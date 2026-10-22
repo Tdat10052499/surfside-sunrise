@@ -96,6 +96,18 @@ Rules:
 - The "© OpenStreetMap contributors" credit is required by the ODbL licence. Never remove it.
 - Interaction: drag to pan, Ctrl/⌘ + wheel or pinch to zoom, +/−/recenter buttons, scale bar, marker popups.
 
+## Responsive scaling & browser support
+
+- Sizes are in `rem`. Hairlines (1–3px) and `@media` conditions stay in px. From 1440px wide, the root font size grows (`clamp(16px, .6vw + 7.36px, 24px)`), so the whole layout scales up on large monitors instead of sitting small in the middle. Keep new sizes in rem so they follow along.
+- Short laptop screens (`max-height:720px`, e.g. 1366×768 at 125% Windows zoom) get tighter spacing, a smaller hero and the scroll cue hidden. The hero headline uses `min(vw, vh)` so it fits both width and height.
+- The hero uses `100vh` with a `100svh` override (mobile address bar). Keep the vh fallback line before any svh/dvh value.
+- On resize, rotate or zoom, `main.js` re-measures Lenis and calls `ScrollTrigger.refresh()`. `ScrollTrigger.config({ignoreMobileResize:true})` stops mobile address-bar jumps.
+- The custom cursor hides the system cursor only when `html.has-cursor` is set (mouse devices, motion allowed). Never set `cursor:none` without it.
+- Never put `:focus-visible` in the same selector list as `:hover`. Older Safari drops the whole rule; write separate rules.
+- Vendor prefixes: run the stylesheet through Autoprefixer (`safari >= 14, ios_saf >= 14, firefox >= 115, chrome >= 100, edge >= 100, samsung >= 18`). It adds `-webkit-backdrop-filter`, `-webkit-background-clip:text` and others that Safari needs.
+- Fallbacks exist for browsers without `aspect-ratio` (`@supports not (aspect-ratio:1/1)`).
+- Test matrix before shipping: 360×740, 390×844, 768×1024, 1024×768, 1093×614, 1366×768, 1920×1080, 2560×1440. Also resize the window live from desktop to phone width and back; the pinned rooms section, map and menu must re-layout without a reload. No horizontal scroll at any size.
+
 ## Content rules (important)
 
 - Use only facts from the Airbnb listing or from the owner. Confirmed facts: entire home, 3 bedrooms (queen, queen, 2 bunk beds), 6 beds, 2 baths, up to 8 guests, 55 amenities (beach access, full kitchen with dishwasher, outdoor patio dining, EV charger, Wi-Fi, workspace, free parking, central AC, washer and dryer, self check-in with lockbox). The Gulf is a few steps away, Surfside Beach is about a 5-minute walk and Jetty Park about 10. Host Anh replies within 1 hour with a 100% response rate. New listing.

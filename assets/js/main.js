@@ -120,6 +120,7 @@ function mqTick(dt){
 /* ---------- GSAP choreography ---------- */
 if(hasGsap&&!reduce){
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ignoreMobileResize:true}); // mobile address bar showing/hiding no longer re-lays out the animations
   gsap.ticker.add((t,dt)=>mqTick(dt/16.67));
 
   /* hero shrinks into a rounded card, content drifts up */
@@ -190,6 +191,12 @@ if(hasGsap&&!reduce){
   gsap.from('.foot .in',{y:60,opacity:.4,ease:'none',scrollTrigger:{trigger:'.foot',start:'top bottom',end:'bottom bottom',scrub:true}});
 
   addEventListener('load',()=>ScrollTrigger.refresh());
+  /* keep every scroll effect in step when the window is resized, rotated or zoomed */
+  let rzT=null,lastW=innerWidth;
+  const relayout=()=>{clearTimeout(rzT);rzT=setTimeout(()=>{lenis&&lenis.resize&&lenis.resize();ScrollTrigger.refresh()},250)};
+  addEventListener('resize',()=>{if(Math.abs(innerWidth-lastW)<2&&matchMedia('(pointer:coarse)').matches)return;lastW=innerWidth;relayout()});
+  addEventListener('orientationchange',relayout);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>ScrollTrigger.refresh());
 }else{
   fillWords(1);
   const tick=()=>{mqTick(1);requestAnimationFrame(tick)};if(!reduce)requestAnimationFrame(tick);
@@ -197,6 +204,7 @@ if(hasGsap&&!reduce){
 
 /* ---------- custom cursor + magnetic buttons ---------- */
 if(fine&&!reduce){
+  document.documentElement.classList.add('has-cursor');
   const cur=$('cursor');let cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;
   addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY});
   (function loop(){cx+=(tx-cx)*.18;cy+=(ty-cy)*.18;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(loop)})();
