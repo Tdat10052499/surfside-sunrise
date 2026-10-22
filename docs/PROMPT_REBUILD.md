@@ -14,7 +14,7 @@ A maintainable Astro project that builds to static files and deploys to GitHub P
 
 - Astro (latest stable), TypeScript, no UI framework. Use vanilla `<script>` in components, because the site is mostly static with a few interactive islands.
 - `astro.config.mjs`: `site: 'https://tdat10052499.github.io'`, `base: '/surfside-sunrise'`. Every asset and link path must respect `base`.
-- Keep the current libraries and versions: GSAP 3.12.5 + ScrollTrigger, Lenis 1.1.13, Lucide icons. Install them from npm instead of CDNs (`gsap`, `lenis`, `lucide`). Fonts: Plus Jakarta Sans and Inter via `@fontsource` packages, or Google Fonts with `display=swap`.
+- Keep the current libraries and versions: GSAP 3.12.5 + ScrollTrigger, Lenis 1.1.13, Lucide icons (inline SVG). Install them from npm (`gsap`, `lenis`, `lucide-static` or `astro-icon`). Fonts: self-host Plus Jakarta Sans and Inter via `@fontsource-variable` with preload and metric-matched fallbacks. Keep the performance rules in `CLAUDE.md` (no third-party requests on load, motion initialised on first interaction, lazy map).
 - Images: move the photos to `src/assets/photos/` and render them with `astro:assets` `<Image>` (responsive `widths`, WebP/AVIF, correct `sizes`, `loading="lazy"` except the hero).
 - CSS: keep the design tokens from the top of `styles.css` in `src/styles/tokens.css`. Use scoped styles per component, plus a small `global.css` for the reset, buttons and utilities.
 - Deployment: add `.github/workflows/deploy.yml` that uses `withastro/action` and `actions/deploy-pages` on push to `main`. Document that the owner must set **Settings → Pages → Source: GitHub Actions** once.

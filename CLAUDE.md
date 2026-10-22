@@ -22,14 +22,14 @@ favicon.svg
 .nojekyll                keeps GitHub Pages from running Jekyll
 ```
 
-Libraries load from CDNs in `index.html`, pinned to exact versions. Keep them pinned:
+Libraries are self-hosted in `assets/vendor` (see Performance budget). Versions:
 
-- GSAP 3.12.5 + ScrollTrigger (cdnjs)
-- Lenis 1.1.13 smooth scroll (unpkg)
-- Lucide 0.344.0 icons (jsDelivr), used as `<i data-lucide="name"></i>`
-- Google Fonts: Plus Jakarta Sans (headings), Inter (body)
+- GSAP 3.12.5 + ScrollTrigger (`assets/vendor`)
+- Lenis 1.1.13 smooth scroll (`assets/vendor`)
+- Lucide 0.344.0 icons, inlined as SVG in `index.html`
+- Fonts: Plus Jakarta Sans (headings) and Inter (body), self-hosted in `assets/fonts`
 
-The page must keep working if a CDN fails. Every script checks for its library (`window.gsap`, `window.Lenis`, `window.lucide`) before using it, and the CSS final state is the visible state.
+The page must keep working if a script fails. Every script checks for its library (`window.gsap`, `window.Lenis`) before using it, and the CSS final state is the visible state.
 
 ## Design system
 
@@ -126,6 +126,30 @@ Rules:
 Replace `https://tdat10052499.github.io/surfside-sunrise/` with the new URL everywhere:
 `index.html` (canonical, og:url, og:image, twitter:image, every JSON-LD `url`/`@id`/`image`), `sitemap.xml`, `robots.txt`.
 In `404.html`, change `/surfside-sunrise/` to `/`. Then submit `sitemap.xml` in Google Search Console and Bing Webmaster Tools.
+
+## Performance budget (PageSpeed 95+ on mobile)
+
+- **No third-party requests on load.** Fonts (`assets/fonts`, variable woff2, latin subset) and libraries (`assets/vendor`: GSAP, ScrollTrigger, Lenis) are self-hosted. Don't add CDN links back.
+- **Fonts:** both woff2 files are preloaded. `@font-face` uses `font-display:swap`, with metric-matched fallback faces (`… Fallback`) so text doesn't shift when the font arrives.
+- **Scripts** are `defer`. The GSAP/ScrollTrigger choreography is built on the visitor's **first scroll, touch or key press** (`initMotion` in `main.js`). Every effect is scroll-driven, and the page is fully visible before that. Keep new scroll effects inside `initMotion`.
+- **One-shot entrance tweens and section tone changes use `IntersectionObserver`**, not one ScrollTrigger each. Use ScrollTrigger only for scrubbed or pinned effects.
+- **The map** fetches its data and draws only when it comes within 800px of the viewport.
+- **Never read layout** (`scrollWidth`, `getBoundingClientRect`) inside per-frame code. Measure on resize and cache the value.
+- **The footer is in normal flow.** A sticky footer behind the page was being counted as LCP and caused layout shift (CLS 0.78 on desktop).
+- **Images:** hero `deck.webp` ≈ 86 KB, `deck-800.webp` ≈ 45 KB, avatar thumbnails 64 px. Keep new photos under ~150 KB with an `-800` version.
+- **Check** with PageSpeed Insights (mobile + desktop) after each change. Expect ±3 points of run-to-run noise.
+
+### Scroll smoothness (no dropped frames)
+
+PageSpeed does not measure scrolling, so these rules matter separately. Each one fixed a real source of scroll jank:
+
+- **Fixed elements must be on their own layer.** At device pixel ratio 1 (most Windows laptops), Chrome does not promote a fixed element automatically. Anything inside it that animates then repaints the whole page on every frame. `.fab` has `will-change:transform`. Do the same for any new fixed element that animates.
+- **No live SVG `<text>` inside something that spins or moves continuously.** It blocks compositor animation. The Book button's ring label is a pre-outlined path (Inter 600, 9.5px, letter-spacing 2.4px, generated with fontTools). To change the wording, regenerate the path rather than putting `<text>` back.
+- **Don't change inherited custom properties on `<html>` or `<body>` while scrolling.** Every element restyles (about 50 ms). Section tone is written directly to `body` and `main` `background-color`.
+- **Classes that change while scrolling go on the smallest element that needs them**, never `<body>`. For example the header hides with `.bar.hide`. In `onScroll`, write to the DOM only when the state actually flips (cached booleans).
+- **Infinite CSS animations pause when off-screen.** They are `animation-play-state:paused` by default, and `.run` (set by an IntersectionObserver) or `body.menu-open` switches them on. Animate only `transform` and `opacity`.
+- **Per-frame JS writes `transform`/`translate` only, never `left`/`top`/`width`** (see the custom cursor). Scrub callbacks must only touch elements whose state changed (see `fillWords`).
+- **Build large DOM pieces off-document** and attach them once (the map's SVG `<g>`).
 
 ## Content rules (important)
 

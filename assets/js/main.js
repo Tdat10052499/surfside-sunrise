@@ -29,18 +29,25 @@ function scrollToTarget(sel){
 document.querySelectorAll('a[data-scroll]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();setMenu(false);scrollToTarget(a.getAttribute('href'))}));
 
 /* ---------- header: solid after hero, hides on scroll down ---------- */
-let lastY=0;
+let lastY=0,bookingInView=false;
+if('IntersectionObserver' in window){const seen=new Set();const io=new IntersectionObserver(es=>{es.forEach(e=>e.isIntersecting?seen.add(e.target):seen.delete(e.target));bookingInView=seen.size>0;onScroll(scrollY)});io.observe($('booking'));io.observe(document.querySelector('.foot'))}
+const fabEl=$('fab'),bodyCL=document.body.classList,barCL=document.querySelector('.bar').classList;let vh=innerHeight,stScrolled=null,stHide=false,stFab=null;
+addEventListener('resize',()=>{vh=innerHeight},{passive:true});
 function onScroll(y){
-  document.body.classList.toggle('scrolled',y>60);
+  /* write to the DOM only when a state flips, so scrolling never dirties style */
+  const sc=y>60;if(sc!==stScrolled){stScrolled=sc;bodyCL.toggle('scrolled',sc)}
   const down=y>lastY+4,up=y<lastY-4;
-  if(y>innerHeight*.9&&down)document.body.classList.add('hide-bar');
-  if(up||y<200)document.body.classList.remove('hide-bar');
+  let hide=stHide;if(y>vh*.9&&down)hide=true;if(up||y<200)hide=false;
+  if(hide!==stHide){stHide=hide;barCL.toggle('hide',hide)}
   lastY=y;
-  const book=$('booking').getBoundingClientRect();
-  $('fab').classList.toggle('on',y>innerHeight*.8&&!(book.top<innerHeight&&book.bottom>0));
+  const f=y>vh*.8&&!bookingInView;if(f!==stFab){stFab=f;fabEl.classList.toggle('on',f)}
 }
 addEventListener('scroll',()=>onScroll(scrollY),{passive:true});
 onScroll(scrollY);
+
+/* ---------- pause looping CSS animations while off-screen ---------- */
+if('IntersectionObserver' in window){const runIO=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('run',e.isIntersecting)));document.querySelectorAll('.live,#map').forEach(n=>runIO.observe(n))}
+else document.querySelectorAll('.live,#map').forEach(n=>n.classList.add('run'));
 
 /* ---------- menu ---------- */
 const burger=$('burger'),menu=$('menu');
@@ -101,22 +108,27 @@ burger.addEventListener('click',zonesUpdate);
 const st=$('statement');
 st.innerHTML=st.innerHTML.replace(/<em>(.*?)<\/em>|([^\s<]+)/g,(m,em,w)=>em?`<span class="w hl">${em}</span>`:`<span class="w">${w}</span>`);
 const words=[...st.querySelectorAll('.w')];
-function fillWords(p){const n=reduce?words.length:Math.round(p*words.length);words.forEach((w,i)=>w.classList.toggle('on',i<n))}
+let filled=0;function fillWords(p){const n=reduce?words.length:Math.round(p*words.length);if(n===filled)return;const a=Math.min(n,filled),b=Math.max(n,filled);for(let i=a;i<b;i++)words[i].classList.toggle('on',i<n);filled=n}
 
 /* ---------- marquee driven by scroll velocity ---------- */
 const mq=$('mq');let mx=0,vel=0,dir=1;
 if(lenis)lenis.on('scroll',e=>{vel=e.velocity||0;if(Math.abs(vel)>.2)dir=vel>0?1:-1});
+let mqHalf=0,mqOn=true;
+const mqMeasure=()=>{mqHalf=mq.scrollWidth/2+20};mqMeasure();addEventListener('resize',mqMeasure);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(mqMeasure);
+if('IntersectionObserver' in window)new IntersectionObserver(es=>{mqOn=es[0].isIntersecting}).observe(mq.parentElement);
 function mqTick(dt){
-  if(reduce)return;
-  const half=mq.scrollWidth/2+20;
+  if(reduce||!mqOn||document.hidden)return;
+  const half=mqHalf;
   mx-=(0.6+Math.min(Math.abs(vel),40)*0.25)*dir*dt;
   if(mx<-half)mx+=half;if(mx>0)mx-=half;
   mq.style.transform=`translate3d(${mx}px,0,0)`;
   vel*=.92;
 }
 
-/* ---------- GSAP choreography ---------- */
+/* ---------- GSAP choreography (built on the first scroll / touch / key press) ---------- */
 if(hasGsap&&!reduce){
+ const initMotion=()=>{
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({ignoreMobileResize:true}); // mobile address bar showing/hiding no longer re-lays out the animations
   gsap.ticker.add((t,dt)=>mqTick(dt/16.67));
@@ -126,10 +138,13 @@ if(hasGsap&&!reduce){
   gsap.to('#heroImg',{yPercent:12,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
   gsap.to('#heroIn',{yPercent:-18,opacity:.25,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
 
-  /* page tone shifts per section */
-  document.querySelectorAll('[data-tone]').forEach(sec=>{
-    ScrollTrigger.create({trigger:sec,start:'top 55%',end:'bottom 55%',onToggle:s=>{if(s.isActive)document.documentElement.style.setProperty('--tone',sec.dataset.tone)}});
-  });
+  /* page tone shifts per section (IntersectionObserver: cheaper than one ScrollTrigger per section) */
+  /* paint the colour straight onto body+main: changing the inherited --tone would restyle every element */
+  const mainEl=document.querySelector('main');let curTone='';const setTone=t=>{if(t===curTone)return;curTone=t;document.body.style.backgroundColor=t;mainEl.style.backgroundColor=t};
+  const toneIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setTone(e.target.dataset.tone)}),{rootMargin:'-55% 0px -45% 0px'});
+  document.querySelectorAll('[data-tone]').forEach(sec=>toneIO.observe(sec));
+  /* one-shot entrance tweens: played when the element enters the view */
+  const enterIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){enterIO.unobserve(e.target);e.target._tw&&e.target._tw.play()}}),{rootMargin:'0px 0px -12% 0px'});
 
   /* statement fill */
   ScrollTrigger.create({trigger:st,start:'top 85%',end:'bottom 40%',scrub:true,onUpdate:s=>fillWords(s.progress)});
@@ -137,7 +152,7 @@ if(hasGsap&&!reduce){
   /* headings: words lift into place (visible throughout) */
   document.querySelectorAll('[data-split]').forEach(h=>{
     h.innerHTML=h.textContent.trim().split(' ').map(w=>`<span class="w">${w}</span>`).join(' ');
-    gsap.from(h.querySelectorAll('.w'),{y:'0.5em',opacity:.25,duration:.9,ease:'power3.out',stagger:.05,scrollTrigger:{trigger:h,start:'top 88%',once:true}});
+    h._tw=gsap.from(h.querySelectorAll('.w'),{y:'0.5em',opacity:.25,duration:.9,ease:'power3.out',stagger:.05,paused:true});enterIO.observe(h);
   });
 
   /* clip reveals for large images */
@@ -153,7 +168,7 @@ if(hasGsap&&!reduce){
 
   /* staggered grids */
   document.querySelectorAll('[data-stagger]').forEach(g=>{
-    gsap.from(g.children,{y:40,opacity:.3,duration:.9,ease:'power3.out',stagger:.06,scrollTrigger:{trigger:g,start:'top 88%',once:true}});
+    g._tw=gsap.from(g.children,{y:40,opacity:.3,duration:.9,ease:'power3.out',stagger:.06,paused:true});enterIO.observe(g);
   });
 
   /* stacking cards: earlier cards sink back as the next one arrives */
@@ -161,8 +176,7 @@ if(hasGsap&&!reduce){
   cards.forEach((c,i)=>{
     if(i===cards.length-1)return;
     const next=cards[i+1];
-    gsap.to(c,{scale:.92,ease:'none',scrollTrigger:{trigger:next,start:'top bottom',end:'top 120px',scrub:true}});
-    gsap.to(c.querySelector('.shade'),{opacity:.45,ease:'none',scrollTrigger:{trigger:next,start:'top bottom',end:'top 120px',scrub:true}});
+    gsap.timeline({scrollTrigger:{trigger:next,start:'top bottom',end:'top 120px',scrub:true}}).to(c,{scale:.92,ease:'none'},0).to(c.querySelector('.shade'),{opacity:.45,ease:'none'},0);
   });
 
   /* pinned horizontal rooms (desktop) */
@@ -195,6 +209,16 @@ if(hasGsap&&!reduce){
   addEventListener('resize',()=>{if(Math.abs(innerWidth-lastW)<2&&matchMedia('(pointer:coarse)').matches)return;lastW=innerWidth;relayout()});
   addEventListener('orientationchange',relayout);
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>ScrollTrigger.refresh());
+
+  /* footer: rises out from under the page as you reach the end (replaces the old sticky curtain) */
+  gsap.fromTo('.foot>img',{yPercent:-13},{yPercent:0,ease:'none',scrollTrigger:{trigger:'.foot',start:'top bottom',end:'bottom bottom',scrub:true}});
+ };
+ /* Every effect is scroll-driven, so the setup waits for the visitor's first scroll/touch/key.
+    The page is fully visible before that, and loading stays light (better Total Blocking Time). */
+ let started=false;const evs=['scroll','wheel','touchstart','pointerdown','keydown'];
+ const start=()=>{if(started)return;started=true;evs.forEach(e=>removeEventListener(e,start,{passive:true}));initMotion()};
+ evs.forEach(e=>addEventListener(e,start,{passive:true}));
+ if(scrollY>0||location.hash)start();
 }else{
   fillWords(1);
   const tick=()=>{mqTick(1);requestAnimationFrame(tick)};if(!reduce)requestAnimationFrame(tick);
@@ -205,7 +229,8 @@ if(fine&&!reduce){
   document.documentElement.classList.add('has-cursor');
   const cur=$('cursor');let cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;
   addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY});
-  (function loop(){cx+=(tx-cx)*.18;cy+=(ty-cy)*.18;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(loop)})();
+  const hasTr=window.CSS&&CSS.supports&&CSS.supports('translate','1px 1px');let curRun=false;const loop=()=>{cx+=(tx-cx)*.18;cy+=(ty-cy)*.18;if(hasTr)cur.style.translate=cx+'px '+cy+'px';else{cur.style.left=cx+'px';cur.style.top=cy+'px'}if(Math.abs(tx-cx)+Math.abs(ty-cy)>.5)requestAnimationFrame(loop);else curRun=false};
+  addEventListener('pointermove',()=>{if(!curRun){curRun=true;requestAnimationFrame(loop)}},{passive:true});
   document.querySelectorAll('[data-cursor]').forEach(el=>{
     el.addEventListener('pointerenter',()=>{cur.textContent=el.dataset.cursor;cur.classList.add('on')});
     el.addEventListener('pointerleave',()=>cur.classList.remove('on'));
@@ -251,7 +276,7 @@ addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return;if(e.key
   function draw(txt){
     const feats=txt.trim().split('\n').map(l=>{const [c,n,e]=l.split('|');let x=0,y=0;return {c,n,pts:e.split(';').map(s=>{const [a,b]=s.split(',').map(Number);x+=a;y+=b;return P(x,y)})}});
     const pts=p=>p.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');
-    const g=el('g',{id:'mg'});svg.appendChild(g);
+    const g=el('g',{id:'mg'});
     g.appendChild(el('rect',{class:'land',x:-20000,y:-20000,width:60000,height:60000}));
     const coast=feats.find(f=>f.c==='n:coastline');
     if(coast){const a=coast.pts;g.appendChild(el('polygon',{class:'sea',points:pts([...a,[a[a.length-1][0],H+60000],[a[0][0],H+60000]])}))}
@@ -264,6 +289,7 @@ addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return;if(e.key
     for(const [c,w] of roads)for(const f of feats)if(f.c===c)g.appendChild(el('polyline',{class:c==='primary'?'hw':'road',points:pts(f.pts),'stroke-width':w,'vector-effect':'non-scaling-stroke','data-w':w}));
     g.appendChild(el('circle',{class:'ring',cx:HOUSE[0],cy:HOUSE[1],r:720,'stroke-width':1.6,'vector-effect':'non-scaling-stroke'}));
     g.appendChild(el('circle',{class:'area',cx:HOUSE[0],cy:HOUSE[1],r:180,'stroke-width':1.2,'vector-effect':'non-scaling-stroke'}));
+    svg.appendChild(g); /* attach once, fully built */
   }
   const labels=[
     {t:'Gulf of Mexico',c:'sea-l',p:P(2600,1220)},
@@ -323,8 +349,9 @@ addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return;if(e.key
     Object.assign(v,{cx:pinch.cx,cy:pinch.cy,z:pinch.z});Object.assign(v,zoomAt(d/pinch.d,pinch.mx,pinch.my));v.cx-=(mx-pinch.mx)/v.z;v.cy-=(my-pinch.my)/v.z;render()},{passive:false});
   box.addEventListener('touchend',e=>{touches=e.touches.length;if(touches<2)pinch=null},{passive:true});
   if(!fine)hint.textContent='Drag sideways to explore · Pinch to zoom';
-  fetch('assets/data/map-data.txt').then(r=>{if(!r.ok)throw 0;return r.text()}).then(t=>{draw(t);resize();new ResizeObserver(resize).observe(box)})
+  const loadMap=()=>fetch('assets/data/map-data.txt').then(r=>{if(!r.ok)throw 0;return r.text()}).then(t=>{draw(t);resize();new ResizeObserver(resize).observe(box)})
     .catch(()=>{box.insertAdjacentHTML('beforeend','<div class="mfail">The map could not load. Use “Open in Google Maps” below.</div>')});
+  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){io.disconnect();loadMap()}},{rootMargin:'800px 0px'});io.observe(box)}else loadMap();
 })();
 
 /* ---------- footer contacts ---------- */

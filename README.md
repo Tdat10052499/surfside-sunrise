@@ -13,13 +13,15 @@ assets/css/styles.css    styles (design tokens at the top)
 assets/js/main.js        behaviour: smooth scroll, animations, menu, world time, map, booking form
 assets/img/              house photos (WebP)
 assets/data/map-data.txt OpenStreetMap data for the location map
+assets/fonts/            self-hosted variable fonts (Inter, Plus Jakarta Sans)
+assets/vendor/           self-hosted GSAP, ScrollTrigger, Lenis
 favicon.svg
 CLAUDE.md                guide for AI coding assistants (design system, rules)
 docs/PROMPT_REBUILD.md   prompt for rebuilding the site with Astro
 docs/DEPLOY_vi.md        deployment guide in Vietnamese
 ```
 
-No build step: it is plain HTML, CSS and JavaScript. Libraries (GSAP, Lenis, Lucide) and fonts load from CDNs.
+No build step: it is plain HTML, CSS and JavaScript. Fonts and libraries are self-hosted, so there are no third-party requests on load.
 
 ## Run locally
 

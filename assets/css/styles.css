@@ -1,3 +1,9 @@
+/* Self-hosted variable fonts (latin). Fallback faces use metric overrides so text doesn't jump when the web font arrives (no layout shift). */
+@font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:200 800;font-display:swap;src:url(../fonts/plus-jakarta-sans-latin-var.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:swap;src:url(../fonts/inter-latin-var.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Plus Jakarta Sans Fallback';src:local('Arial'),local('Liberation Sans'),local('Helvetica');size-adjust:103.12%;ascent-override:100.66%;descent-override:21.53%;line-gap-override:0%}
+@font-face{font-family:'Inter Fallback';src:local('Arial'),local('Liberation Sans'),local('Helvetica');size-adjust:104.33%;ascent-override:92.85%;descent-override:23.12%;line-gap-override:0%}
+
 /* Base reset (matches the original hosting skeleton) */
 :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;font:0.875rem system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -27,8 +33,8 @@ img{max-width:100%}
   --oak:#6d5444;
   --glass:#7cc5c7;
   --sun:#f1bf45;
-  --head:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;
-  --body:'Inter','Segoe UI',system-ui,sans-serif;
+  --head:'Plus Jakarta Sans','Plus Jakarta Sans Fallback','Segoe UI',system-ui,sans-serif;
+  --body:'Inter','Inter Fallback','Segoe UI',system-ui,sans-serif;
   --gl:max(1rem,env(safe-area-inset-left,0px));
   --gr:max(1rem,env(safe-area-inset-right,0px));
   --r:1.125rem;
@@ -76,7 +82,7 @@ h2{font-size:clamp(2rem,4vw,2.9rem);line-height:1.15}
 .bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:41;padding-left:var(--gl);padding-right:var(--gr);transition:transform .5s var(--ease)}
 .bar-in{max-width:73.75rem;margin-inline:auto;margin-top:0.75rem;height:3.75rem;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;padding:0 0.5rem 0 1.25rem;border-radius:62.4375rem;transition:background .4s,box-shadow .4s,-webkit-backdrop-filter .4s;transition:background .4s,box-shadow .4s,backdrop-filter .4s;transition:background .4s,box-shadow .4s,backdrop-filter .4s,-webkit-backdrop-filter .4s}
 body.scrolled .bar-in{background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(1rem) saturate(1.4);backdrop-filter:blur(1rem) saturate(1.4);box-shadow:0 0.625rem 1.875rem -18px rgba(20,40,64,.45),inset 0 0 0 1px rgba(255,255,255,.6)}
-body.hide-bar:not(.menu-open) .bar{transform:translateY(-110%)}
+body:not(.menu-open) .bar.hide{transform:translateY(-110%)}
 .logo{font:700 .95rem/1 var(--head);letter-spacing:.1em;text-transform:uppercase;color:#fff;text-decoration:none;transition:color .3s;display:flex;align-items:center;gap:0.625rem}
 .logo i{width:1.125rem;height:1.125rem;border-radius:50%;background:radial-gradient(circle at 50% 120%,var(--sun) 0 45%,transparent 46%),linear-gradient(var(--gulf),var(--gulf));box-shadow:inset 0 0 0 1.5px currentColor}
 body.scrolled .logo{color:var(--navy)}
@@ -158,11 +164,11 @@ body.menu-open .menu aside{opacity:1;transform:none}
 @media (max-width:820px){.menu-in{grid-template-columns:1fr;grid-template-rows:auto auto auto}.menu aside img{display:none}.mrow span{border-right:0;margin-right:1.125rem;padding-right:0}}
 
 /* floating book button */
-.fab{position:fixed;right:calc(var(--gr) + 0.25rem);bottom:calc(1.25rem + env(safe-area-inset-bottom,0px));z-index:35;width:6rem;height:6rem;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;text-align:center;font:600 .78rem/1.2 var(--head);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;box-shadow:var(--shadow);transform:scale(0);transition:transform .6s var(--ease),background .3s}
+.fab{position:fixed;right:calc(var(--gr) + 0.25rem);bottom:calc(1.25rem + env(safe-area-inset-bottom,0px));z-index:35;width:6rem;height:6rem;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;text-align:center;font:600 .78rem/1.2 var(--head);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;box-shadow:var(--shadow);transform:scale(0);transition:transform .6s var(--ease),background .3s;will-change:transform;contain:layout paint}
 .fab.on{transform:scale(1)}
 .fab:hover{background:var(--gulf)}
-.fab svg{position:absolute;inset:0.375rem;width:calc(100% - 0.75rem);height:calc(100% - 0.75rem);animation:spin 14s linear infinite}
-.fab text{font:600 9.5px var(--body);letter-spacing:2.4px;fill:#cfe2ee;text-transform:uppercase}
+.fab .ring{position:absolute;inset:0.375rem;animation:spin 14s linear infinite;animation-play-state:paused;will-change:transform}.fab.on .ring{animation-play-state:running}.fab .ring svg{display:block;width:100%;height:100%}
+.fab .ring path{fill:#cfe2ee} /* ring label is pre-outlined Inter 600: live SVG text can't spin on the compositor */
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (max-width:560px){.fab{width:4.875rem;height:4.875rem;font-size:.7rem}}
 
@@ -178,7 +184,7 @@ main .bleed{margin-left:calc(-1 * var(--gl));margin-right:calc(-1 * var(--gr))}
 /* hero */
 .hero{position:relative;height:100vh;height:100svh;min-height:32.5rem;isolation:isolate;color:#fff}
 .hero-media{position:absolute;inset:0;overflow:hidden;z-index:-1;clip-path:inset(0 0 0 0 round 0px);will-change:clip-path}
-.hero-media img{width:100%;height:100%;object-fit:cover;object-position:60% 40%;transform:scale(1.12);animation:heroIn 2.2s var(--ease) both}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:60% 40%;transform:scale(1.12);animation:heroIn 1.5s var(--ease) both}
 @keyframes heroIn{from{transform:scale(1.28)}to{transform:scale(1.12)}}
 .hero-media::after{content:"";position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 32%,rgba(12,32,52,.5),rgba(12,32,52,0) 70%),linear-gradient(180deg,rgba(15,38,60,.7) 0%,rgba(15,38,60,.3) 45%,rgba(15,38,60,0) 65%,rgba(15,38,60,.4) 100%)}
 .hero-in{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:calc(clamp(6rem,17vh,9.375rem) + env(safe-area-inset-top,0px)) var(--gr) 0 var(--gl);gap:clamp(0.875rem,2.6vh,1.5rem)}
@@ -426,8 +432,8 @@ html.has-cursor .room:not(.info){cursor:none}
 
 /* footer (revealed under the curtain) */
 .foot{position:relative;z-index:1;color:#fff;margin-top:-36px;padding:calc(2.25rem + clamp(3rem,7vw,5rem)) var(--gr) calc(1.75rem + env(safe-area-inset-bottom,0px)) var(--gl);min-height:38.75rem;display:flex;flex-direction:column;justify-content:space-between;isolation:isolate;overflow:hidden}
-@media (min-height:700px) and (min-width:760px){.foot{position:sticky;bottom:0;height:min(100vh,45rem)}}
-.foot>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 70%;z-index:-2}
+/* footer is in normal flow; its photo rises in with GSAP (no sticky curtain: a sticky footer sat behind the page and was counted as LCP/CLS) */
+.foot>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 70%;z-index:-2;height:115%;bottom:auto}
 .foot::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(31,53,82,.96) 0%,rgba(31,53,82,.8) 45%,rgba(31,53,82,.2) 78%,rgba(31,53,82,.6) 100%)}
 .foot .in{max-width:73.75rem;width:100%;margin-inline:auto}
 .ftop{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap}
@@ -439,8 +445,10 @@ html.has-cursor .room:not(.info){cursor:none}
 @media (max-width:640px){.fcols{grid-template-columns:1fr 1fr}}
 .fbot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0.75rem;font-size:.82rem;color:#e8eef4}
 .live{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);padding:0.4375rem 0.8125rem;border-radius:6.1875rem;-webkit-backdrop-filter:blur(0.375rem);backdrop-filter:blur(0.375rem)}
-.live::before{content:"";width:0.5rem;height:0.5rem;border-radius:50%;background:#5fd38d;animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(95,211,141,.7)}70%,100%{box-shadow:0 0 0 0.5rem rgba(95,211,141,0)}}
+.live{position:relative}
+.live::before{content:"";width:0.5rem;height:0.5rem;border-radius:50%;background:#5fd38d;flex:none}
+.live::after{content:"";position:absolute;left:0.8125rem;top:50%;width:0.5rem;height:0.5rem;margin-top:-0.25rem;border-radius:50%;background:#5fd38d;animation:ping2 2s ease-out infinite;will-change:transform,opacity}
+@keyframes ping2{0%{transform:scale(1);opacity:.6}80%,100%{transform:scale(2.6);opacity:0}}
 
 /* lightbox */
 .lb{position:fixed;inset:0;z-index:80;background:rgba(10,22,36,.95);display:flex;align-items:center;justify-content:center;padding:calc(4rem + env(safe-area-inset-top,0px)) var(--gr) calc(4rem + env(safe-area-inset-bottom,0px)) var(--gl);opacity:0;visibility:hidden;transition:opacity .4s,visibility 0s .4s}
@@ -454,6 +462,9 @@ html.has-cursor .room:not(.info){cursor:none}
 .lb .p{left:var(--gl)}.lb .n{right:var(--gr)}
 .lb .cap{position:absolute;bottom:calc(1.25rem + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:#dfe8f0;font-size:.88rem}
 
+/* infinite loops only tick while visible (keeps the main thread free while scrolling) */
+.live::after,.mk .mpin::before,.msun::after{animation-play-state:paused}
+.live.run::after,.map.run .mk .mpin::before,body.menu-open .msun::after{animation-play-state:running}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
   .hero-media img{transform:none}
