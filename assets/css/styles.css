@@ -96,6 +96,11 @@ body.menu-open .burger span:nth-child(2){opacity:0}
 body.menu-open .burger span:nth-child(3){transform:translateY(-6.8px) rotate(-45deg)}
 body.menu-open .logo{color:#fff}
 body.menu-open .bar-in{background:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* menu open: header sits on a navy band that fades out, so menu content scrolls softly underneath instead of colliding with the logo */
+.bar::before{content:"";position:absolute;left:0;right:0;top:calc(-1 * env(safe-area-inset-top,0px));height:calc(100% + env(safe-area-inset-top,0px) + 2.75rem);background:linear-gradient(180deg,var(--navy) 0%,var(--navy) 62%,rgba(31,53,82,0) 100%);opacity:0;pointer-events:none;transition:opacity .4s var(--ease);z-index:-1}
+body.menu-open .bar::before{opacity:1;transition-delay:.25s}
+body.menu-open::before{background:var(--navy)}
+.menu .mark{scroll-margin-top:6rem}
 @media (max-width:560px){.bar .btn-book{display:none}}
 
 /* menu */
@@ -188,10 +193,6 @@ main .bleed{margin-left:calc(-1 * var(--gl));margin-right:calc(-1 * var(--gr))}
 .hero .cta{display:flex;flex-wrap:wrap;gap:0.625rem;justify-content:center;animation:fadeUp 1s .7s var(--ease) both}
 .badge{animation:fadeUp 1s .1s var(--ease) both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:none}}
-.cue{position:absolute;left:50%;bottom:1.75rem;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.625rem;font:500 .72rem var(--body);letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85)}
-.cue i{width:1.5px;height:2.75rem;background:rgba(255,255,255,.3);position:relative;overflow:hidden}
-.cue i::after{content:"";position:absolute;left:0;top:0;width:100%;height:40%;background:#fff;animation:drip 1.8s var(--ease) infinite}
-@keyframes drip{from{transform:translateY(-100%)}to{transform:translateY(260%)}}
 
 /* overview */
 .statement{font:600 clamp(1.5rem,3.2vw,2.4rem)/1.3 var(--head);color:var(--navy);text-align:center;letter-spacing:-.02em;max-width:30ch;margin:1.375rem auto 0;text-wrap:balance}
@@ -465,8 +466,7 @@ html.has-cursor .room:not(.info){cursor:none}
 }
 /* short laptop screens (e.g. 1366x768 at 125% zoom) */
 @media (max-height:720px) and (min-width:761px){
-  .cue{display:none}
-  .section{padding-block:clamp(4rem,10vh,6.875rem)}
+    .section{padding-block:clamp(4rem,10vh,6.875rem)}
   .scard{top:calc(5.25rem + var(--i) * 0.875rem);height:min(70vh,32.5rem)}
   .pin{padding-block:4.5rem 1.75rem;gap:1.125rem}
   .room{height:min(52vh,27.5rem)}
