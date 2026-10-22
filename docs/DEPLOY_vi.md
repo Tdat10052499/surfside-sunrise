@@ -33,3 +33,11 @@ Lưu ý: cần kéo **nội dung bên trong** thư mục, không kéo chính th�
 - **Thay ảnh:** vào `assets/img`, chọn **Add file → Upload files**, tải ảnh mới lên với **cùng tên file** (ví dụ `deck.webp`) để thay ảnh cũ.
 - **Dùng AI để sửa hoặc phát triển tiếp:** mở repo bằng Claude Code hoặc Cursor. Assistant sẽ đọc `CLAUDE.md` để hiểu thiết kế và quy tắc.
 - **Dựng lại bằng framework (Astro):** dán nội dung `docs/PROMPT_REBUILD.md` vào Claude Code hoặc Cursor.
+
+## SEO: việc cần làm sau khi khách hàng duyệt
+
+1. **Google Search Console:** vào https://search.google.com/search-console, thêm property. Có domain riêng thì chọn **Domain** và xác minh bằng bản ghi TXT. Trước đó có thể dùng **URL prefix** `https://tdat10052499.github.io/surfside-sunrise/` và xác minh bằng thẻ HTML. Sau đó vào **Sitemaps**, gửi `sitemap.xml`.
+2. **Bing Webmaster Tools:** https://www.bing.com/webmasters, chọn "Import from Google Search Console" cho nhanh.
+3. **Khi chuyển sang domain riêng:** thay link github.io bằng domain mới trong `index.html`, `sitemap.xml`, `robots.txt`, và sửa `404.html` (danh sách chi tiết ở mục SEO trong `CLAUDE.md`).
+4. **Kiểm tra:** chạy https://pagespeed.web.dev và https://search.google.com/test/rich-results với link thật.
+5. **Không tạo Google Business Profile** cho căn nhà: chính sách của Google không cho phép với nhà nghỉ dưỡng cho thuê.

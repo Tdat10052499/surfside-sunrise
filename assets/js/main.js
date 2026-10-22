@@ -95,9 +95,7 @@ function zonesUpdate(){
 zonesUpdate();setInterval(zonesUpdate,15000);
 burger.addEventListener('click',zonesUpdate);
 
-/* ---------- hero title mask rise ---------- */
-const h1=$('h1');
-h1.innerHTML=h1.textContent.trim().split(' ').map((w,i)=>`<span class="mask"><span style="animation-delay:${.15+i*.07}s">${w}</span></span>`).join(' ');
+/* hero title: animated in CSS (.hero h1), kept as plain text so it paints immediately (faster LCP) */
 
 /* ---------- statement word fill ---------- */
 const st=$('statement');

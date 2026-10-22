@@ -108,6 +108,25 @@ Rules:
 - Fallbacks exist for browsers without `aspect-ratio` (`@supports not (aspect-ratio:1/1)`).
 - Test matrix before shipping: 360×740, 390×844, 768×1024, 1024×768, 1093×614, 1366×768, 1920×1080, 2560×1440. Also resize the window live from desktop to phone width and back; the pinned rooms section, map and menu must re-layout without a reload. No horizontal scroll at any size.
 
+## SEO (keep these when editing)
+
+- **Title, description and H1** target "Surfside Beach TX beach house rental". Keep "Surfside Beach" in the title, the H1 and a few H2s. Don't stuff keywords.
+- **Headings:** exactly one `h1`. Every section has an `h2` (the overview statement is an `h2`). Levels go in order: no `h4` after an `h2`. Footer column labels are `<p class="fh">`, not headings.
+- **Images:** content photos need descriptive `alt`; purely decorative backgrounds use `alt=""`. Always set `width`/`height`. Large photos have an `-800.webp` version used via `srcset`/`sizes`. The hero image is preloaded with `fetchpriority="high"`; everything below the fold is `loading="lazy"`.
+- **Hero H1** is plain text, animated with CSS only, so it paints immediately (it is the LCP element). Don't hide it behind a JS split or mask animation.
+- **Icons** are inline SVG (generated from Lucide 0.344.0). There is no icon CDN. To add one, copy the SVG markup from lucide.dev and keep `aria-hidden="true"`.
+- **Scripts** load with `defer`.
+- **Structured data** in `<head>`: `WebSite`, `House` (rooms, occupancy, amenities, approximate geo, Airbnb `sameAs`) and `FAQPage`. When the FAQ, amenities or photos change, update the JSON-LD too. Google's `VacationRental` rich result is limited to Hotel Center partners, so don't switch to it.
+- **Social sharing:** `og:image` and `twitter:image` use `assets/img/og-image.jpg` (1200×630 JPG; WebP isn't shown by every platform).
+- **Contrast:** text on light backgrounds uses `--gulf-ink` (`#336f97`), not `--gulf`. Small labels need at least 4.5:1.
+- **Do not** create a Google Business Profile for the house. Google's guidelines list vacation homes as ineligible.
+
+### When the custom domain goes live (e.g. https://www.surfsidesunrise.com/)
+
+Replace `https://tdat10052499.github.io/surfside-sunrise/` with the new URL everywhere:
+`index.html` (canonical, og:url, og:image, twitter:image, every JSON-LD `url`/`@id`/`image`), `sitemap.xml`, `robots.txt`.
+In `404.html`, change `/surfside-sunrise/` to `/`. Then submit `sitemap.xml` in Google Search Console and Bing Webmaster Tools.
+
 ## Content rules (important)
 
 - Use only facts from the Airbnb listing or from the owner. Confirmed facts: entire home, 3 bedrooms (queen, queen, 2 bunk beds), 6 beds, 2 baths, up to 8 guests, 55 amenities (beach access, full kitchen with dishwasher, outdoor patio dining, EV charger, Wi-Fi, workspace, free parking, central AC, washer and dryer, self check-in with lockbox). The Gulf is a few steps away, Surfside Beach is about a 5-minute walk and Jetty Park about 10. Host Anh replies within 1 hour with a 100% response rate. New listing.
