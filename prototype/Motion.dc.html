@@ -193,19 +193,64 @@ class Component extends DCLogic {
     const queueMeasure = () => { if (!mq) mq = W.requestAnimationFrame(() => { mq = 0; measure(); }); };
     const resetAll = () => {
       S.scrubs.forEach((s) => s.reset && s.reset());
-      S.pins.forEach((p) => p.reset());
+      S.pins.forEach((sec) => { const st = sec.__ssPin; if (st) { st.off && st.off(); st.off = null; st.mode = ''; } });
+      S.pins = [];
       S.head.forEach((o) => { o.h.style.transform = ''; o.h.style.position = ''; });
       S.tones.forEach((sec) => { sec.style.background = ''; });
       if (toneRoot) { toneRoot.style.backgroundColor = ''; curTone = ''; }
       S.marq.forEach((o) => { o.row.style.transform = ''; });
     };
     const measure = () => {
+      api.measures = (api.measures || 0) + 1;
       const was = S.active;
       S.vh = W.innerHeight;
       S.active = isLive();
       if (!S.active) { if (was) resetAll(); S.scrubs = []; return; }
       const vh = S.vh, y0 = W.scrollY;
       const list = [];
+
+      /* pinned horizontal rooms (desktop); swipe with a progress bar on phones.
+         Laid out first, because its height moves everything below it. Styles are only reset
+         when the mode changes, so a re-measure mid-scroll never shrinks the page (no jump). */
+      D.querySelectorAll('[data-motion="pin-horizontal"]').forEach((sec) => {
+        const pin = sec.querySelector('.pin-in'), row = sec.querySelector('.rooms'), bar = sec.querySelector('.pprog b'), cnt = sec.querySelector('.pprog .pc');
+        if (!pin || !row) return;
+        const n = row.children.length, mode = W.innerWidth >= 761 ? 'pin' : 'swipe';
+        const st = sec.__ssPin || (sec.__ssPin = { mode: '', lastC: '', off: null });
+        const prog = (p) => {
+          if (bar) bar.style.transform = `scaleX(${p})`;
+          const c = String(Math.min(n, Math.floor(p * (n - 0.01)) + 1)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+          if (cnt && c !== st.lastC) { if (cnt.firstChild) cnt.firstChild.nodeValue = c; else cnt.textContent = c; st.lastC = c; }
+        };
+        if (st.mode !== mode) {
+          st.off && st.off();
+          st.off = null;
+          if (mode === 'pin') {
+            row.style.scrollSnapType = 'none';
+            row.style.overflowX = 'hidden';
+            pin.style.position = 'sticky';
+            st.off = () => { row.style.scrollSnapType = ''; row.style.overflowX = ''; row.scrollLeft = 0; pin.style.position = ''; pin.style.top = ''; sec.style.height = ''; prog(0); };
+          } else {
+            const on = () => prog(row.scrollLeft / Math.max(1, row.scrollWidth - row.clientWidth));
+            row.addEventListener('scroll', on, { passive: true });
+            on();
+            st.off = () => row.removeEventListener('scroll', on);
+          }
+          st.mode = mode;
+          S.pins.push(sec);
+        }
+        if (mode === 'pin') {
+          const dist = Math.max(0, row.scrollWidth - row.clientWidth);
+          const ph = pin.offsetHeight, stick = Math.max(96, (vh - ph) / 2);
+          const cs = W.getComputedStyle(sec), extra = cs.boxSizing === 'border-box' ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) : 0;
+          const hpx = ph + dist + extra + 'px', tpx = stick + 'px';
+          if (pin.style.top !== tpx) pin.style.top = tpx;
+          if (sec.style.height !== hpx) sec.style.height = hpx;
+          const t = absTop(sec) - stick;
+          list.push({ a: t, b: t + dist, apply: (p) => { row.scrollLeft = p * dist; prog(p); } });
+        }
+      });
+
 
       /* page tone: sections go transparent so the page colour behind them can shift */
       S.tones.forEach((sec) => { sec.style.background = 'transparent'; });
@@ -285,39 +330,6 @@ class Component extends DCLogic {
         }, reset: () => parts.forEach((el) => { el.style.transform = ''; el.style.opacity = ''; }) });
       });
 
-      /* pinned horizontal rooms (desktop); swipe with a progress bar on phones */
-      S.pins.forEach((p) => p.reset());
-      S.pins = [];
-      D.querySelectorAll('[data-motion="pin-horizontal"]').forEach((sec) => {
-        const pin = sec.querySelector('.pin-in'), row = sec.querySelector('.rooms'), bar = sec.querySelector('.pprog b'), cnt = sec.querySelector('.pprog .pc');
-        if (!pin || !row) return;
-        const n = row.children.length;
-        let lastC = '';
-        const prog = (p) => {
-          if (bar) bar.style.transform = `scaleX(${p})`;
-          const c = String(Math.min(n, Math.floor(p * (n - 0.01)) + 1)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
-          if (cnt && c !== lastC) { cnt.textContent = c; lastC = c; }
-        };
-        if (W.innerWidth >= 761) {
-          row.style.scrollSnapType = 'none';
-          row.style.overflowX = 'hidden';
-          const dist = Math.max(0, row.scrollWidth - row.clientWidth);
-          const ph = pin.offsetHeight, stick = Math.max(96, (vh - ph) / 2);
-          pin.style.position = 'sticky';
-          pin.style.top = stick + 'px';
-          const cs = W.getComputedStyle(sec), extra = cs.boxSizing === 'border-box' ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) : 0;
-          sec.style.height = ph + dist + extra + 'px';
-          const t = absTop(sec) - stick;
-          list.push({ a: t, b: t + dist, apply: (p) => { row.scrollLeft = p * dist; prog(p); } });
-          S.pins.push({ reset: () => { row.style.scrollSnapType = ''; row.style.overflowX = ''; row.scrollLeft = 0; pin.style.position = ''; pin.style.top = ''; sec.style.height = ''; prog(0); } });
-        } else {
-          const on = () => prog(row.scrollLeft / Math.max(1, row.scrollWidth - row.clientWidth));
-          row.addEventListener('scroll', on, { passive: true });
-          on();
-          S.pins.push({ reset: () => row.removeEventListener('scroll', on) });
-        }
-      });
-
       S.marq.forEach((o) => {
         const gap = parseFloat(W.getComputedStyle(o.row).columnGap) || 0;
         o.half = (o.row.scrollWidth + gap) / 2;
@@ -385,10 +397,21 @@ class Component extends DCLogic {
 
     /* ---------- keep everything in step with resizes and late-mounting parts ---------- */
     let rz = null;
-    W.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(measure, 200); }, { passive: true });
+    let lastW = W.innerWidth;
+    const coarse = W.matchMedia('(pointer: coarse)').matches;
+    W.addEventListener('resize', () => {
+      /* phones resize when the address bar shows or hides: keep the layout, like ScrollTrigger's ignoreMobileResize */
+      if (coarse && Math.abs(W.innerWidth - lastW) < 2 && S.active) return;
+      lastW = W.innerWidth;
+      clearTimeout(rz); rz = setTimeout(measure, 200);
+    }, { passive: true });
     if ('ResizeObserver' in W) new ResizeObserver(queueMeasure).observe(D.body);
     let mo = null;
-    new MutationObserver(() => { clearTimeout(mo); mo = setTimeout(scan, 150); }).observe(D.body, { childList: true, subtree: true });
+    const ours = (n) => n.nodeType !== 1 || n.classList.contains('w') || n === cursor || (n.parentElement && n.parentElement.closest('[data-motion="marquee-velocity"], .pprog'));
+    new MutationObserver((recs) => {
+      if (recs.every((r) => [...r.addedNodes, ...r.removedNodes].every(ours))) return;
+      clearTimeout(mo); mo = setTimeout(scan, 150);
+    }).observe(D.body, { childList: true, subtree: true });
     W.addEventListener('load', queueMeasure);
     if (D.fonts && D.fonts.ready) D.fonts.ready.then(queueMeasure);
     setTimeout(scan, 0);
