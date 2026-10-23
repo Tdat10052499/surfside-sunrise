@@ -481,6 +481,9 @@ class Component extends DCLogic {
         D.querySelectorAll('[data-motion="footer-image-rise"]').forEach((f) => {
           if (!once(f, 'foot')) return;
           const big = f.querySelector('.big');
+          /* the photo rises out from under the page as you reach the end, as on the live site */
+          const fim = f.querySelector(':scope > img');
+          if (fim) gsap.fromTo(fim, { yPercent: -13 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: f, start: 'top bottom', end: 'bottom bottom', scrub: true } });
           if (big) gsap.from(splitWords(big, true), { yPercent: 80, opacity: 0.25, duration: 1.2, ease: 'expo.out', stagger: 0.06, scrollTrigger: { trigger: big, start: 'top 92%', once: true } });
           gsap.fromTo(f.querySelectorAll('.fcols > div, .fbot'), { y: 50, opacity: 0.25 }, { y: 0, opacity: 1, duration: 1, ease: 'power3.out', stagger: 0.08, scrollTrigger: { trigger: f, start: 'top 80%', once: true } });
         });
