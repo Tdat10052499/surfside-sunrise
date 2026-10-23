@@ -49,6 +49,7 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
 .walk-foot{display:flex;align-items:center;gap:1rem;font:500 .8rem/1 var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}
 .walk-bar{flex:1;height:2px;background:var(--line);overflow:hidden;display:block;border-radius:2px}
 .walk-bar b{display:block;height:100%;background:var(--navy);transform:scaleX(0);transform-origin:0 50%}
+.how .walk-bar b{transition:transform .85s cubic-bezier(.76,0,.24,1)}
 .walk-media{position:relative;height:min(62vh,34rem);border-radius:var(--radius-panel);overflow:hidden;background:var(--wall);box-shadow:var(--shadow-hover)}
 .walk-slide{position:absolute;inset:0;overflow:hidden;will-change:transform}
 .walk-slide>img{width:100%;height:100%;object-fit:cover;display:block}
@@ -166,7 +167,7 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
   <div class="row2"><span>Gulf of Mexico</span><i></i><span>Surfside Beach</span><i></i><span>Sleeps 8</span><i></i><span>Jetty Park</span><i></i><span>Sunrise deck</span><i></i><span>Gulf of Mexico</span><i></i><span>Surfside Beach</span></div>
 </div>
 
-<section class="how" id="how" data-motion="walk" aria-labelledby="how-h">
+<section class="how" id="how" data-motion="walk" data-walk="step" aria-labelledby="how-h">
   <div class="walk-stage">
     <div class="wrap walk-in">
       <div class="walk-text">
