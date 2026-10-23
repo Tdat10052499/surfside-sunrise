@@ -22,401 +22,403 @@ class Component extends DCLogic {
     try { this.boot(); } catch (e) { console.warn('motion', e); }
   }
   renderVals() { return {}; }
-  /* Port of the live site's motion (assets/js/main.js: Lenis + GSAP ScrollTrigger) without libraries.
-     It reads the same data-* hooks. It only runs when the artboard is shown as a real, scrolling page
-     (Play / full window, or a browser), so the static canvas keeps the final, fully visible layout. */
+  /* Scroll motion for every page, on GSAP 3.12.5 + ScrollTrigger + Lenis 1.1.13 (vendor/, same files as
+     assets/vendor). Reads the data-* hooks from the live site (data-split, data-clip, data-par, data-stagger,
+     data-tone, data-cursor, data-motion="…"). It starts only when the artboard scrolls as a real page
+     (browser, Play or full window); the static canvas, reduced motion, or a failed script keep the
+     final, fully visible layout. Pins use CSS sticky inside a section whose height is set here,
+     so no wrapper elements are added to the component tree. */
   boot() {
     const W = window, D = document;
-    if (W.__ssMotion) { W.__ssMotion.scan(); return; }
+    if (W.__ssMotion) { W.__ssMotion.scan && W.__ssMotion.scan(); return; }
+    const api = W.__ssMotion = {};
     const reduce = W.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
     const fine = W.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const OUT = 'cubic-bezier(.215,.61,.355,1)';
-    const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
-    const S = { active: false, vh: W.innerHeight, scrubs: [], tones: [], pins: [], marq: [], head: [], y: -1, lastY: 0, vel: 0, dir: 1 };
-    const api = {};
-    W.__ssMotion = api;
-
-    const isLive = () => {
-      const h = W.innerHeight;
-      return !reduce && h <= Math.max(W.screen.height || 0, 1000) + 40 && D.documentElement.scrollHeight > h + 40;
+    const isLive = () => W.innerHeight <= 1600 && W.innerHeight <= Math.max(W.screen.height || 0, 1000) + 40 && D.documentElement.scrollHeight > W.innerHeight + 40;
+    const sup = D.querySelector('script[src*="support.js"]');
+    const base = sup ? sup.src.replace(/support\.js.*$/, '') : '';
+    const load = (src) => new Promise((ok, bad) => {
+      const s = D.createElement('script');
+      s.src = base + src; s.async = false; s.onload = ok; s.onerror = bad;
+      D.head.appendChild(s);
+    });
+    let started = false;
+    const tryStart = () => {
+      if (started || !isLive()) return;
+      started = true;
+      const need = [];
+      if (!W.gsap) need.push('vendor/gsap.min.js');
+      if (!W.ScrollTrigger) need.push('vendor/ScrollTrigger.min.js');
+      if (!W.Lenis) need.push('vendor/lenis.min.js');
+      Promise.all(need.map(load)).then(() => { try { init(); } catch (e) { console.warn('motion', e); } }).catch(() => {});
     };
-    const absTop = (el) => el.getBoundingClientRect().top + W.scrollY;
+    setTimeout(tryStart, 300);
+    W.addEventListener('resize', tryStart);
 
-    /* ---------- smooth wheel scrolling (Lenis-like, lerp .085) ---------- */
-    let tgt = W.scrollY, cur = W.scrollY, setY = -1, anim = null;
-    const maxY = () => D.documentElement.scrollHeight - W.innerHeight;
-    const nestedScroll = (el, dy) => {
-      for (; el && el !== D.body; el = el.parentElement) {
-        if (el.scrollHeight > el.clientHeight + 1) {
-          const o = W.getComputedStyle(el).overflowY;
-          if ((o === 'auto' || o === 'scroll') && (dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0)) return true;
-        }
+    const init = () => {
+      const gsap = W.gsap, ST = W.ScrollTrigger;
+      if (!gsap || !ST) return;
+      gsap.registerPlugin(ST);
+      ST.config({ ignoreMobileResize: true });
+      const vh = () => W.innerHeight;
+
+      /* ---------- smooth scroll ---------- */
+      let lenis = null;
+      if (W.Lenis) {
+        lenis = new W.Lenis({ lerp: 0.09, wheelMultiplier: 1, smoothWheel: true });
+        lenis.on('scroll', ST.update);
+        gsap.ticker.add((t) => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
       }
-      return false;
-    };
-    W.addEventListener('wheel', (e) => {
-      if (!S.active || !fine || e.ctrlKey || e.metaKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      if (nestedScroll(e.target, e.deltaY)) return;
-      e.preventDefault();
-      const k = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? W.innerHeight : 1;
-      if (anim) anim = null;
-      if (Math.abs(W.scrollY - cur) > 2) cur = tgt = W.scrollY;
-      tgt = Math.max(0, Math.min(maxY(), tgt + e.deltaY * k));
-    }, { passive: false });
-    W.addEventListener('scroll', () => { if (Math.abs(W.scrollY - setY) > 2 && !anim) { cur = tgt = W.scrollY; } }, { passive: true });
-    const scrollToY = (y) => { tgt = Math.max(0, Math.min(maxY(), y)); anim = { from: W.scrollY, to: tgt, t0: performance.now(), dur: 1400 }; };
-    D.addEventListener('click', (e) => {
-      const a = e.target.closest && e.target.closest('a[href^="#"]');
-      if (!a || !S.active) return;
-      const id = a.getAttribute('href').slice(1);
-      const el = id ? D.getElementById(id) : null;
-      if (!el && id !== 'top') return;
-      e.preventDefault();
-      scrollToY(el ? absTop(el) - 96 : 0);
-    });
+      api.lenis = lenis;
+      D.addEventListener('click', (e) => {
+        const a = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!a) return;
+        const id = a.getAttribute('href').slice(1), el = id ? D.getElementById(id) : null;
+        if (!el && id !== 'top') return;
+        e.preventDefault();
+        if (lenis) lenis.scrollTo(el || 0, { offset: el ? -96 : 0, duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 4) });
+        else W.scrollTo({ top: el ? el.getBoundingClientRect().top + W.scrollY - 96 : 0, behavior: 'smooth' });
+      });
 
-    /* ---------- helpers ---------- */
-    const splitWords = (el) => {
-      if (el.__ssSplit) return el.__ssSplit;
-      const words = [];
-      const walk = (node) => {
-        [...node.childNodes].forEach((n) => {
-          if (n.nodeType === 3 && n.textContent.trim()) {
-            const frag = D.createDocumentFragment();
-            n.textContent.split(/(\s+)/).forEach((part) => {
-              if (!part) return;
-              if (/^\s+$/.test(part)) { frag.appendChild(D.createTextNode(part)); return; }
-              const s = D.createElement('span');
-              s.className = 'w';
-              s.style.display = 'inline-block';
-              s.textContent = part;
-              words.push(s);
-              frag.appendChild(s);
-            });
-            n.replaceWith(frag);
-          } else if (n.nodeType === 1 && !n.classList.contains('w')) walk(n);
-        });
-      };
-      walk(el);
-      el.__ssSplit = words;
-      return words;
-    };
-    const entrance = (els, from, step) => els.forEach((el, i) => {
-      if (el.animate) el.animate([from, { transform: 'none', opacity: 1 }], { duration: 900, delay: i * step, easing: OUT, fill: 'backwards' });
-    });
-    const enterIO = 'IntersectionObserver' in W ? new IntersectionObserver((es) => es.forEach((e) => {
-      if (!e.isIntersecting || !S.active) return;
-      enterIO.unobserve(e.target);
-      e.target.__ssEnter && e.target.__ssEnter();
-    }), { rootMargin: '0px 0px -12% 0px' }) : null;
-    const toneIO = 'IntersectionObserver' in W ? new IntersectionObserver((es) => es.forEach((e) => {
-      if (e.isIntersecting && S.active) setTone(e.target);
-    }), { rootMargin: '-55% 0px -45% 0px' }) : null;
-    const marqIO = 'IntersectionObserver' in W ? new IntersectionObserver((es) => es.forEach((e) => { e.target.__ssOn = e.isIntersecting; })) : null;
-    let toneRoot = null, curTone = '';
-    const setTone = (sec) => {
-      const t = sec.dataset.tone;
-      if (!toneRoot || t === curTone) return;
-      curTone = t;
-      toneRoot.style.backgroundColor = t;
-    };
-
-    /* ---------- find and wire elements (runs again when new parts mount) ---------- */
-    const scan = () => {
-      D.querySelectorAll('[data-split]').forEach((h) => {
-        if (h.__ssInit) return; h.__ssInit = 1;
-        h.__ssEnter = () => entrance(splitWords(h), { transform: 'translateY(.5em)', opacity: 0.25 }, 50);
-        enterIO && enterIO.observe(h);
-      });
-      D.querySelectorAll('[data-stagger]').forEach((g) => {
-        if (g.__ssInit) return; g.__ssInit = 1;
-        g.__ssEnter = () => entrance([...g.children], { transform: 'translateY(40px)', opacity: 0.3 }, 60);
-        enterIO && enterIO.observe(g);
-      });
-      D.querySelectorAll('[data-tone]').forEach((sec) => {
-        if (sec.__ssInit) return; sec.__ssInit = 1;
-        S.tones.push(sec);
-        if (!toneRoot) toneRoot = sec.parentElement;
-        toneIO && toneIO.observe(sec);
-      });
-      D.querySelectorAll('[data-motion="marquee-velocity"]').forEach((m) => {
-        if (m.__ssInit) return; m.__ssInit = 1;
-        const row = m.firstElementChild;
-        if (!row) return;
-        [...row.children].forEach((c) => row.appendChild(c.cloneNode(true)));
-        row.style.willChange = 'transform';
-        S.marq.push({ m, row, x: 0, half: 0 });
-        marqIO && marqIO.observe(m);
-      });
-      D.querySelectorAll('[data-motion="bar-hide-on-scroll"]').forEach((h) => {
-        if (h.__ssInit) return; h.__ssInit = 1;
-        S.head.push({ h, bar: h.querySelector('.bar-in'), hide: false, sc: null, fixed: !!h.closest('.top') });
-      });
-      D.querySelectorAll('[data-motion="menu-open"]').forEach((mn) => {
-        if (mn.__ssInit || reduce) return; mn.__ssInit = 1;
-        entrance([...mn.querySelectorAll('.mnav a')], { transform: 'translateY(1.2em)', opacity: 0.25 }, 70);
-        entrance([...mn.querySelectorAll('.zone, .mcard')], { transform: 'translateY(24px)', opacity: 0.3 }, 50);
-      });
-      D.querySelectorAll('[data-cursor]').forEach((el) => {
-        if (el.__ssCur) return; el.__ssCur = 1;
-        el.addEventListener('pointerenter', () => { if (cursor && S.active) { cursor.firstChild.textContent = el.dataset.cursor; cursor.style.opacity = '1'; cursor.firstChild.style.transform = 'scale(1)'; } });
-        el.addEventListener('pointerleave', () => { if (cursor) { cursor.style.opacity = '0'; cursor.firstChild.style.transform = 'scale(.4)'; } });
-      });
-      D.querySelectorAll('.btn').forEach((b) => {
-        if (b.__ssMag || !fine || reduce) return; b.__ssMag = 1;
-        b.addEventListener('pointermove', (e) => {
-          if (!S.active) return;
-          const r = b.getBoundingClientRect();
-          b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.18}px,${(e.clientY - r.top - r.height / 2) * 0.25}px)`;
-        });
-        b.addEventListener('pointerleave', () => { b.style.transform = ''; });
-      });
-      queueMeasure();
-    };
-    api.scan = scan;
-
-    /* ---------- custom cursor label (mouse only) ---------- */
-    let cursor = null, cx = 0, cy = 0, tx = 0, ty = 0;
-    if (fine && !reduce) {
-      cursor = D.createElement('div');
-      cursor.setAttribute('aria-hidden', 'true');
-      cursor.style.cssText = 'position:fixed;left:0;top:0;z-index:90;pointer-events:none;opacity:0;transition:opacity .25s;will-change:transform';
-      const dot = D.createElement('span');
-      dot.style.cssText = 'display:grid;place-items:center;width:5.5rem;height:5.5rem;margin:-2.75rem 0 0 -2.75rem;border-radius:50%;background:var(--navy);color:#fff;font:600 .8rem/1 var(--font-body);letter-spacing:.06em;transform:scale(.4);transition:transform .35s var(--ease)';
-      cursor.appendChild(dot);
-      D.body.appendChild(cursor);
-      W.addEventListener('pointermove', (e) => { tx = e.clientX; ty = e.clientY; }, { passive: true });
-    }
-
-    /* ---------- measure (on resize, mount, font load) and build scrubbed effects ---------- */
-    let mq = 0;
-    const queueMeasure = () => { if (!mq) mq = W.requestAnimationFrame(() => { mq = 0; measure(); }); };
-    const resetAll = () => {
-      S.scrubs.forEach((s) => s.reset && s.reset());
-      S.pins.forEach((sec) => { const st = sec.__ssPin; if (st) { st.off && st.off(); st.off = null; st.mode = ''; } });
-      S.pins = [];
-      S.head.forEach((o) => { o.h.style.transform = ''; o.h.style.position = ''; });
-      S.tones.forEach((sec) => { sec.style.background = ''; });
-      if (toneRoot) { toneRoot.style.backgroundColor = ''; curTone = ''; }
-      S.marq.forEach((o) => { o.row.style.transform = ''; });
-    };
-    const measure = () => {
-      api.measures = (api.measures || 0) + 1;
-      const was = S.active;
-      S.vh = W.innerHeight;
-      S.active = isLive();
-      if (!S.active) { if (was) resetAll(); S.scrubs = []; return; }
-      const vh = S.vh, y0 = W.scrollY;
-      const list = [];
-
-      /* pinned horizontal rooms (desktop); swipe with a progress bar on phones.
-         Laid out first, because its height moves everything below it. Styles are only reset
-         when the mode changes, so a re-measure mid-scroll never shrinks the page (no jump). */
-      D.querySelectorAll('[data-motion="pin-horizontal"]').forEach((sec) => {
-        const pin = sec.querySelector('.pin-in'), row = sec.querySelector('.rooms'), bar = sec.querySelector('.pprog b'), cnt = sec.querySelector('.pprog .pc');
-        if (!pin || !row) return;
-        const n = row.children.length, mode = W.innerWidth >= 761 ? 'pin' : 'swipe';
-        const st = sec.__ssPin || (sec.__ssPin = { mode: '', lastC: '', off: null });
-        const prog = (p) => {
-          if (bar) bar.style.transform = `scaleX(${p})`;
-          const c = String(Math.min(n, Math.floor(p * (n - 0.01)) + 1)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
-          if (cnt && c !== st.lastC) { if (cnt.firstChild) cnt.firstChild.nodeValue = c; else cnt.textContent = c; st.lastC = c; }
+      /* ---------- helpers ---------- */
+      const once = (el, key) => { if (el['__ss' + key]) return false; el['__ss' + key] = 1; return true; };
+      /* words, optionally wrapped in a mask (.wm) so they rise out of their line */
+      const splitWords = (el, mask) => {
+        if (el.__ssWords) return el.__ssWords;
+        const words = [];
+        const walk = (node) => {
+          [...node.childNodes].forEach((n) => {
+            if (n.nodeType === 3 && n.textContent.trim()) {
+              const frag = D.createDocumentFragment();
+              n.textContent.split(/(\s+)/).forEach((part) => {
+                if (!part) return;
+                if (/^\s+$/.test(part)) { frag.appendChild(D.createTextNode(part)); return; }
+                const w = D.createElement('span');
+                w.className = 'w';
+                w.style.display = 'inline-block';
+                w.textContent = part;
+                if (mask) {
+                  const m = D.createElement('span');
+                  m.className = 'wm';
+                  m.style.cssText = 'display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em';
+                  m.appendChild(w);
+                  frag.appendChild(m);
+                } else frag.appendChild(w);
+                words.push(w);
+              });
+              n.replaceWith(frag);
+            } else if (n.nodeType === 1 && !n.classList.contains('w') && !n.classList.contains('wm')) walk(n);
+          });
         };
-        if (st.mode !== mode) {
-          st.off && st.off();
-          st.off = null;
-          if (mode === 'pin') {
+        walk(el);
+        el.__ssWords = words;
+        return words;
+      };
+      const refresh = (() => { let t = null; return () => { clearTimeout(t); t = setTimeout(() => ST.refresh(), 150); }; })();
+
+      /* ---------- header: frosted pill after the hero, hides while scrolling down ---------- */
+      const heads = [];
+      let lastY = 0;
+      const onScroll = (y) => {
+        const down = y > lastY + 4, up = y < lastY - 4;
+        heads.forEach((o) => {
+          let hide = o.hide;
+          if (y > vh() * 0.9 && down) hide = true;
+          if (up || y < 200) hide = false;
+          if (hide !== o.hide) { o.hide = hide; gsap.to(o.h, { yPercent: hide ? -115 : 0, duration: 0.6, ease: 'power3.out', overwrite: true }); }
+          const sc = y > 60;
+          if (o.photo && o.bar && sc !== o.sc) { o.sc = sc; o.bar.classList.toggle('is-scrolled', sc); }
+        });
+        if (down || up) lastY = y;
+      };
+      if (lenis) lenis.on('scroll', (l) => onScroll(l.scroll)); else W.addEventListener('scroll', () => onScroll(W.scrollY), { passive: true });
+
+      /* ---------- custom cursor (mouse only) ---------- */
+      let cursor = null, label = null;
+      if (fine) {
+        cursor = D.createElement('div');
+        cursor.setAttribute('aria-hidden', 'true');
+        cursor.style.cssText = 'position:fixed;left:0;top:0;z-index:90;pointer-events:none;will-change:transform';
+        label = D.createElement('span');
+        label.style.cssText = 'display:grid;place-items:center;width:5.5rem;height:5.5rem;margin:-2.75rem 0 0 -2.75rem;border-radius:50%;background:var(--navy);color:#fff;font:600 .8rem/1 var(--font-body);letter-spacing:.06em;transform:scale(0)';
+        cursor.appendChild(label);
+        D.body.appendChild(cursor);
+        const cx = gsap.quickTo(cursor, 'x', { duration: 0.45, ease: 'power3' }), cy = gsap.quickTo(cursor, 'y', { duration: 0.45, ease: 'power3' });
+        W.addEventListener('pointermove', (e) => { cx(e.clientX); cy(e.clientY); }, { passive: true });
+      }
+
+      /* ---------- the effects, wired once per element (parts mount late, so this re-runs) ---------- */
+      let toneRoot = null;
+      const scan = () => {
+        /* header */
+        D.querySelectorAll('[data-motion="bar-hide-on-scroll"]').forEach((h) => {
+          if (!once(h, 'head')) return;
+          const bar = h.querySelector('.bar-in');
+          if (!h.closest('.top') && !h.closest('.bar-top')) { h.style.position = 'sticky'; h.style.top = '0'; h.style.zIndex = '40'; }
+          heads.push({ h, bar, hide: false, sc: null, photo: !!(bar && !bar.classList.contains('is-scrolled')) });
+          gsap.from(h, { yPercent: -100, opacity: 0.25, duration: 1, ease: 'power3.out', delay: 0.15 });
+        });
+
+        /* hero: photo eases in, then shrinks into a rounded card while the text drifts up */
+        D.querySelectorAll('[data-motion="hero-card"]').forEach((hero) => {
+          if (!once(hero, 'hero')) return;
+          const media = hero.querySelector('.hmedia'), img = media && media.querySelector('img'), inner = hero.querySelector('.in');
+          if (img) gsap.fromTo(img, { scale: 1.18 }, { scale: 1.04, duration: 2.2, ease: 'power3.out' });
+          const tl = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+          if (media) tl.fromTo(media, { clipPath: 'inset(0% 0% 0% 0% round 0px)' }, { clipPath: 'inset(4% 3% 0% 3% round 32px)', ease: 'none' }, 0);
+          if (img) tl.to(img, { yPercent: 14, ease: 'none' }, 0);
+          if (inner) tl.to(inner, { yPercent: -22, opacity: 0.2, ease: 'none' }, 0);
+        });
+
+        /* page tone: sections go transparent so the colour behind them can shift */
+        D.querySelectorAll('[data-tone]').forEach((sec) => {
+          if (!once(sec, 'tone')) return;
+          if (!toneRoot) toneRoot = sec.parentElement;
+          sec.style.background = 'transparent';
+          ST.create({ trigger: sec, start: 'top 55%', end: 'bottom 55%', onToggle: (s) => { if (s.isActive && toneRoot) gsap.to(toneRoot, { backgroundColor: sec.dataset.tone, duration: 0.8, ease: 'power2.out', overwrite: true }); } });
+        });
+
+        /* headings: words rise out of a mask */
+        D.querySelectorAll('[data-split]').forEach((h) => {
+          if (!once(h, 'split')) return;
+          const ws = splitWords(h, true);
+          gsap.from(ws, { yPercent: 70, opacity: 0.25, rotate: 3, duration: 1.1, ease: 'expo.out', stagger: 0.045, scrollTrigger: { trigger: h, start: 'top 88%', once: true } });
+        });
+        /* section intro lines next to the heading */
+        D.querySelectorAll('.head > .eyebrow, .head > p').forEach((el) => {
+          if (!once(el, 'fade')) return;
+          gsap.from(el, { y: 24, opacity: 0.25, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+        });
+
+        /* statement: words fill in as you scroll */
+        D.querySelectorAll('[data-motion="fill-words"]').forEach((st) => {
+          if (!once(st, 'fill')) return;
+          const ws = splitWords(st, false);
+          gsap.fromTo(ws, { color: 'rgba(31,53,82,.18)' }, { color: 'rgba(31,53,82,1)', ease: 'none', stagger: 0.1, scrollTrigger: { trigger: st, start: 'top 80%', end: 'bottom 40%', scrub: true } });
+        });
+
+        /* large images open from an inset rounded rectangle, the photo settles inside */
+        D.querySelectorAll('[data-clip]').forEach((el) => {
+          if (!once(el, 'clip')) return;
+          const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 30%', scrub: true } });
+          tl.fromTo(el, { clipPath: 'inset(12% 10% 12% 10% round 36px)' }, { clipPath: 'inset(0% 0% 0% 0% round 18px)', ease: 'none' }, 0);
+          const im = el.querySelector('img:not([data-par])');
+          if (im) tl.fromTo(im, { scale: 1.25 }, { scale: 1, ease: 'none' }, 0);
+        });
+
+        /* inner parallax */
+        D.querySelectorAll('[data-par]').forEach((img) => {
+          if (img.closest('[data-motion="pin-horizontal"]') || !once(img, 'par')) return;
+          const a = +img.dataset.par || 6;
+          gsap.fromTo(img, { yPercent: -a }, { yPercent: a, ease: 'none', scrollTrigger: { trigger: img.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } });
+        });
+
+        /* grids: children rise in turn */
+        D.querySelectorAll('[data-stagger]').forEach((g) => {
+          if (!once(g, 'stagger')) return;
+          gsap.from(g.children, { y: 60, opacity: 0.25, duration: 1.1, ease: 'expo.out', stagger: 0.08, scrollTrigger: { trigger: g, start: 'top 88%', once: true } });
+        });
+
+        /* marquee: speed and skew follow scroll velocity */
+        D.querySelectorAll('[data-motion="marquee-velocity"]').forEach((m) => {
+          if (!once(m, 'marq')) return;
+          const row = m.firstElementChild;
+          if (!row) return;
+          [...row.children].forEach((c) => row.appendChild(c.cloneNode(true)));
+          row.style.willChange = 'transform';
+          let x = 0, half = 0, dir = 1, vis = true, skew = 0;
+          const measure = () => { half = (row.scrollWidth + (parseFloat(getComputedStyle(row).columnGap) || 0)) / 2; };
+          measure();
+          ST.addEventListener('refresh', measure);
+          ST.create({ trigger: m, start: 'top bottom', end: 'bottom top', onToggle: (s) => { vis = s.isActive; } });
+          gsap.ticker.add((t, dt) => {
+            if (!vis || !half) return;
+            const v = lenis ? lenis.velocity : 0;
+            if (Math.abs(v) > 0.3) dir = v > 0 ? 1 : -1;
+            x -= (0.8 + Math.min(Math.abs(v), 60) * 0.35) * dir * (dt / 16.67);
+            if (x < -half) x += half;
+            if (x > 0) x -= half;
+            skew += (Math.max(-8, Math.min(8, -v * 0.3)) - skew) * 0.12;
+            row.style.transform = `translate3d(${x}px,0,0) skewX(${skew.toFixed(2)}deg)`;
+          });
+        });
+
+        /* stacking cards: earlier cards sink back and darken as the next one arrives */
+        D.querySelectorAll('[data-motion="stack-cards"]').forEach((wrap) => {
+          if (!once(wrap, 'stack')) return;
+          const cards = [...wrap.children];
+          cards.forEach((c, i) => {
+            const im = c.querySelector('img');
+            if (im) gsap.fromTo(im, { scale: 1.2 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: c, start: 'top bottom', end: 'top 20%', scrub: true } });
+            if (i === cards.length - 1) return;
+            const next = cards[i + 1], shade = c.querySelector('.shade');
+            const tl = gsap.timeline({ scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 15%', scrub: true } });
+            tl.to(c, { scale: 0.9, ease: 'none' }, 0);
+            if (shade) tl.to(shade, { opacity: 0.5, ease: 'none' }, 0);
+          });
+        });
+
+        /* home: walk through the house, one pinned room after another */
+        D.querySelectorAll('[data-motion="walk"]').forEach((sec) => {
+          if (!once(sec, 'walk')) return;
+          const stage = sec.querySelector('.walk-stage'), slides = [...sec.querySelectorAll('.walk-slide')], caps = [...sec.querySelectorAll('.walk-cap')];
+          const steps = [...sec.querySelectorAll('.walk-steps li')], bar = sec.querySelector('.walk-bar b'), count = sec.querySelector('.walk-count');
+          const n = slides.length;
+          if (!stage || n < 2) return;
+          const size = () => { sec.style.height = (n * 100) + 'vh'; };
+          size();
+          stage.style.position = 'sticky';
+          stage.style.top = '0';
+          stage.style.height = '100vh';
+          caps.forEach((c, i) => { if (i) gsap.set(c, { yPercent: 40, opacity: 0 }); });
+          const tl = gsap.timeline({ defaults: { ease: 'none' } });
+          for (let i = 1; i < n; i++) {
+            const at = i - 1, prev = slides[i - 1].querySelector('img'), nx = slides[i], nxi = nx.querySelector('img');
+            /* wipe up: the slide moves up while its photo moves down by the same amount (transforms only, GPU friendly) */
+            gsap.set(nx, { y: 0, yPercent: 100 });
+            if (nxi) gsap.set(nxi, { yPercent: -100, scale: 1.3 });
+            tl.to(nx, { yPercent: 0, duration: 1 }, at);
+            if (nxi) tl.to(nxi, { yPercent: 0, scale: 1.05, duration: 1 }, at);
+            if (prev) tl.to(prev, { scale: 1.15, yPercent: -6, duration: 1 }, at);
+            if (caps[i - 1]) tl.to(caps[i - 1], { yPercent: -40, opacity: 0, duration: 0.4 }, at + 0.1);
+            if (caps[i]) tl.to(caps[i], { yPercent: 0, opacity: 1, duration: 0.45 }, at + 0.5);
+          }
+          let cur = -1;
+          ST.create({
+            trigger: sec, start: 'top top', end: 'bottom bottom', scrub: 0.8, animation: tl,
+            onUpdate: (s) => {
+              if (bar) bar.style.transform = `scaleX(${s.progress})`;
+              const k = Math.min(n - 1, Math.round(s.progress * (n - 1)));
+              if (k !== cur) {
+                cur = k;
+                steps.forEach((li, j) => li.classList.toggle('on', j === k));
+                if (count && count.firstChild) count.firstChild.nodeValue = String(k + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+              }
+            }
+          });
+          ST.addEventListener('refreshInit', size);
+        });
+
+        /* detail: sticky photo grid, columns slide in opposite ways, then the grid zooms to the centre photo */
+        D.querySelectorAll('[data-motion="sticky-grid"]').forEach((sec) => {
+          if (!once(sec, 'grid')) return;
+          const stage = sec.querySelector('.sg-stage'), grid = sec.querySelector('.sg-grid'), cols = [...sec.querySelectorAll('.sg-col')], text = sec.querySelector('.sg-text');
+          if (!stage || !grid || cols.length < 3) return;
+          const size = () => { sec.style.height = '320vh'; };
+          size();
+          stage.style.position = 'sticky';
+          stage.style.top = '0';
+          stage.style.height = '100vh';
+          const tl = gsap.timeline({ defaults: { ease: 'none' } });
+          cols.forEach((c, i) => { gsap.set(c, { yPercent: i % 2 ? -30 : 30 }); tl.to(c, { yPercent: 0, duration: 1 }, 0); });
+          const mid = cols[1].children[1] || cols[1].firstElementChild;
+          const zoom = () => (mid ? Math.max(W.innerWidth / mid.offsetWidth, W.innerHeight / mid.offsetHeight) * 1.04 : 2.4);
+          tl.to(grid, { scale: zoom, duration: 1.2, ease: 'power1.inOut' }, 1);
+          tl.to(cols[0], { xPercent: -50, duration: 1.2, ease: 'power1.inOut' }, 1);
+          tl.to(cols[cols.length - 1], { xPercent: 50, duration: 1.2, ease: 'power1.inOut' }, 1);
+          if (text) { gsap.set(text, { autoAlpha: 0, y: 40 }); tl.to(text, { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 1.9); }
+          ST.create({ trigger: sec, start: 'top top', end: 'bottom bottom', scrub: 1, animation: tl, invalidateOnRefresh: true });
+          ST.addEventListener('refreshInit', size);
+        });
+
+        /* detail: rooms pinned and moved sideways (desktop), swipe with a progress bar (phones) */
+        D.querySelectorAll('[data-motion="pin-horizontal"]').forEach((sec) => {
+          if (!once(sec, 'pin')) return;
+          const pin = sec.querySelector('.pin-in'), row = sec.querySelector('.rooms'), bar = sec.querySelector('.pprog b'), cnt = sec.querySelector('.pprog .pc');
+          if (!pin || !row) return;
+          const n = row.children.length;
+          const prog = (p) => {
+            if (bar) bar.style.transform = `scaleX(${p})`;
+            if (cnt && cnt.firstChild) cnt.firstChild.nodeValue = String(Math.min(n, Math.floor(p * (n - 0.01)) + 1)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+          };
+          const mm = gsap.matchMedia();
+          mm.add('(min-width: 761px)', () => {
             row.style.scrollSnapType = 'none';
-            row.style.overflowX = 'hidden';
+            row.style.overflow = 'visible';
+            pin.style.overflow = 'hidden';
             pin.style.position = 'sticky';
-            st.off = () => { row.style.scrollSnapType = ''; row.style.overflowX = ''; row.scrollLeft = 0; pin.style.position = ''; pin.style.top = ''; sec.style.height = ''; prog(0); };
-          } else {
+            let dist = 0, stick = 96;
+            const size = () => {
+              gsap.set(row, { x: 0 });
+              dist = Math.max(0, row.scrollWidth - pin.clientWidth);
+              const ph = pin.offsetHeight;
+              stick = Math.max(96, (vh() - ph) / 2);
+              pin.style.top = stick + 'px';
+              sec.style.height = (ph + dist) + 'px';
+            };
+            size();
+            ST.addEventListener('refreshInit', size);
+            const tw = gsap.to(row, { x: () => -dist, ease: 'none', scrollTrigger: { trigger: sec, start: () => 'top ' + stick, end: () => '+=' + dist, scrub: 0.8, invalidateOnRefresh: true, onUpdate: (s) => prog(s.progress) } });
+            row.querySelectorAll('.room img').forEach((im) => gsap.fromTo(im, { xPercent: -6, scale: 1.12 }, { xPercent: 6, scale: 1.12, ease: 'none', scrollTrigger: { trigger: im.parentElement, containerAnimation: tw, start: 'left right', end: 'right left', scrub: true } }));
+            return () => {
+              ST.removeEventListener('refreshInit', size);
+              row.style.scrollSnapType = ''; row.style.overflow = ''; pin.style.overflow = ''; pin.style.position = ''; pin.style.top = ''; sec.style.height = '';
+              gsap.set(row, { clearProps: 'transform' }); prog(0);
+            };
+          });
+          mm.add('(max-width: 760px)', () => {
             const on = () => prog(row.scrollLeft / Math.max(1, row.scrollWidth - row.clientWidth));
             row.addEventListener('scroll', on, { passive: true });
             on();
-            st.off = () => row.removeEventListener('scroll', on);
-          }
-          st.mode = mode;
-          S.pins.push(sec);
-        }
-        if (mode === 'pin') {
-          const dist = Math.max(0, row.scrollWidth - row.clientWidth);
-          const ph = pin.offsetHeight, stick = Math.max(96, (vh - ph) / 2);
-          const cs = W.getComputedStyle(sec), extra = cs.boxSizing === 'border-box' ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) : 0;
-          const hpx = ph + dist + extra + 'px', tpx = stick + 'px';
-          if (pin.style.top !== tpx) pin.style.top = tpx;
-          if (sec.style.height !== hpx) sec.style.height = hpx;
-          const t = absTop(sec) - stick;
-          list.push({ a: t, b: t + dist, apply: (p) => { row.scrollLeft = p * dist; prog(p); } });
-        }
-      });
-
-
-      /* page tone: sections go transparent so the page colour behind them can shift */
-      S.tones.forEach((sec) => { sec.style.background = 'transparent'; });
-      if (toneRoot) toneRoot.style.transition = 'background-color .7s var(--ease)';
-
-      /* header: sticks to the top, turns into the frosted pill after the hero, hides while scrolling down */
-      S.head.forEach((o) => {
-        if (!o.fixed && !o.h.closest('.bar-top')) { o.h.style.position = 'sticky'; o.h.style.top = '0'; o.h.style.zIndex = '40'; }
-        o.h.style.transition = 'transform .5s var(--ease)';
-        o.photo = o.bar && !o.bar.classList.contains('is-scrolled') ? true : o.photo || false;
-      });
-
-      /* hero: the photo shrinks into a rounded card, the text drifts up */
-      D.querySelectorAll('[data-motion="hero-card"]').forEach((hero) => {
-        const media = hero.querySelector('.hmedia'), img = media && media.querySelector('img'), inner = hero.querySelector('.in');
-        const t = absTop(hero), h = hero.offsetHeight;
-        list.push({ a: t, b: t + h, apply: (p) => {
-          if (media) media.style.clipPath = `inset(${3 * p}% ${2.5 * p}% 0% ${2.5 * p}% round ${28 * p}px)`;
-          if (img) img.style.transform = `translate3d(0,${12 * p}%,0)`;
-          if (inner) { inner.style.transform = `translate3d(0,${-18 * p}%,0)`; inner.style.opacity = String(1 - 0.75 * p); }
-        }, reset: () => { if (media) media.style.clipPath = ''; if (img) img.style.transform = ''; if (inner) { inner.style.transform = ''; inner.style.opacity = ''; } } });
-      });
-
-      /* statement: words fill in as you scroll */
-      D.querySelectorAll('[data-motion="fill-words"]').forEach((st) => {
-        const words = splitWords(st);
-        words.forEach((w) => { w.style.transition = 'color .25s'; });
-        let filled = -1;
-        const t = absTop(st), h = st.offsetHeight;
-        list.push({ a: t - vh * 0.85, b: t + h - vh * 0.4, apply: (p) => {
-          const n = Math.round(p * words.length);
-          if (n === filled) return;
-          const lo = filled < 0 ? 0 : Math.min(n, filled), hi = filled < 0 ? words.length : Math.max(n, filled);
-          for (let i = lo; i < hi; i++) words[i].style.color = i < n ? '' : 'var(--fade)';
-          filled = n;
-        }, reset: () => { words.forEach((w) => { w.style.color = ''; }); filled = -1; } });
-      });
-
-      /* large images open from an inset rounded rectangle */
-      D.querySelectorAll('[data-clip]').forEach((el) => {
-        const t = absTop(el);
-        list.push({ a: t - vh * 0.95, b: t - vh * 0.35, apply: (p) => {
-          const q = 1 - p;
-          el.style.clipPath = `inset(${10 * q}% ${8 * q}% ${10 * q}% ${8 * q}% round ${18 + 10 * q}px)`;
-        }, reset: () => { el.style.clipPath = ''; } });
-      });
-
-      /* inner parallax (skipped inside the pinned rooms row, which moves sideways) */
-      D.querySelectorAll('[data-par]').forEach((img) => {
-        if (img.closest('[data-motion="pin-horizontal"]')) return;
-        const a = +img.dataset.par || 6, box = img.parentElement, t = absTop(box), h = box.offsetHeight;
-        img.style.willChange = 'transform';
-        list.push({ a: t - vh, b: t + h, apply: (p) => { img.style.transform = `translate3d(0,${(p - 0.5) * a}%,0)`; }, reset: () => { img.style.transform = ''; img.style.willChange = ''; } });
-      });
-
-      /* stacking cards: earlier cards sink back as the next one arrives */
-      D.querySelectorAll('[data-motion="stack-cards"]').forEach((wrap) => {
-        const cards = [...wrap.children], top0 = absTop(wrap);
-        const gap = parseFloat(W.getComputedStyle(wrap).rowGap) || 0;
-        let acc = top0;
-        const tops = cards.map((c) => { const t = acc; acc += c.offsetHeight + gap; return t; });
-        cards.forEach((c, i) => {
-          if (i === cards.length - 1) return;
-          const nx = cards[i + 1], stick = parseFloat(W.getComputedStyle(nx).top) || 120, shade = c.querySelector('.shade');
-          list.push({ a: tops[i + 1] - vh, b: tops[i + 1] - stick, apply: (p) => {
-            c.style.transform = p ? `scale(${1 - 0.08 * p})` : '';
-            if (shade) shade.style.opacity = String(0.45 * p);
-          }, reset: () => { c.style.transform = ''; if (shade) shade.style.opacity = ''; } });
-        });
-      });
-
-      /* footer content rises as the footer comes into view */
-      D.querySelectorAll('[data-motion="footer-image-rise"]').forEach((f) => {
-        const parts = [...f.querySelectorAll('.foot > div')], t = absTop(f), h = f.offsetHeight;
-        list.push({ a: t - vh, b: t + h - vh, apply: (p) => {
-          parts.forEach((el) => { el.style.transform = p < 1 ? `translate3d(0,${60 * (1 - p)}px,0)` : ''; el.style.opacity = p < 1 ? String(0.4 + 0.6 * p) : ''; });
-        }, reset: () => parts.forEach((el) => { el.style.transform = ''; el.style.opacity = ''; }) });
-      });
-
-      S.marq.forEach((o) => {
-        const gap = parseFloat(W.getComputedStyle(o.row).columnGap) || 0;
-        o.half = (o.row.scrollWidth + gap) / 2;
-      });
-
-      list.forEach((s) => { s.last = -1; });
-      S.scrubs = list;
-      if (!was) { cur = tgt = W.scrollY; S.lastY = y0; }
-      S.y = -1;
-    };
-    api.measure = measure;
-
-    /* ---------- one frame loop: smooth scroll, scrubs, header, marquee, cursor ---------- */
-    let tPrev = performance.now();
-    const frame = (now) => {
-      const dt = Math.min(3, (now - tPrev) / 16.67);
-      tPrev = now;
-      if (S.active) {
-        if (anim) {
-          const k = Math.min(1, (now - anim.t0) / anim.dur), e = 1 - Math.pow(1 - k, 4);
-          cur = anim.from + (anim.to - anim.from) * e;
-          setY = Math.round(cur); W.scrollTo(0, cur);
-          if (k >= 1) { anim = null; cur = tgt; }
-        } else if (Math.abs(tgt - cur) > 0.5) {
-          cur += (tgt - cur) * (1 - Math.pow(1 - 0.085, dt));
-          if (Math.abs(tgt - cur) < 0.5) cur = tgt;
-          setY = Math.round(cur); W.scrollTo(0, cur);
-        }
-        const y = W.scrollY;
-        if (y !== S.y) {
-          const v = y - (S.y < 0 ? y : S.y);
-          S.vel = S.vel * 0.6 + v * 0.4;
-          if (Math.abs(v) > 0.2) S.dir = v > 0 ? 1 : -1;
-          S.y = y;
-          for (const s of S.scrubs) {
-            const p = s.b > s.a ? clamp((y - s.a) / (s.b - s.a)) : (y >= s.a ? 1 : 0);
-            if (p !== s.last) { s.last = p; s.apply(p); }
-          }
-          const down = y > S.lastY + 4, up = y < S.lastY - 4;
-          S.head.forEach((o) => {
-            let hide = o.hide;
-            if (y > S.vh * 0.9 && down) hide = true;
-            if (up || y < 200) hide = false;
-            if (hide !== o.hide) { o.hide = hide; o.h.style.transform = hide ? 'translateY(-110%)' : ''; }
-            const sc = y > 60;
-            if (o.photo && o.bar && sc !== o.sc) { o.sc = sc; o.bar.classList.toggle('is-scrolled', sc); }
+            return () => row.removeEventListener('scroll', on);
           });
-          if (down || up) S.lastY = y;
-        }
-        S.marq.forEach((o) => {
-          if (o.m.__ssOn === false || !o.half || D.hidden) return;
-          o.x -= (0.6 + Math.min(Math.abs(S.vel), 40) * 0.25) * S.dir * dt;
-          if (o.x < -o.half) o.x += o.half;
-          if (o.x > 0) o.x -= o.half;
-          o.row.style.transform = `translate3d(${o.x}px,0,0)`;
         });
-        S.vel *= 0.92;
-      }
-      if (cursor && (Math.abs(tx - cx) + Math.abs(ty - cy) > 0.5)) {
-        cx += (tx - cx) * 0.18; cy += (ty - cy) * 0.18;
-        cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`;
-      }
-      W.requestAnimationFrame(frame);
-    };
 
-    /* ---------- keep everything in step with resizes and late-mounting parts ---------- */
-    let rz = null;
-    let lastW = W.innerWidth;
-    const coarse = W.matchMedia('(pointer: coarse)').matches;
-    W.addEventListener('resize', () => {
-      /* phones resize when the address bar shows or hides: keep the layout, like ScrollTrigger's ignoreMobileResize */
-      if (coarse && Math.abs(W.innerWidth - lastW) < 2 && S.active) return;
-      lastW = W.innerWidth;
-      clearTimeout(rz); rz = setTimeout(measure, 200);
-    }, { passive: true });
-    if ('ResizeObserver' in W) new ResizeObserver(queueMeasure).observe(D.body);
-    let mo = null;
-    const ours = (n) => n.nodeType !== 1 || n.classList.contains('w') || n === cursor || (n.parentElement && n.parentElement.closest('[data-motion="marquee-velocity"], .pprog'));
-    new MutationObserver((recs) => {
-      if (recs.every((r) => [...r.addedNodes, ...r.removedNodes].every(ours))) return;
-      clearTimeout(mo); mo = setTimeout(scan, 150);
-    }).observe(D.body, { childList: true, subtree: true });
-    W.addEventListener('load', queueMeasure);
-    if (D.fonts && D.fonts.ready) D.fonts.ready.then(queueMeasure);
-    setTimeout(scan, 0);
-    setTimeout(measure, 600);
-    W.requestAnimationFrame(frame);
+        /* footer: big line rises, columns follow */
+        D.querySelectorAll('[data-motion="footer-image-rise"]').forEach((f) => {
+          if (!once(f, 'foot')) return;
+          const big = f.querySelector('.big');
+          if (big) gsap.from(splitWords(big, true), { yPercent: 80, opacity: 0.25, duration: 1.2, ease: 'expo.out', stagger: 0.06, scrollTrigger: { trigger: big, start: 'top 92%', once: true } });
+          gsap.from(f.querySelectorAll('.fcols > div, .fbot'), { y: 50, opacity: 0.25, duration: 1, ease: 'power3.out', stagger: 0.08, scrollTrigger: { trigger: f, start: 'top 80%', once: true } });
+        });
+
+        /* menu: wordmark, links and clocks come in on open */
+        D.querySelectorAll('[data-motion="menu-open"]').forEach((mn) => {
+          if (!once(mn, 'menu')) return;
+          const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+          tl.from(mn.querySelectorAll('.word > *'), { yPercent: 60, opacity: 0.25, duration: 1.2, stagger: 0.08 })
+            .from(mn.querySelectorAll('.mnav a'), { y: 40, opacity: 0.25, duration: 1, stagger: 0.06 }, 0.15)
+            .from(mn.querySelectorAll('.zone, .mcard, .mrow'), { y: 24, opacity: 0.25, duration: 0.9, stagger: 0.04 }, 0.3);
+        });
+
+        /* cursor label and magnetic buttons */
+        if (fine) {
+          D.querySelectorAll('[data-cursor]').forEach((el) => {
+            if (!once(el, 'cur')) return;
+            el.addEventListener('pointerenter', () => { label.textContent = el.dataset.cursor; gsap.to(label, { scale: 1, duration: 0.4, ease: 'power3.out', overwrite: true }); });
+            el.addEventListener('pointerleave', () => gsap.to(label, { scale: 0, duration: 0.3, ease: 'power3.in', overwrite: true }));
+          });
+          D.querySelectorAll('.btn').forEach((b) => {
+            if (!once(b, 'mag')) return;
+            b.addEventListener('pointermove', (e) => {
+              const r = b.getBoundingClientRect();
+              gsap.to(b, { x: (e.clientX - r.left - r.width / 2) * 0.2, y: (e.clientY - r.top - r.height / 2) * 0.3, duration: 0.4, ease: 'power3.out' });
+            });
+            b.addEventListener('pointerleave', () => gsap.to(b, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1,.4)' }));
+          });
+        }
+        refresh();
+      };
+      api.scan = scan;
+      scan();
+
+      /* parts that mount later (child components, sc-if branches) */
+      const ours = (n) => n.nodeType !== 1 || n.classList.contains('w') || n.classList.contains('wm') || n === cursor || n.tagName === 'SCRIPT' || (n.parentElement && n.parentElement.closest('[data-motion="marquee-velocity"]'));
+      let mo = null;
+      new MutationObserver((recs) => {
+        if (recs.every((r) => [...r.addedNodes, ...r.removedNodes].every(ours))) return;
+        clearTimeout(mo); mo = setTimeout(scan, 150);
+      }).observe(D.body, { childList: true, subtree: true });
+      /* layout changes that are not resizes (FAQ opening, form results) */
+      if ('ResizeObserver' in W) {
+        let lastH = D.body.offsetHeight;
+        new ResizeObserver(() => { const h = D.body.offsetHeight; if (Math.abs(h - lastH) > 2) { lastH = h; refresh(); } }).observe(D.body);
+      }
+      if (D.fonts && D.fonts.ready) D.fonts.ready.then(refresh);
+      W.addEventListener('load', refresh);
+    };
   }
 }
 </script>
