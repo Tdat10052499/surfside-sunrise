@@ -202,6 +202,10 @@ class Component extends DCLogic {
         el.__ssWords = words;
         return words;
       };
+      /* GSAP and a CSS transition on the same property fight: a refresh can read a half-finished
+         transition as the end value and leave cards stuck part-way. Turn CSS transitions off while
+         GSAP owns the element; the end state then clears them back to the stylesheet. */
+      const noTrans = (els) => els.forEach((e) => { e.style.transition = 'none'; });
       const refresh = (() => { let t = null; return () => { clearTimeout(t); t = setTimeout(() => ST.refresh(), 150); }; })();
 
       /* ---------- header: frosted pill after the hero, hides while scrolling down ---------- */
@@ -275,7 +279,7 @@ class Component extends DCLogic {
         /* section intro lines next to the heading */
         D.querySelectorAll('.head > .eyebrow, .head > p').forEach((el) => {
           if (!once(el, 'fade')) return;
-          gsap.from(el, { y: 40, opacity: 0.25, duration: 0.9, ease: 'expo.out', delay: el.matches('p') ? 0.12 : 0, scrollTrigger: { trigger: el, start: 'top 92%', once: true } });
+          gsap.fromTo(el, { y: 40, opacity: 0.25 }, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', delay: el.matches('p') ? 0.12 : 0, scrollTrigger: { trigger: el, start: 'top 92%', once: true } });
         });
 
         /* statement: words fill in as you scroll */
@@ -306,7 +310,8 @@ class Component extends DCLogic {
           if (!once(g, 'stagger')) return;
           /* cards in the same row rise together, rows follow each other, so a row never looks stepped */
           const kids = [...g.children], tops = [...new Set(kids.map((k) => k.offsetTop))];
-          gsap.from(kids, { y: 40, opacity: 0.25, duration: 0.8, ease: 'expo.out', delay: (i) => tops.indexOf(kids[i].offsetTop) * 0.08, scrollTrigger: { trigger: g, start: 'top 90%', once: true } });
+          noTrans(kids);
+          gsap.fromTo(kids, { y: 40, opacity: 0.25 }, { y: 0, opacity: 1, duration: 0.8, ease: 'expo.out', onComplete: () => gsap.set(kids, { clearProps: 'transition,transform,opacity' }), delay: (i) => tops.indexOf(kids[i].offsetTop) * 0.08, scrollTrigger: { trigger: g, start: 'top 90%', once: true } });
         });
 
         /* content blocks: everything else in a section rises into place once, in reading order.
@@ -316,10 +321,11 @@ class Component extends DCLogic {
         D.querySelectorAll('.sec .wrap > *, section.blk:not(.walk) > *, section.ask > *, section.form > *, section.sim > *').forEach((el) => {
           if (!once(el, 'rise') || el.matches(skip) || el.querySelector('[data-split], [data-stagger], [data-clip]')) return;
           if (el.getBoundingClientRect().top < W.innerHeight * 0.92) return;
+          noTrans([el]);
           gsap.set(el, { y: 80, opacity: 0.25 });
           rise.push(el);
         });
-        if (rise.length) ST.batch(rise, { start: 'top 92%', once: true, onEnter: (b) => gsap.to(b, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.08, overwrite: true }) });
+        if (rise.length) ST.batch(rise, { start: 'top 92%', once: true, onEnter: (b) => gsap.to(b, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.08, overwrite: true, onComplete: () => gsap.set(b, { clearProps: 'transition,transform,opacity' }) }) });
 
         /* marquee: speed and skew follow scroll velocity */
         D.querySelectorAll('[data-motion="marquee-velocity"]').forEach((m) => {
@@ -476,7 +482,7 @@ class Component extends DCLogic {
           if (!once(f, 'foot')) return;
           const big = f.querySelector('.big');
           if (big) gsap.from(splitWords(big, true), { yPercent: 80, opacity: 0.25, duration: 1.2, ease: 'expo.out', stagger: 0.06, scrollTrigger: { trigger: big, start: 'top 92%', once: true } });
-          gsap.from(f.querySelectorAll('.fcols > div, .fbot'), { y: 50, opacity: 0.25, duration: 1, ease: 'power3.out', stagger: 0.08, scrollTrigger: { trigger: f, start: 'top 80%', once: true } });
+          gsap.fromTo(f.querySelectorAll('.fcols > div, .fbot'), { y: 50, opacity: 0.25 }, { y: 0, opacity: 1, duration: 1, ease: 'power3.out', stagger: 0.08, scrollTrigger: { trigger: f, start: 'top 80%', once: true } });
         });
 
         /* menu: wordmark, links and clocks come in on open */
