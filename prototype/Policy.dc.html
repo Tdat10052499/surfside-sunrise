@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Policies — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--white)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.ph{background:var(--sky-l);padding:clamp(2rem,5vw,4rem) max(var(--gutter),3vw) clamp(1.5rem,3vw,2.5rem)}
+.ph-in{max-width:var(--content-max);margin-inline:auto;display:flex;flex-direction:column;gap:.875rem}
+.ph h1{font-size:clamp(2rem,4.2vw,3.2rem);line-height:1.08}
+.ph .lede{margin:0;color:var(--muted);max-width:56ch}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;align-items:center;font-size:.86rem;color:var(--muted)}
+.pg{max-width:var(--content-max);margin-inline:auto;box-sizing:border-box;padding:clamp(1.5rem,4vw,3rem) max(var(--gutter),3vw) 5rem;display:grid;grid-template-columns:15rem minmax(0,1fr);gap:clamp(1.5rem,5vw,4rem);align-items:start}
+.toc{position:sticky;top:6rem;display:flex;flex-direction:column;gap:1.5rem}
+.toc p{margin:0 0 .5rem;font:500 .72rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--label-ink)}
+.toc nav{display:flex;flex-direction:column;gap:.125rem}
+.toc a{padding:.5rem .75rem;border-radius:.625rem;text-decoration:none;color:var(--text);font-size:.92rem}
+.toc a:hover{background:var(--wall);color:var(--navy)}
+.toc a[aria-current="page"]{background:var(--navy);color:#fff;font-weight:600}
+.toc .on-page a{color:var(--muted);font-size:.86rem;padding:.375rem .75rem}
+.art{max-width:44rem;display:flex;flex-direction:column;gap:2.25rem}
+.sec{display:flex;flex-direction:column;gap:.75rem;scroll-margin-top:6rem}
+.sec h2{font-size:1.4rem}
+.sec p{margin:0;line-height:1.7}
+.sec ul{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.375rem;line-height:1.6}
+.tag{display:inline-block;font:600 .7rem/1 var(--font-body);letter-spacing:.04em;text-transform:uppercase;padding:.3rem .5rem;border-radius:.375rem;margin-right:.375rem;vertical-align:.1em}
+.tag.as{background:var(--sky);color:var(--navy)}
+.help{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;background:var(--sand-l);border-radius:var(--radius-panel);padding:1.25rem 1.5rem}
+.help b{color:var(--navy);font:600 1.05rem/1.3 var(--font-head)}
+@media (max-width:900px){.pg{grid-template-columns:1fr}.toc{position:static}.toc .on-page{display:none}.toc nav{flex-direction:row;flex-wrap:wrap;gap:.375rem}.toc a{background:var(--wall)}}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--white)">
+  <dc-import name="Header" tone="light" hint-size="100%,84px"></dc-import>
+  <header class="ph">
+    <div class="ph-in">
+      <span class="eyebrow">Policies</span>
+      <h1 data-split>{{d.title}}</h1>
+      <p class="lede">{{d.lede}}</p>
+      <div class="meta"><span class="badge wait">Draft · waiting for host approval</span><span>Last updated: <span class="todo">TODO</span></span><span>Applies to: Surfside Sunrise House</span></div>
+    </div>
+  </header>
+  <div class="pg">
+    <aside class="toc">
+      <div><p>All policies</p><nav aria-label="Policies"><sc-for list="{{all}}" as="a" hint-placeholder-count="5"><a href="{{a.href}}" aria-current="{{a.cur}}">{{a.name}}</a></sc-for></nav></div>
+      <div class="on-page"><p>On this page</p><nav aria-label="On this page"><sc-for list="{{d.secs}}" as="s" hint-placeholder-count="4"><a href="#{{s.id}}">{{s.h}}</a></sc-for></nav></div>
+    </aside>
+    <article class="art">
+      <sc-for list="{{d.secs}}" as="s" hint-placeholder-count="4">
+        <section class="sec" id="{{s.id}}">
+          <h2>{{s.h}}</h2>
+          <sc-for list="{{s.rows}}" as="r" hint-placeholder-count="2">
+            <sc-if value="{{r.p}}" hint-placeholder-val="{{true}}"><p>{{r.text}}</p></sc-if>
+            <sc-if value="{{r.todo}}" hint-placeholder-val="{{false}}"><p><span class="todo">TODO</span> {{r.text}}</p></sc-if>
+            <sc-if value="{{r.as}}" hint-placeholder-val="{{false}}"><p><span class="tag as">Assumption</span>{{r.text}}</p></sc-if>
+          </sc-for>
+        </section>
+      </sc-for>
+      <div class="help"><div><b>Questions about this policy?</b><p class="hint" style="margin: 0.25rem 0 0">Ngoc Anh Ta, Realtor · <a href="tel:4086684189">408-668-4189</a> · <a href="mailto:ngocanhrealtor@gmail.com">ngocanhrealtor@gmail.com</a></p></div><a class="btn btn-navy btn-sm" href="Contact.dc.html">Contact the host</a></div>
+    </article>
+  </div>
+  <dc-import name="Footer" hint-size="100%,600px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"doc":{"editor":"enum","options":["cancellation","house-rules","booking","privacy","terms"],"default":"cancellation"},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const doc = this.props.doc ?? 'cancellation';
+    const P = (text) => ({ p: true, todo: false, as: false, text });
+    const T = (text) => ({ p: false, todo: true, as: false, text });
+    const A = (text) => ({ p: false, todo: false, as: true, text });
+    const docs = {
+      cancellation: { name: 'Cancellation and refunds', href: 'PolicyCancellation.dc.html', lede: 'What happens to your payment if the host declines, if you cancel, or if plans change.', secs: [
+        ['declined', 'If the host declines your booking', [P('Every paid booking is reviewed by the host. If the host does not approve it, the booking is cancelled and your dates are released.'), A('You get a full refund to the card you paid with.')]],
+        ['you-cancel', 'If you cancel', [P('Contact the host with your booking code to cancel.'), T('Refund amounts and deadlines, for example how many days before check-in.')]],
+        ['host-cancels', 'If the host cancels a confirmed stay', [T('What the host offers if a confirmed stay has to be cancelled.')]],
+        ['change', 'Changing your dates', [P('Date changes are made by the host. Call or email Ngoc Anh with your booking code. The new price is worked out again for the new dates.')]],
+        ['refund-time', 'How refunds are paid', [P('Refunds go back to the card you paid with, through the payment provider.'), T('How long it takes for the money to reach your card.')]]
+      ]},
+      'house-rules': { name: 'House rules', href: 'PolicyHouseRules.dc.html', lede: 'The rules you agree to when you book. They help keep the house and the neighbours happy.', secs: [
+        ['arrival', 'Check-in and check-out', [P('Self check-in with a lockbox. The code is sent before you arrive.'), T('Check-in and check-out times.')]],
+        ['guests', 'Guests', [P('Up to 8 guests, including children.'), T('Minimum number of nights.')]],
+        ['pets', 'Pets', [P('Pet fee: $50 per pet, per stay.'), T('Maximum number of pets and any pet rules.')]],
+        ['conduct', 'Smoking, parties and quiet hours', [T('Smoking rule.'), T('Parties and events rule.'), T('Quiet hours.')]],
+        ['parking', 'Parking', [P('Free parking on site, with an EV charger.')]],
+        ['damage', 'Damage and lost items', [T('What happens if something is broken or lost.')]]
+      ]},
+      booking: { name: 'Booking and payment', href: 'PolicyBooking.dc.html', lede: 'How booking on this website works, what you pay, and how your payment is handled.', secs: [
+        ['how', 'How booking works', [P('Pick your dates and guests, enter your details, review the price and pay by card. No account is needed.'), P('After you pay, the host reviews your booking. You get an email when it is confirmed.'), T('How long the host has to decide.')]],
+        ['hold', 'Holding your dates', [P('When you go to payment, your dates are held for a short time so nobody else can book them.'), T('How long the hold lasts.')]],
+        ['price', 'Price and fees', [P('Prices are in US dollars. Every amount is shown before you pay and is worked out again on our server.'), P('Cleaning fee: $175 per stay. Pet fee: $50 per pet, per stay.'), T('Nightly rates.'), T('Lodging tax.'), T('Security deposit, if any.')]],
+        ['card', 'Card payments', [P('You pay on the payment provider’s secure page. Your card number never reaches this website and is never stored here.'), P('A booking counts as paid only when the payment provider confirms the payment.'), T('Name of the payment provider and accepted cards.')]]
+      ]},
+      privacy: { name: 'Privacy', href: 'PolicyPrivacy.dc.html', lede: 'What we collect when you book or send a message, and what we do with it.', secs: [
+        ['collect', 'What we collect', [P('Your name, email, phone number, booking details and any message you send us.')]],
+        ['use', 'How we use it', [P('To run your booking, send you booking emails, answer your questions and contact you about your stay.')]],
+        ['cards', 'Card details', [P('Card details go straight to the payment provider. This website never sees or stores them.')]],
+        ['share', 'Who can see it', [P('The host and the services that run bookings, payments and email.'), T('List of those services.')]],
+        ['keep', 'How long we keep it', [T('How long data is kept.')]],
+        ['rights', 'Your choices', [P('To see, correct or delete your data, email ngocanhrealtor@gmail.com.'), T('Response time and any legal basis that applies.')]]
+      ]},
+      terms: { name: 'Terms of booking', href: 'PolicyTerms.dc.html', lede: 'The agreement between you and the host when you book on Seathesunrise.', secs: [
+        ['who', 'Who you book with', [P('Seathesunrise is run by Ngoc Anh Ta, Realtor. Bookings are made directly with the host.')]],
+        ['agree', 'What you agree to', [P('When you book, you agree to these terms, the house rules and the cancellation policy that are live at the time you pay.')]],
+        ['code', 'Your booking code', [P('Every booking gets a code such as SSR-7K4Q2M. Use it to look up your booking and when you contact the host.')]],
+        ['approval', 'Host approval', [P('A paid booking is confirmed only after the host approves it.'), A('If the host declines, the payment is refunded in full.')]],
+        ['legal', 'Liability and governing law', [T('Liability, governing law and how disputes are handled. The host or a lawyer should write this part.')]]
+      ]}
+    };
+    const d = docs[doc] || docs.cancellation;
+    return {
+      d: { title: d.name, lede: d.lede, secs: d.secs.map(([id, h, rows]) => ({ id, h, rows })) },
+      all: Object.keys(docs).map((k) => ({ name: docs[k].name, href: docs[k].href, cur: k === doc ? 'page' : undefined }))
+    };
+  }
+}
+</script>
+</body>
+</html>

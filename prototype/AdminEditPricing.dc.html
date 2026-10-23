@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Edit home: pricing — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.prio{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem;counter-reset:p}
+.prio li{display:grid;grid-template-columns:1.75rem minmax(0,1fr);gap:.75rem;align-items:start;font-size:.88rem;counter-increment:p}
+.prio li::before{content:counter(p);width:1.75rem;height:1.75rem;border-radius:50%;background:var(--sky);color:var(--navy);display:grid;place-items:center;font:600 .8rem/1 var(--font-body)}
+.prio b{display:block;color:var(--navy)}
+.addrow{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto;gap:.5rem;align-items:stretch}
+.addrow .btn{min-height:3.5rem}
+.empty{padding:1.25rem;border-radius:var(--radius-field);background:var(--sky-l);text-align:center;font-size:.9rem;color:var(--text)}
+@media (max-width:1100px){.addrow{grid-template-columns:1fr 1fr}.addrow .btn{grid-column:1/-1}}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="homes" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb"><a href="AdminHomes.dc.html">Homes</a> / Edit</span><h1>Surfside Sunrise House</h1></div>
+      <div class="acts"><span class="badge ok">Published</span><a class="btn btn-line btn-sm" href="Detail.dc.html">View on site</a></div>
+    </header>
+    <main class="adm-body">
+      <nav class="tabs" aria-label="Edit home">
+        <a href="AdminEditContent.dc.html">Content &amp; amenities</a>
+        <a href="AdminEditMedia.dc.html">Photos &amp; video</a>
+        <a href="AdminEditRules.dc.html">House rules</a>
+        <a href="AdminEditPricing.dc.html" aria-current="page">Pricing</a>
+        <a href="AdminEditFees.dc.html">Fees</a>
+      </nav>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; min-width: 0">
+          <section class="card" aria-labelledby="b-h">
+            <div><h2 id="b-h">Nightly rates (USD)</h2><p class="sub">The website can’t take bookings until a base rate is set.</p></div>
+            <div class="g2">
+              <div class="field"><label for="br">Base rate per night</label><input id="br" type="text" inputmode="decimal" placeholder="$ set by host"></div>
+              <div class="field"><label for="wr">Weekend rate (Fri and Sat nights)</label><input id="wr" type="text" inputmode="decimal" placeholder="Same as base if empty"></div>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="s-h">
+            <div><h2 id="s-h">Seasons</h2><p class="sub">A different nightly rate for a date range, for example summer or holidays.</p></div>
+            <sc-if value="{{noSeasons}}" hint-placeholder-val="{{true}}"><div class="empty">No seasons yet. Add one below.</div></sc-if>
+            <sc-if value="{{hasSeasons}}" hint-placeholder-val="{{false}}">
+              <div class="tbl-wrap"><table class="tbl" style="min-width: 0"><thead><tr><th>Season</th><th>From</th><th>To</th><th>Per night</th><th><span style="position: absolute; left: -9999px">Remove</span></th></tr></thead><tbody>
+                <sc-for list="{{seasons}}" as="s" hint-placeholder-count="1"><tr><td><b style="color: var(--navy)">{{s.name}}</b></td><td>{{s.from}}</td><td>{{s.to}}</td><td class="num">{{s.rate}}</td><td style="text-align: right"><button type="button" class="btn btn-line btn-sm" onClick="{{s.remove}}">Remove</button></td></tr></sc-for>
+              </tbody></table></div>
+            </sc-if>
+            <div class="addrow">
+              <div class="field"><label for="sn">Season name</label><input id="sn" type="text" value="{{fName}}" onChange="{{setName}}"></div>
+              <div class="field"><label for="sf">From</label><input id="sf" type="date" value="{{fFrom}}" onChange="{{setFrom}}"></div>
+              <div class="field"><label for="st">To</label><input id="st" type="date" value="{{fTo}}" onChange="{{setTo}}"></div>
+              <div class="field"><label for="sr">Per night ($)</label><input id="sr" type="text" inputmode="decimal" value="{{fRate}}" onChange="{{setRate}}"></div>
+              <button type="button" class="btn btn-navy btn-sm" onClick="{{add}}">Add season</button>
+            </div>
+            <p class="err" role="alert">{{formErr}}</p>
+          </section>
+          <section class="card" aria-labelledby="d-h">
+            <div class="rowb"><div><h2 id="d-h">Single dates</h2><p class="sub">Override one night, for example July 4. Set these on the calendar.</p></div><a class="btn btn-line btn-sm" href="AdminCalendar.dc.html">Open calendar</a></div>
+            <div class="empty">No date overrides yet.</div>
+          </section>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="p-h">
+            <h2 id="p-h">Which rate wins</h2>
+            <ol class="prio">
+              <li><div><b>Single date</b>Set on the calendar</div></li>
+              <li><div><b>Season</b>If the night falls in a season</div></li>
+              <li><div><b>Weekend</b>Friday and Saturday nights</div></li>
+              <li><div><b>Base rate</b>Every other night</div></li>
+            </ol>
+            <p class="sub" style="margin: 0">The server works out the price for each night when a guest books. Amounts are stored in cents.</p>
+          </section>
+          <section class="card" aria-labelledby="t-h"><h2 id="t-h">Still needed from the host</h2><div class="list" style="font-size: 0.9rem"><div><span>Base nightly rate</span><span class="badge wait">Missing</span></div><div><span>Weekend rate</span><span class="badge off">Optional</span></div><div><span>Seasons</span><span class="badge off">Optional</span></div></div></section>
+        </aside>
+      </div>
+    </main>
+    <div class="savebar" role="region" aria-label="Save changes"><span>{{saveText}}</span><div class="acts"><a class="btn btn-line btn-sm" href="AdminEditRules.dc.html">Back</a><button type="button" class="btn btn-navy btn-sm" onClick="{{save}}">Save changes</button></div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { seasons: [], fName: '', fFrom: '', fTo: '', fRate: '', err: '', saved: false };
+  }
+  renderVals() {
+    const { seasons, fName, fFrom, fTo, fRate, err, saved } = this.state;
+    const fmtDate = (d) => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    const add = () => {
+      const cents = Math.round(parseFloat(String(fRate).replace(/[$,]/g, '')) * 100);
+      if (!fName.trim() || !fFrom || !fTo || !(cents > 0)) { this.setState({ err: 'Fill in a name, both dates and a rate.' }); return; }
+      if (fTo <= fFrom) { this.setState({ err: 'The end date must be after the start date.' }); return; }
+      this.setState({ seasons: seasons.concat({ name: fName.trim(), from: fFrom, to: fTo, cents }), fName: '', fFrom: '', fTo: '', fRate: '', err: '', saved: false });
+    };
+    return {
+      noSeasons: seasons.length === 0,
+      hasSeasons: seasons.length > 0,
+      seasons: seasons.map((s, i) => ({
+        name: s.name, from: fmtDate(s.from), to: fmtDate(s.to),
+        rate: '$' + (s.cents / 100).toFixed(2),
+        remove: () => this.setState({ seasons: seasons.filter((_, j) => j !== i) })
+      })),
+      fName, fFrom, fTo, fRate,
+      setName: (e) => this.setState({ fName: e.target.value }),
+      setFrom: (e) => this.setState({ fFrom: e.target.value }),
+      setTo: (e) => this.setState({ fTo: e.target.value }),
+      setRate: (e) => this.setState({ fRate: e.target.value }),
+      add,
+      formErr: err,
+      saveText: saved ? 'Saved (demo). New prices apply to new bookings.' : 'Price changes never affect bookings already paid.',
+      save: () => this.setState({ saved: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

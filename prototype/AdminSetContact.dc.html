@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Settings: contact — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.used{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem;font-size:.88rem}
+.used li{display:flex;justify-content:space-between;gap:.75rem;padding:.625rem .75rem;border-radius:var(--radius-xs);background:var(--wall)}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="settings" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Settings</span><h1>Contact details</h1></div>
+      <div class="acts"><a class="btn btn-line btn-sm" href="Main.dc.html">View website</a></div>
+    </header>
+    <main class="adm-body">
+      <nav class="tabs" aria-label="Settings">
+        <a href="AdminSetContact.dc.html" aria-current="page">Contact</a>
+        <a href="AdminSetFaq.dc.html">FAQ</a>
+        <a href="AdminSetPolicies.dc.html">Policies</a>
+        <a href="AdminSetAccount.dc.html">Account</a>
+      </nav>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; min-width: 0">
+          <section class="card" aria-labelledby="c-h">
+            <div><h2 id="c-h">Host contact</h2><p class="sub">Shown in the header, the footer, the contact page and every email.</p></div>
+            <div class="fgrid">
+              <div class="field"><label for="nm">Name</label><input id="nm" type="text" value="{{name}}" onChange="{{setName}}"></div>
+              <div class="field"><label for="tt">Title</label><input id="tt" type="text" value="{{title}}" onChange="{{setTitle}}"></div>
+              <div class="field"><label for="ph">Phone</label><input id="ph" type="tel" value="{{phone}}" onChange="{{setPhone}}"></div>
+              <div class="field"><label for="em">Email</label><input id="em" type="email" value="{{email}}" onChange="{{setEmail}}"></div>
+              <div class="field"><label for="wa">WhatsApp (optional)</label><input id="wa" type="tel" placeholder="Not set"></div>
+              <div class="field"><label for="rt">Reply time shown to guests</label><input id="rt" type="text" value="Usually within 1 hour"></div>
+            </div>
+            <p class="err" role="alert">{{err}}</p>
+          </section>
+          <section class="card" aria-labelledby="n-h">
+            <h2 id="n-h">Where notifications go</h2>
+            <div>
+              <div class="sw"><div><b>New booking to approve</b><small>Email the host as soon as a payment succeeds</small></div><button type="button" class="tg" role="switch" aria-checked="true" aria-label="New booking emails"></button></div>
+              <div class="sw"><div><b>New question</b><small>Email the host when a guest asks something</small></div><button type="button" class="tg" role="switch" aria-checked="true" aria-label="New question emails"></button></div>
+              <div class="sw"><div><b>Text message alerts</b><small>Needs an SMS provider (not set up)</small></div><button type="button" class="tg" role="switch" aria-checked="false" aria-label="Text alerts"></button></div>
+            </div>
+          </section>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="p-h">
+            <h2 id="p-h">Preview</h2>
+            <div class="contact">
+              <b>{{name}}</b>
+              <span>{{title}}</span>
+              <a href="tel:{{phone}}">{{phone}}</a>
+              <a href="mailto:{{email}}">{{email}}</a>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="u-h">
+            <h2 id="u-h">Used in</h2>
+            <ul class="used"><li><span>Website header and footer</span><span class="badge ok">Live</span></li><li><span>Contact and booking pages</span><span class="badge ok">Live</span></li><li><span>All 6 emails</span><a href="EmailGuestConfirmed.dc.html">Preview</a></li></ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <div class="savebar" role="region" aria-label="Save changes"><span>{{saveText}}</span><div class="acts"><button type="button" class="btn btn-line btn-sm" onClick="{{reset}}">Discard</button><button type="button" class="btn btn-navy btn-sm" onClick="{{save}}">Save changes</button></div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.init = { name: 'Ngoc Anh Ta', title: 'Realtor', phone: '408-668-4189', email: 'ngocanhrealtor@gmail.com' };
+    this.state = { ...this.init, err: '', saved: false, dirty: false };
+  }
+  renderVals() {
+    const { name, title, phone, email, err, saved, dirty } = this.state;
+    const set = (k) => (e) => this.setState({ [k]: e.target.value, dirty: true, saved: false, err: '' });
+    return {
+      name, title, phone, email, err,
+      setName: set('name'), setTitle: set('title'), setPhone: set('phone'), setEmail: set('email'),
+      saveText: saved ? 'Saved (demo). The website and emails use the new details.' : dirty ? 'You have unsaved changes.' : 'Stored in the database, not in the code.',
+      save: () => {
+        if (!name.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || phone.replace(/\D/g, '').length < 7) { this.setState({ err: 'Check the name, email and phone.' }); return; }
+        this.setState({ saved: true, dirty: false });
+      },
+      reset: () => this.setState({ ...this.init, err: '', saved: false, dirty: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Questions — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.q{background:var(--sky-l);border-radius:var(--radius-field);padding:1rem 1.125rem;font-size:.95rem;line-height:1.6}
+.meta2{display:flex;flex-wrap:wrap;gap:.375rem 1.25rem;font-size:.86rem;color:var(--muted)}
+.meta2 a{font-weight:600}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="questions" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Inbox</span><h1>Questions</h1></div>
+      <div class="acts"><span class="demo">Sample messages</span></div>
+    </header>
+    <main class="adm-body">
+      <p class="sub" style="margin: 0; font-size: 0.9rem; color: var(--muted)">Questions from the contact form and the “Ask the host” form. Each one is also emailed to ngocanhrealtor@gmail.com.</p>
+      <div class="msg">
+        <div class="inbox" role="list">
+          <sc-for list="{{items}}" as="m" hint-placeholder-count="3">
+            <button type="button" role="listitem" aria-pressed="{{m.on}}" onClick="{{m.pick}}">
+              <span class="rowb"><b class="{{m.unreadCls}}">{{m.name}}</b><span class="dash" style="font-size: 0.78rem">{{m.when}}</span></span>
+              <span class="p">{{m.text}}</span>
+              <span><span class="badge {{m.badge}}" style="font-size: 0.72rem; padding: 0.3125rem 0.5rem">{{m.status}}</span></span>
+            </button>
+          </sc-for>
+        </div>
+        <section class="card" aria-labelledby="q-h">
+          <div class="rowb"><h2 id="q-h">{{cur.name}}</h2><span class="badge {{cur.badge}}">{{cur.status}}</span></div>
+          <div class="meta2"><a href="mailto:{{cur.email}}">{{cur.email}}</a><span>{{cur.phone}}</span><span>About: Surfside Sunrise House</span><span>{{cur.when}}</span></div>
+          <p class="q">{{cur.text}}</p>
+          <div class="field"><label for="rp">Your reply (sent by email to the guest)</label><textarea id="rp" value="{{draft}}" onChange="{{setDraft}}" style="min-height: 8rem"></textarea></div>
+          <div class="rowb">
+            <button type="button" class="btn btn-line btn-sm" onClick="{{markDone}}">Mark as answered</button>
+            <button type="button" class="btn btn-navy btn-sm" onClick="{{send}}">Send reply</button>
+          </div>
+          <p class="err" role="alert">{{err}}</p>
+          <sc-if value="{{sent}}" hint-placeholder-val="{{false}}"><div class="toast" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Reply sent (demo). You can see it in the Email log.</div></sc-if>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 0, done: [2], read: [2], draft: '', sent: false, err: '' };
+  }
+  renderVals() {
+    const { sel, done, read, draft, sent, err } = this.state;
+    const data = [
+      { name: 'Sample guest E', email: 'guest.e@example.com', phone: '+1 555 010 4411', when: 'Today, 9:40 AM', text: 'Hi! Is there a crib or pack-and-play we could use for our baby? We are looking at the second week of December.' },
+      { name: 'Sample guest F', email: 'guest.f@example.com', phone: '+44 20 7946 0000', when: 'Yesterday', text: 'We are flying in from London. How far is the house from the airport and is there a grocery store nearby?' },
+      { name: 'Sample guest G', email: 'guest.g@example.com', phone: '+1 555 010 7788', when: 'Oct 20', text: 'Can we bring two dogs? Both are small and house-trained.' }
+    ];
+    const st = (i) => done.includes(i) ? ['Answered', 'ok'] : ['Needs reply', 'wait'];
+    const cur = { ...data[sel], status: st(sel)[0], badge: st(sel)[1] };
+    return {
+      items: data.map((d, i) => ({
+        ...d, on: i === sel ? 'true' : 'false', status: st(i)[0], badge: st(i)[1],
+        unreadCls: read.includes(i) || i === sel ? '' : 'unread',
+        pick: () => this.setState({ sel: i, read: read.concat(i), draft: '', sent: false, err: '' })
+      })),
+      cur, draft, sent, err,
+      setDraft: (e) => this.setState({ draft: e.target.value, err: '' }),
+      markDone: () => this.setState({ done: done.includes(sel) ? done : done.concat(sel) }),
+      send: () => {
+        if (!draft.trim()) { this.setState({ err: 'Write a reply first.' }); return; }
+        this.setState({ sent: true, draft: '', done: done.includes(sel) ? done : done.concat(sel) });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

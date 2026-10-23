@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Menu — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--navy)}
+.mn{min-height:56rem;background:var(--navy);color:#fff;display:flex;flex-direction:column}
+.mtop{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.75rem max(var(--gutter),2vw);height:5.25rem}
+.mtop .logo{color:#fff}
+.close{width:2.75rem;height:2.75rem;border-radius:50%;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);display:grid;place-items:center;color:#fff}
+.close svg{width:1.25rem;height:1.25rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.min{flex:1;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(2rem,5vw,5rem);padding:clamp(1.5rem,4vw,3.5rem) max(var(--gutter),4vw) clamp(2rem,4vw,3rem);max-width:90rem;margin-inline:auto;width:100%;box-sizing:border-box}
+.word{font:600 clamp(3rem,8.5vw,7.5rem)/.95 var(--font-head);letter-spacing:-.04em;display:flex;flex-wrap:wrap;align-items:flex-end;gap:0 .15em}
+.word .o{color:var(--glass)}
+.sunwrap{position:relative;display:inline-block;width:.8em;height:.42em;overflow:hidden;margin-bottom:.1em}
+.sunwrap i{position:absolute;left:0;bottom:-.4em;width:.8em;height:.8em;border-radius:50%;background:var(--sun);animation:rise 3.5s var(--ease) both}
+@keyframes rise{from{transform:translateY(.35em)}to{transform:none}}
+.mrow{display:flex;flex-wrap:wrap;gap:.5rem 1.75rem;margin-top:1.75rem;font-size:.9rem;color:#cfdbe6}
+.mrow b{color:var(--sun);font-weight:600}
+.wt{margin-top:2.25rem;border-top:1px solid rgba(255,255,255,.14);padding-top:1.25rem}
+.wt-head{font:500 .74rem/1 var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:#a9bccd;margin-bottom:1rem}
+.zones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.625rem;list-style:none;margin:0;padding:0}
+.zone{display:flex;flex-direction:column;gap:.25rem;padding:.875rem 1rem;border-radius:var(--radius-card);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.zone.home{background:rgba(124,197,199,.16);box-shadow:inset 0 0 0 1px rgba(124,197,199,.45)}
+.zone .c{font-size:.8rem;color:#cfdbe6}
+.zone .tm{font:600 1.35rem/1.1 var(--font-head);font-variant-numeric:tabular-nums}
+.zone .d{font-size:.78rem;color:#a9bccd}
+.mnav{display:flex;flex-direction:column;gap:.25rem}
+.mnav a{font:600 clamp(1.6rem,3vw,2.4rem)/1.2 var(--font-head);letter-spacing:-.02em;color:#fff;text-decoration:none;padding:.25rem 0;display:flex;align-items:center;gap:.75rem}
+.mnav a:hover{color:var(--glass)}
+.mnav a small{font:500 .78rem/1 var(--font-body);letter-spacing:.1em;color:#a9bccd}
+.mcard{margin-top:2rem;display:grid;grid-template-columns:7.5rem 1fr;gap:1rem;align-items:center;padding:.75rem;border-radius:var(--radius-r);background:rgba(255,255,255,.08);text-decoration:none;color:#fff}
+.mcard img{width:7.5rem;height:5.5rem;object-fit:cover;border-radius:.75rem}
+.mcard b{font:600 1.05rem/1.25 var(--font-head)}
+.mcard span{font-size:.84rem;color:#cfdbe6}
+@media (max-width:900px){
+  .min{grid-template-columns:1fr}
+  .zones{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+</helmet>
+<div class="mn" style="font-family: var(--font-body)" data-motion="menu-open">
+<dc-import name="Motion" hint-size="0px,0px"></dc-import>
+  <div class="mtop">
+    <a class="logo" href="Main.dc.html"><i></i>Seathesunrise</a>
+    <a class="close" href="Main.dc.html" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></a>
+  </div>
+  <div class="min">
+    <div>
+      <p class="word" aria-label="Seathesunrise"><span>Seathe</span><span class="o">sunrise</span><span class="sunwrap" aria-hidden="true"><i></i></span></p>
+      <div class="mrow"><span>Surfside Beach, Texas</span><span>Sunrise today <b>{{sunrise}}</b></span><span>28.95° N · 95.29° W</span></div>
+      <div class="wt">
+        <p class="wt-head">Time around the world · hours compared with Surfside</p>
+        <ul class="zones">
+          <sc-for list="{{zones}}" as="z" hint-placeholder-count="6">
+            <li class="zone {{z.cls}}"><span class="c">{{z.name}}</span><span class="tm">{{z.time}}</span><span class="d">{{z.diff}}</span></li>
+          </sc-for>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <nav class="mnav" aria-label="Main">
+        <a href="Main.dc.html"><small>01</small>Home</a>
+        <a href="Homes.dc.html"><small>02</small>Homes</a>
+        <a href="Detail.dc.html"><small>03</small>Surfside Sunrise House</a>
+        <a href="Detail.dc.html#availability"><small>04</small>Availability</a>
+        <a href="Main.dc.html#faq"><small>05</small>FAQ</a>
+        <a href="Contact.dc.html"><small>06</small>Contact the host</a>
+        <a href="Lookup.dc.html"><small>07</small>Find my booking</a>
+      </nav>
+      <a class="mcard" href="Detail.dc.html#availability">
+        <img src="../assets/img/deck.webp" alt="" width="800" height="533">
+        <div><b>Book your stay</b><br><span>Pick dates and see the full price before you pay.</span></div>
+      </a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  parts(tz, now) {
+    const f = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
+    const h = Number(new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hourCycle: 'h23' }).format(now));
+    const y = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(now);
+    const g = (t) => Number(y.find((p) => p.type === t).value);
+    const asUtc = Date.UTC(g('year'), g('month') - 1, g('day'), g('hour') % 24, g('minute'));
+    return { label: f.format(now), hour: h, off: Math.round((asUtc - now.getTime()) / 60000) };
+  }
+  renderVals() {
+    const now = new Date();
+    const cities = [
+      { n: 'Surfside · local', tz: 'America/Chicago', home: true },
+      { n: 'Mexico City', tz: 'America/Mexico_City' },
+      { n: 'New York', tz: 'America/New_York' },
+      { n: 'London', tz: 'Europe/London' },
+      { n: 'Ho Chi Minh City', tz: 'Asia/Ho_Chi_Minh' },
+      { n: 'Tokyo', tz: 'Asia/Tokyo' }
+    ];
+    const home = this.parts(cities[0].tz, now);
+    const zones = cities.map((c) => {
+      const p = this.parts(c.tz, now);
+      const dh = Math.round((p.off - home.off) / 60);
+      const day = p.hour >= 6 && p.hour < 18 ? 'Day' : 'Night';
+      const diff = c.home ? day + ' · local time' : day + ' · ' + (dh === 0 ? 'same time' : (dh > 0 ? '+' : '') + dh + ' h');
+      return { name: c.n, time: p.label, diff, cls: c.home ? 'home' : '' };
+    });
+    return { zones, sunrise: '7:28 AM (sample)' };
+  }
+}
+</script>
+</body>
+</html>

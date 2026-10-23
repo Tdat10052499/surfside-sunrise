@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Forgot password — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--navy)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.au{min-height:100vh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--white)}
+.au-pic{position:relative;overflow:hidden;background:var(--navy)}
+.au-pic img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.au-pic::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,30,48,.15),rgba(15,30,48,.75))}
+.au-pic .cap{position:absolute;left:2.5rem;right:2.5rem;bottom:2.5rem;z-index:1;color:#fff;display:flex;flex-direction:column;gap:.5rem}
+.au-pic .cap b{font:600 1.6rem/1.2 var(--font-head)}
+.au-pic .logo{position:absolute;left:2.5rem;top:2rem;z-index:1;color:#fff}
+.au-main{display:flex;align-items:center;justify-content:center;padding:2.5rem max(var(--gutter),2rem)}
+.box{width:100%;max-width:24rem;display:flex;flex-direction:column;gap:1.125rem}
+.box h1{font-size:clamp(1.7rem,3vw,2.1rem);line-height:1.15}
+.box .lede{margin:0;color:var(--muted)}
+.pw{position:relative}
+.pw button{position:absolute;right:.5rem;bottom:.55rem;border:0;background:transparent;color:var(--gulf-ink);font:600 .82rem/1 var(--font-body);cursor:pointer;padding:.5rem}
+.done{display:flex;gap:.75rem;align-items:flex-start;padding:1rem;border-radius:var(--radius-field);background:var(--ok-bg);color:var(--ok-ink);font-size:.92rem}
+.sim{border:1.5px dashed var(--warn-ink);background:var(--warn-bg);border-radius:var(--radius-card);padding:.75rem .875rem;font-size:.84rem;display:flex;flex-wrap:wrap;gap:.375rem .75rem}
+.rules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.375rem;font-size:.86rem}
+.rules li{display:flex;gap:.5rem;align-items:center;color:var(--muted)}
+.rules li.ok{color:var(--ok-ink)}
+.rules svg,.done svg{width:1rem;height:1rem;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.au{grid-template-columns:1fr}.au-pic{height:12rem}.au-pic .cap{display:none}}
+</style>
+</helmet>
+<div class="au" style="font-family: var(--font-body); color: var(--text)">
+  <div class="au-pic"><img src="../assets/img/aerial.webp" alt="" width="1200" height="800"><span class="logo"><i aria-hidden="true"></i>Seathesunrise</span><div class="cap"><b>Host dashboard</b><span>Bookings, calendar, prices and messages for your homes.</span></div></div>
+  <main class="au-main">
+    <div class="box">
+      <div><a href="AdminLogin.dc.html" class="hint">← Back to sign in</a><h1 style="margin-top: 0.75rem">Reset your password</h1><p class="lede">Enter your admin email. If it matches an account, we send a link to set a new password.</p></div>
+      <sc-if value="{{open}}" hint-placeholder-val="{{true}}">
+        <div class="field"><label for="em">Email</label><input id="em" type="email" value="{{email}}" onChange="{{setEmail}}" autocomplete="username"></div>
+        <p class="err" role="alert">{{err}}</p>
+        <button type="button" class="btn btn-navy" onClick="{{send}}">Send reset link</button>
+      </sc-if>
+      <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+        <div class="done" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>If {{email}} has an admin account, a reset link is on its way. The link works once and expires after <span class="todo">TODO</span> minutes.</span></div>
+        <button type="button" class="btn btn-line btn-sm" onClick="{{again}}" style="align-self: flex-start">Use another email</button>
+      </sc-if>
+      <div class="sim"><span class="demo">Prototype only</span><a href="AdminReset.dc.html">Open the link from the email</a></div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { email: '', err: '', sent: false };
+  }
+  renderVals() {
+    const { email, err, sent } = this.state;
+    return {
+      email, err, sent, open: !sent,
+      setEmail: (e) => this.setState({ email: e.target.value, err: '' }),
+      send: () => {
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) { this.setState({ err: 'Enter a valid email.' }); return; }
+        this.setState({ sent: true });
+      },
+      again: () => this.setState({ sent: false, email: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>

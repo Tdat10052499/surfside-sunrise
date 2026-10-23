@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Homes in Surfside Beach — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--white)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.wrap{max-width:var(--content-max);margin-inline:auto;padding-inline:max(var(--gutter),3vw)}
+.ico svg{width:1.3125rem;height:1.3125rem;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.bar-top{position:sticky;top:0;z-index:5}
+.filt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:.5rem;align-items:stretch;background:#fff;border:1px solid var(--line);border-radius:1.5rem;padding:.5rem}
+.filt .btn{min-height:3.5rem}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem}
+.grid3 .pcard{max-width:none;text-decoration:none;color:inherit}
+.ask{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1.25rem;background:var(--sky-l);border:1px solid var(--sky);border-radius:var(--radius-panel);padding:clamp(1.25rem,3vw,2rem)}
+.ask h2{font-size:clamp(1.4rem,2.4vw,1.8rem)}
+.ask p{color:var(--text);margin-top:.375rem}
+@media (max-width:900px){
+  .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .filt{grid-template-columns:1fr 1fr}
+  .filt .btn{grid-column:1/-1}
+}
+@media (max-width:640px){
+  .grid3{grid-template-columns:1fr}
+}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--white); overflow-x: hidden">
+  <div class="bar-top"><dc-import name="Header" tone="light" hint-size="100%,84px"></dc-import></div>
+
+  <main class="wrap" style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: clamp(2rem, 5vw, 4rem); padding-bottom: clamp(4rem, 8vw, 7rem)">
+    <div style="display: flex; flex-direction: column; gap: 0.875rem">
+      <span class="eyebrow">Homes</span>
+      <h1 style="font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.1">Beach Homes in Surfside Beach, Texas</h1>
+      <p style="color: var(--muted); max-width: 52ch">Book directly with the host. Pick your dates to see which homes are free and what your stay costs.</p>
+    </div>
+
+    <form class="filt" aria-label="Filter homes">
+      <div class="field"><label for="hci">Check-in</label><input id="hci" type="text" placeholder="Add date"></div>
+      <div class="field"><label for="hco">Check-out</label><input id="hco" type="text" placeholder="Add date"></div>
+      <div class="field">
+        <label>Guests</label>
+        <div class="stepper"><output>{{guests}}</output><div><button type="button" aria-label="Fewer guests" onClick="{{lessG}}" disabled="{{gMin}}">−</button><button type="button" aria-label="More guests" onClick="{{moreG}}" disabled="{{gMax}}">+</button></div></div>
+      </div>
+      <div class="field">
+        <label>Pets</label>
+        <div class="stepper"><output>{{pets}}</output><div><button type="button" aria-label="Fewer pets" onClick="{{lessP}}" disabled="{{pMin}}">−</button><button type="button" aria-label="More pets" onClick="{{moreP}}">+</button></div></div>
+      </div>
+      <a class="btn btn-navy" href="Homes.dc.html">Search</a>
+    </form>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap">
+      <p style="font-weight: 600; color: var(--navy)">1 home in Surfside Beach</p>
+      <div class="seg" role="tablist" aria-label="Sort"><button type="button" role="tab" aria-selected="true">Recommended</button><button type="button" role="tab" aria-selected="false">Price</button><button type="button" role="tab" aria-selected="false">Guests</button></div>
+    </div>
+
+    <div class="grid3" data-stagger>
+      <a class="pcard" href="Detail.dc.html" data-cursor="View">
+        <div class="ph"><img src="../assets/img/deck.webp" alt="Covered deck of Surfside Sunrise House facing the Gulf" width="800" height="533" loading="lazy" data-par="6"></div>
+        <div class="bd">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem"><span class="loc">Surfside Beach, Texas</span><span class="badge info">New listing</span></div>
+          <h3>Surfside Sunrise House</h3>
+          <div class="meta"><span>8 guests</span><span>3 bedrooms</span><span>6 beds</span><span>2 baths</span></div>
+          <div class="meta"><span>Beach access</span><span>EV charger</span><span>Self check-in</span></div>
+          <div class="ft"><span>From <span class="todo">TODO nightly rate</span></span><span style="color: var(--gulf-ink); font-weight: 600">View home →</span></div>
+        </div>
+      </a>
+    </div>
+
+    <section class="ask" aria-labelledby="ask-h">
+      <div>
+        <h2 id="ask-h">Questions about a home or your dates?</h2>
+        <p>Ngoc Anh Ta, your host, replies within 1 hour.</p>
+      </div>
+      <div class="actions">
+        <a class="btn btn-navy" href="tel:4086684189">Call 408-668-4189</a>
+        <a class="btn btn-line" href="mailto:ngocanhrealtor@gmail.com">Email the host</a>
+      </div>
+    </section>
+  </main>
+
+  <dc-import name="Footer" hint-size="100%,600px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { guests: 2, pets: 0 };
+  }
+  renderVals() {
+    const { guests, pets } = this.state;
+    return {
+      guests: guests + (guests === 1 ? ' guest' : ' guests'),
+      pets: pets + (pets === 1 ? ' pet' : ' pets'),
+      gMin: guests <= 1,
+      gMax: guests >= 8,
+      pMin: pets <= 0,
+      lessG: () => this.setState({ guests: Math.max(1, guests - 1) }),
+      moreG: () => this.setState({ guests: Math.min(8, guests + 1) }),
+      lessP: () => this.setState({ pets: Math.max(0, pets - 1) }),
+      moreP: () => this.setState({ pets: pets + 1 })
+    };
+  }
+}
+</script>
+</body>
+</html>

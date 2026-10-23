@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Add a booking — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--navy);box-shadow:0 1px 2px rgba(20,40,64,.12)}
+.conflict{display:flex;gap:.75rem;align-items:flex-start;padding:.875rem 1rem;border-radius:var(--radius-field);background:var(--err-bg);color:var(--err);font-size:.9rem}
+.conflict svg{width:1.125rem;height:1.125rem;flex:none;margin-top:.1rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.taken{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.375rem;font-size:.86rem}
+.taken li{display:flex;justify-content:space-between;gap:.75rem;padding:.5rem .75rem;border-radius:var(--radius-xs);background:var(--wall)}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="bookings" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb"><a href="AdminBookings.dc.html">Bookings</a> / New</span><h1>Add a booking</h1></div>
+      <div class="acts"><span class="demo">Prototype</span></div>
+    </header>
+    <main class="adm-body">
+      <p class="sub" style="margin: 0; font-size: 0.9rem; color: var(--muted)">For stays booked by phone, in person or on Airbnb. Adding them here blocks the dates so the website can’t sell them twice.</p>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; min-width: 0">
+          <section class="card" aria-labelledby="s-h">
+            <h2 id="s-h">Stay</h2>
+            <div class="fgrid">
+              <div class="field"><label for="hm">Home</label><select id="hm"><option>Surfside Sunrise House</option></select></div>
+              <div style="display: flex; flex-direction: column; gap: 0.375rem"><span class="hint" style="margin: 0; font: 500 0.7rem/1 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--label-ink)">Booked through</span><div class="seg" role="group" aria-label="Booked through"><sc-for list="{{srcs}}" as="s" hint-placeholder-count="3"><button type="button" aria-pressed="{{s.on}}" onClick="{{s.pick}}">{{s.label}}</button></sc-for></div></div>
+              <div class="field"><label for="ci">Check-in</label><input id="ci" type="date" value="{{f.ci}}" onChange="{{set.ci}}"></div>
+              <div class="field"><label for="co">Check-out</label><input id="co" type="date" value="{{f.co}}" onChange="{{set.co}}"></div>
+              <div class="field"><label for="gs">Guests (max 8)</label><input id="gs" type="number" min="1" max="8" value="{{f.guests}}" onChange="{{set.guests}}"></div>
+              <div class="field"><label for="pt">Pets</label><input id="pt" type="number" min="0" value="{{f.pets}}" onChange="{{set.pets}}"></div>
+            </div>
+            <sc-if value="{{hasConflict}}" hint-placeholder-val="{{false}}"><div class="conflict" role="alert"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg><span>{{conflict}}</span></div></sc-if>
+          </section>
+          <section class="card" aria-labelledby="g-h">
+            <h2 id="g-h">Guest</h2>
+            <div class="fgrid">
+              <div class="field"><label for="nm">Full name</label><input id="nm" type="text" value="{{f.name}}" onChange="{{set.name}}"></div>
+              <div class="field"><label for="em">Email (optional)</label><input id="em" type="email" value="{{f.email}}" onChange="{{set.email}}"></div>
+              <div class="field"><label for="ph">Phone (optional)</label><input id="ph" type="tel" value="{{f.phone}}" onChange="{{set.phone}}"></div>
+              <div class="field"><label for="ar">Airbnb confirmation code (optional)</label><input id="ar" type="text" placeholder="e.g. HM…"></div>
+              <div class="field full"><label for="nt">Private note</label><textarea id="nt" placeholder="Only admins see this"></textarea></div>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="m-h">
+            <h2 id="m-h">Payment</h2>
+            <div class="fgrid">
+              <div class="field"><label for="am">Amount received ($, optional)</label><input id="am" type="text" inputmode="decimal" value="{{f.amount}}" onChange="{{set.amount}}"></div>
+              <div class="field"><label for="pm">Paid by</label><select id="pm"><option>Paid on Airbnb</option><option>Paid to host directly</option><option>Not paid yet</option></select></div>
+            </div>
+            <p class="hint" style="margin: 0">Recorded for your own reference. No card is charged from this form.</p>
+            <div class="sw"><div><b>Email the guest a confirmation</b><small>Uses the “Booking confirmed” template. Off for Airbnb guests, who get Airbnb’s email.</small></div><button type="button" class="tg" role="switch" aria-checked="{{mailStr}}" aria-label="Email the guest" onClick="{{toggleMail}}"></button></div>
+          </section>
+          <p class="err" role="alert">{{err}}</p>
+          <sc-if value="{{saved}}" hint-placeholder-val="{{false}}"><div class="toast" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Saved as SSR-4T9X2B (demo). The dates are blocked on the website. <a href="AdminCalendar.dc.html">See calendar</a></span></div></sc-if>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="t-h">
+            <h2 id="t-h">Already taken</h2>
+            <ul class="taken"><li><span>Nov 6 – 9</span><span>SSR-7K4Q2M</span></li><li><span>Nov 14 – 16</span><span>Host block</span></li><li><span>Nov 26 – 29</span><span>SSR-2M6V8A</span></li><li><span>Dec 11 – 14</span><span>SSR-9W2N6T (held)</span></li><li><span>Dec 18 – 21</span><span>SSR-8P3K5W</span></li></ul>
+            <p class="hint" style="margin: 0">Overlaps are refused by the database, not only by this form.</p>
+          </section>
+          <section class="card"><h2>Airbnb calendar sync</h2><p class="sub" style="margin: 0">Not in the first version (§7 asks for manual entry). Can be added later with an iCal link.</p></section>
+        </aside>
+      </div>
+    </main>
+    <div class="savebar" role="region" aria-label="Save booking"><span>Check-out is the morning the guest leaves; that night stays free.</span><div class="acts"><a class="btn btn-line btn-sm" href="AdminBookings.dc.html">Cancel</a><button type="button" class="btn btn-navy btn-sm" onClick="{{save}}">Save booking</button></div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { src: 'airbnb', mail: false, err: '', saved: false, f: { ci: '2026-11-08', co: '2026-11-11', guests: '4', pets: '0', name: '', email: '', phone: '', amount: '' } };
+  }
+  renderVals() {
+    const { src, mail, err, saved, f } = this.state;
+    const taken = [['2026-11-06', '2026-11-09', 'SSR-7K4Q2M'], ['2026-11-14', '2026-11-16', 'a host block'], ['2026-11-26', '2026-11-29', 'SSR-2M6V8A'], ['2026-12-11', '2026-12-14', 'SSR-9W2N6T'], ['2026-12-18', '2026-12-21', 'SSR-8P3K5W']];
+    const hit = f.ci && f.co && f.co > f.ci ? taken.find(([a, b]) => f.ci < b && f.co > a) : null;
+    const set = {};
+    ['ci', 'co', 'guests', 'pets', 'name', 'email', 'phone', 'amount'].forEach((k) => { set[k] = (e) => this.setState({ f: { ...f, [k]: e.target.value }, err: '', saved: false }); });
+    return {
+      f, set, err, saved,
+      srcs: [['airbnb', 'Airbnb'], ['phone', 'Phone or in person'], ['other', 'Other']].map(([k, label]) => ({ label, on: src === k ? 'true' : 'false', pick: () => this.setState({ src: k, mail: k !== 'airbnb' }) })),
+      hasConflict: !!hit,
+      conflict: hit ? 'These dates overlap ' + hit[2] + '. Pick other dates.' : '',
+      mailStr: mail ? 'true' : 'false',
+      toggleMail: () => this.setState({ mail: !mail }),
+      save: () => {
+        const g = parseInt(f.guests, 10);
+        if (!f.ci || !f.co || f.co <= f.ci) { this.setState({ err: 'Check-out must be after check-in.' }); return; }
+        if (hit) { this.setState({ err: 'The dates are already taken.' }); return; }
+        if (!(g >= 1 && g <= 8)) { this.setState({ err: 'Guests must be between 1 and 8.' }); return; }
+        if (!f.name.trim()) { this.setState({ err: 'Enter the guest’s name.' }); return; }
+        if (f.amount && !(Math.round(parseFloat(f.amount.replace(/[$,]/g, '')) * 100) >= 0)) { this.setState({ err: 'The amount isn’t a number.' }); return; }
+        this.setState({ saved: true, err: '' });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

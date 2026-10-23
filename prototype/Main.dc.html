@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Seathesunrise — Surfside Beach TX beach house rental</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--white)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.wrap{max-width:var(--content-max);margin-inline:auto;padding-inline:max(var(--gutter),3vw)}
+.sec{padding-block:clamp(5rem,9vw,8.75rem)}
+.ico svg,.ti svg{width:1.3125rem;height:1.3125rem;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hero{position:relative;min-height:50rem;padding-top:6rem;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;overflow:hidden;background:var(--navy)}
+.hmedia{position:absolute;inset:0;overflow:hidden;background:var(--navy)}
+.hmedia img{position:absolute;inset:0;width:100%;height:120%;margin-top:-10%;object-fit:cover;will-change:transform}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,30,48,.5) 0,rgba(15,30,48,0) 28%,rgba(15,30,48,.12) 55%,rgba(15,30,48,.72) 100%)}
+.hero .top{position:fixed;top:0;left:0;right:0;z-index:40;will-change:transform}
+.hero .in{position:relative;z-index:2;will-change:transform,opacity;padding-bottom:3rem;display:flex;flex-direction:column;gap:1.5rem}
+.hero h1{color:#fff;font-size:clamp(2.6rem,6.2vw,5rem);line-height:1.04;max-width:14ch;animation:riseSoft 1.2s var(--ease) .1s both}
+.hero .lede{font-size:1.1rem;max-width:44ch;color:rgba(255,255,255,.92)}
+.search{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:center;background:#fff;border-radius:1.5rem;padding:.5rem;box-shadow:var(--shadow-float);max-width:56rem}
+.search .field{background:var(--wall)}
+.search .btn{height:100%;min-height:3.5rem;padding-inline:1.75rem}
+.trust{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;font-size:.9rem;color:rgba(255,255,255,.92)}
+.trust span{display:inline-flex;align-items:center;gap:.5rem}
+.trust svg{width:1rem;height:1rem;fill:none;stroke:var(--glass);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.statement{font:600 clamp(1.6rem,3vw,2.4rem)/1.3 var(--font-head);letter-spacing:-.02em;color:var(--navy);text-align:center;max-width:30ch;margin-inline:auto}
+.bigph{height:clamp(18rem,40vw,36rem);border-radius:var(--radius-r);overflow:hidden;background:var(--wall)}
+.bigph img{width:100%;height:120%;margin-top:-10%;object-fit:cover}
+.marq{background:var(--navy);color:#fff;overflow:hidden;padding-block:1.75rem}
+.marq .row2{display:flex;gap:2.5rem;align-items:center;white-space:nowrap;font:600 clamp(1.8rem,3.5vw,2.6rem)/1 var(--font-head);letter-spacing:-.02em}
+.marq i{width:.75rem;height:.75rem;border-radius:50%;background:var(--sun);flex:none;display:inline-block}
+.feat{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);background:var(--white);border:1px solid var(--line);border-radius:var(--radius-panel);overflow:hidden;text-decoration:none;color:inherit;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.feat:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.feat .ph{min-height:24rem;overflow:hidden;background:var(--wall)}
+.feat .ph img{width:100%;height:120%;margin-top:-10%;object-fit:cover}
+.feat .bd{padding:clamp(1.5rem,3.5vw,3rem);display:flex;flex-direction:column;justify-content:center;gap:1.25rem}
+.feat h3{font-size:clamp(1.6rem,2.6vw,2.1rem);letter-spacing:-.025em}
+.feat .loc{font-size:.9rem;color:var(--muted)}
+.specs4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line)}
+.specs4 div{padding:1rem 0;display:flex;flex-direction:column;gap:.25rem;text-align:center}
+.specs4 div+div{border-left:1px solid var(--line)}
+.specs4 b{font:600 1.35rem/1 var(--font-head);color:var(--navy)}
+.specs4 small{font-size:.8rem;color:var(--muted)}
+.feat .ft{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.why{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}
+.why .tile{flex-direction:column;align-items:center;text-align:center;padding:1.5rem 1.25rem}
+.why p{font-size:.88rem;color:var(--muted);max-width:24ch}
+.scards{display:flex;flex-direction:column;gap:1.25rem}
+.scard{position:sticky;top:calc(6rem + var(--i) * 1.375rem);height:min(72vh,32rem);border-radius:var(--radius-panel);overflow:hidden;color:#fff;background:var(--navy);transform-origin:50% 0;box-shadow:0 -20px 3.125rem -30px rgba(20,40,64,.5)}
+.scard .shade{position:absolute;inset:0;z-index:2;background:#0d2236;opacity:0;pointer-events:none}
+.scard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scard::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,30,48,0) 35%,rgba(15,30,48,.78))}
+.scard .cap{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:clamp(1.25rem,3vw,2.5rem);display:flex;flex-direction:column;gap:.5rem;max-width:36rem}
+.scard .cap{font:400 1rem/1.5 var(--font-body);letter-spacing:normal;text-transform:none;color:#fff}
+.scard p{color:rgba(255,255,255,.9);margin:0}
+.scard .k{font:500 .78rem/1 var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:var(--sky)}
+.scard h3{color:#fff;font-size:clamp(1.6rem,3vw,2.3rem)}
+.hostfaq{display:grid;grid-template-columns:minmax(0,22rem) minmax(0,1fr);gap:1.5rem;align-items:start}
+.qa .panel p{color:var(--text)}
+@media (max-width:900px){
+  .feat,.hostfaq{grid-template-columns:1fr}
+  .feat .ph{min-height:16rem}
+  .why{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .search{grid-template-columns:1fr 1fr}
+  .search .btn{grid-column:1/-1}
+}
+@media (max-width:640px){
+  .hero{min-height:46rem}
+  .scard{top:calc(5.25rem + var(--i) * .875rem);height:min(70vh,28rem)}
+  .why{grid-template-columns:1fr}
+  .search{grid-template-columns:1fr}
+}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--white); overflow-x: hidden">
+
+<section class="hero" id="top" data-motion="hero-card">
+  <div class="hmedia"><img src="../assets/img/deck.webp" alt="Covered deck with rocking chairs looking out over the Gulf of Mexico" width="1200" height="800"><div class="shade"></div></div>
+  <div class="top"><dc-import name="Header" tone="photo" hint-size="100%,84px"></dc-import></div>
+  <div class="wrap in">
+    <span class="eyebrow" style="color: var(--sky)">Surfside Beach, Texas</span>
+    <h1>Your Surfside Beach Getaway Starts Here</h1>
+    <p class="lede">A three-bedroom beach house in Surfside Beach, Texas, with a long covered deck that looks straight out over the Gulf of Mexico.</p>
+    <form class="search" action="Homes.dc.html" aria-label="Check availability">
+      <div class="field"><label for="ci">Check-in</label><input id="ci" type="text" placeholder="Add date"></div>
+      <div class="field"><label for="co">Check-out</label><input id="co" type="text" placeholder="Add date"></div>
+      <div class="field"><label for="gu">Guests</label><select id="gu"><option>2 guests</option><option>4 guests</option><option>6 guests</option><option>8 guests</option></select></div>
+      <a class="btn btn-navy" href="Homes.dc.html">Check availability <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </form>
+    <div class="trust">
+      <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Book direct with the host</span>
+      <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Replies within 1 hour</span>
+      <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Every cost shown before you pay</span>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="overview" data-tone="#ffffff">
+  <div class="wrap" style="display: flex; flex-direction: column; gap: 3rem">
+    <div class="head"><span class="eyebrow">Overview</span></div>
+    <h2 class="statement" data-motion="fill-words">Made for families and friends who want the Gulf at the front door, breakfast on the deck and enough room for everyone to spread out after a day on the sand.</h2>
+    <figure class="bigph" data-clip data-par="8" data-cursor="View" style="margin: 0"><img src="../assets/img/living.webp" alt="Bright living room with two big sofas and coastal decor" width="1200" height="800" loading="lazy"></figure>
+    <div class="tiles" data-stagger>
+      <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span><div><b>Up to 8 guests</b><small>Entire home</small></div></div>
+      <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path><path d="M12 4v6"></path><path d="M2 18h20"></path></svg></span><div><b>3 bedrooms</b><small>2 queens, 2 bunk beds</small></div></div>
+      <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path><line x1="10" x2="8" y1="5" y2="7"></line><line x1="2" x2="22" y1="12" y2="12"></line><line x1="7" x2="7" y1="19" y2="21"></line><line x1="17" x2="17" y1="19" y2="21"></line></svg></span><div><b>2 bathrooms</b><small>Full baths</small></div></div>
+      <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path></svg></span><div><b>Gulf a few steps away</b><small>Beach in 5 minutes on foot</small></div></div>
+      <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg></span><div><b>Free parking</b><small>On site, plus EV charger</small></div></div>
+      <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"></path><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle></svg></span><div><b>Self check-in</b><small>Lockbox, arrive any time</small></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marq" aria-hidden="true" data-motion="marquee-velocity">
+  <div class="row2"><span>Gulf of Mexico</span><i></i><span>Surfside Beach</span><i></i><span>Sleeps 8</span><i></i><span>Jetty Park</span><i></i><span>Sunrise deck</span><i></i><span>Gulf of Mexico</span><i></i><span>Surfside Beach</span></div>
+</div>
+
+<section class="sec" id="homes" data-tone="#eef6fa" style="background: var(--sky-l)">
+  <div class="wrap" style="display: flex; flex-direction: column; gap: 3rem">
+    <div class="head"><span class="eyebrow">Book direct</span><h2 data-split>Beach Houses in Surfside Beach</h2><p>Choose your dates, see every cost, and pay by card. The host confirms your booking after payment.</p></div>
+    <a class="feat" href="Detail.dc.html" data-cursor="View">
+      <div class="ph"><img src="../assets/img/deck.webp" alt="Covered deck of Surfside Sunrise House facing the Gulf" width="800" height="533" loading="lazy" data-par="6"></div>
+      <div class="bd">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap"><span class="loc">Surfside Beach, Texas · Entire home</span><span class="badge info">New listing</span></div>
+        <h3>Surfside Sunrise House</h3>
+        <p style="color: var(--text)">A three-bedroom beach house with a long covered deck that looks straight out over the Gulf of Mexico.</p>
+        <div class="specs4"><div><b>8</b><small>guests</small></div><div><b>3</b><small>bedrooms</small></div><div><b>6</b><small>beds</small></div><div><b>2</b><small>baths</small></div></div>
+        <div class="ft"><span>From <span class="todo">TODO nightly rate</span> / night</span><span class="btn btn-navy">View home <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></div>
+      </div>
+    </a>
+    <div class="why" data-stagger>
+        <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg></span><b>Talk to the host</b><p>Ask anything before you book. The host replies within 1 hour.</p></div>
+        <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span><b>Every cost up front</b><p>Nightly rate, cleaning, pet fee and taxes are listed before you pay.</p></div>
+        <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span><b>Secure card payment</b><p>You pay on the payment provider’s page. Card details never touch this site.</p></div>
+        <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg></span><b>No account needed</b><p>Book with your name, email and phone. You get a booking code by email.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="experience" data-tone="#ffffff">
+  <div class="wrap" style="display: flex; flex-direction: column; gap: 3rem">
+    <div class="head"><span class="eyebrow">The experience</span><h2 data-split>A Day at the Beach House</h2><p>From sunrise coffee to dinner around the big table.</p></div>
+    <div class="scards" data-motion="stack-cards">
+      <article class="scard" style="--i: 0"><img src="../assets/img/gulf.webp" alt="Sunrise light over the Gulf of Mexico seen from the deck" width="741" height="495" loading="lazy"><div class="cap"><span class="k">Morning</span><h3>Sunrise over the Gulf</h3><p>Coffee on the deck while the sun comes up over the water.</p></div><span class="shade" aria-hidden="true"></span></article>
+      <article class="scard" style="--i: 1"><img src="../assets/img/deck.webp" alt="Rocking chairs and a picnic table on the covered deck" width="800" height="533" loading="lazy" style="object-position: 30% 50%"><div class="cap"><span class="k">Afternoon</span><h3>Days on the Deck</h3><p>Rocking chairs, a picnic table and the sea breeze, a few steps from Surfside Beach.</p></div><span class="shade" aria-hidden="true"></span></article>
+      <article class="scard" style="--i: 2"><img src="../assets/img/dining.webp" alt="Round dining table set for dinner in the open living area" width="720" height="480" loading="lazy"><div class="cap"><span class="k">Evening</span><h3>Dinners Together</h3><p>A big round table and a full kitchen for cooking what you caught at Jetty Park.</p></div><span class="shade" aria-hidden="true"></span></article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="faq" data-tone="#f6f0e7" style="background: var(--sand-l)">
+  <div class="wrap" style="display: flex; flex-direction: column; gap: 3rem">
+    <div class="head"><span class="eyebrow">Questions</span><h2 data-split>Good to Know Before You Book</h2><p>Ask the host anything else. Contact details are below.</p></div>
+    <div class="hostfaq">
+      <div class="host" id="host">
+        <div class="who"><div class="av">N</div><div><b>Ngoc Anh Ta</b><small>Realtor · Your host</small></div></div>
+        <div class="meta"><span>Replies within 1 hour</span><span>100% response rate</span></div>
+        <div class="contact">
+          <a href="tel:4086684189"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>408-668-4189</a>
+          <a href="mailto:ngocanhrealtor@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>ngocanhrealtor@gmail.com</a>
+        </div>
+      </div>
+      <div class="faq">
+        <sc-for list="{{faqs}}" as="f" hint-placeholder-count="5">
+          <div class="qa {{f.cls}}">
+            <button type="button" aria-expanded="{{f.open}}" onClick="{{f.toggle}}"><span>{{f.q}}</span><span class="pm" aria-hidden="true"></span></button>
+            <div class="panel"><div><p>{{f.a}}</p></div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<dc-import name="Footer" hint-size="100%,600px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: 0 };
+  }
+  renderVals() {
+    const list = [
+      { q: 'What time is check-in and check-out?', a: 'Check-in is self check-in with a lockbox. Exact times are confirmed when you book.' },
+      { q: 'Are pets allowed?', a: 'Pets are welcome for a fee of $50 per pet per stay. The maximum number of pets is set by the host (TODO).' },
+      { q: 'Is free parking available?', a: 'Yes. Parking on site is free, and there is an EV charger.' },
+      { q: 'How do I book?', a: 'Pick your dates on the home page, check the full price, then pay by card. The host confirms your booking after payment and you get a booking code by email.' },
+      { q: 'What is the cancellation policy?', a: 'The cancellation terms are shown in full before you pay. (TODO: policy text from the host.)' }
+    ];
+    const open = this.state.open;
+    return {
+      faqs: list.map((f, i) => ({
+        ...f,
+        open: open === i ? 'true' : 'false',
+        cls: open === i ? 'open' : '',
+        toggle: () => this.setState({ open: open === i ? -1 : i })
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

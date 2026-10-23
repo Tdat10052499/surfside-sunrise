@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Payment — Book Surfside Sunrise House</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--sky-l)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.bk{max-width:var(--content-max);margin-inline:auto;padding:clamp(1.5rem,4vw,3rem) max(var(--gutter),3vw) 5rem;display:flex;flex-wrap:wrap;gap:clamp(1.5rem,3vw,2.5rem);align-items:flex-start}
+.bk-main{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:1.5rem}
+.bk-side{flex:1 1 340px;min-width:0;position:sticky;top:1.5rem}
+.bk-side summary{display:none}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-panel);padding:clamp(1.25rem,3vw,2rem);display:flex;flex-direction:column;gap:1.25rem}
+.panel h2{font-size:clamp(1.3rem,2.2vw,1.6rem)}
+.hold.is-low{background:var(--warn-bg);border-color:var(--warn-bg)}
+.pay-tot{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:1rem 1.125rem;border-radius:var(--radius-field);background:var(--sky-l)}
+.pay-tot b{font:600 1.1rem/1.2 var(--font-head);color:var(--navy)}
+.secure{display:flex;flex-direction:column;gap:.625rem;font-size:.9rem}
+.secure span{display:flex;gap:.625rem;align-items:flex-start}
+.secure svg{width:1.125rem;height:1.125rem;flex:none;margin-top:.15rem;fill:none;stroke:var(--ok-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sim{border:1.5px dashed var(--warn-ink);background:var(--warn-bg);border-radius:var(--radius-panel);padding:1.25rem;display:flex;flex-direction:column;gap:.875rem}
+.sim-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+.sim-g a{display:flex;flex-direction:column;gap:.25rem;padding:.75rem .875rem;border-radius:var(--radius-field);background:var(--white);text-decoration:none;color:var(--navy);font:600 .9rem/1.25 var(--font-body);box-shadow:inset 0 0 0 1px var(--line)}
+.sim-g a small{font-weight:400;color:var(--text);font-size:.8rem}
+.sim-g a:hover{box-shadow:inset 0 0 0 1.5px var(--navy)}
+@media (max-width:900px){
+  .bk-side{order:-1;position:static;flex-basis:100%}
+  .bk-side summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;list-style:none;padding:1rem 1.25rem;background:var(--white);border:1px solid var(--line);border-radius:var(--radius-card);font:600 .95rem/1.2 var(--font-head);color:var(--navy);margin-bottom:.75rem}
+  .sim-g{grid-template-columns:1fr}
+}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--sky-l); min-height: 100vh">
+  <dc-import name="BookBar" hint-size="100%,72px"></dc-import>
+  <div class="bk">
+    <div class="bk-main">
+      <div style="display: flex; flex-direction: column; gap: 1rem">
+        <a href="Book2.dc.html" style="font-size: 0.88rem; font-weight: 600">← Back to review</a>
+        <h1 style="font-size: clamp(1.8rem, 3.6vw, 2.6rem)">Payment</h1>
+        <ol class="steps" aria-label="Booking steps">
+          <li class="done">1 · Your details</li>
+          <li class="done">2 · Review and agree</li>
+          <li class="now" aria-current="step">3 · Payment</li>
+        </ol>
+      </div>
+
+      <div class="hold {{holdCls}}" role="timer" aria-live="off">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>We’re holding Nov 6 – Nov 9 for you for <b>{{left}}</b>. If payment isn’t finished by then, the dates are released.</span>
+        <span class="demo" style="margin-left: auto">30 min sample</span>
+      </div>
+
+      <section class="panel" aria-labelledby="pay-h">
+        <h2 id="pay-h">Pay by card</h2>
+        <div class="pay-tot"><span>Total to pay (USD)</span><b><span class="todo">TODO</span></b></div>
+        <div class="secure">
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>You’ll enter your card on the payment provider’s secure page, not on this site.</span>
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>We never see or store your card number.</span>
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Your booking is marked paid only after the provider confirms the payment.</span>
+        </div>
+        <a class="btn btn-navy" href="BookAwaiting.dc.html" style="align-self: stretch; min-height: 3.5rem">Pay with card <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <p class="hint" style="text-align: center">By paying you confirm the booking terms you agreed to in step 2.</p>
+      </section>
+
+      <section class="sim" aria-labelledby="sim-h">
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap"><span class="demo">Prototype only</span><b id="sim-h" style="color: var(--navy); font: 600 1rem/1.2 var(--font-head)">Simulate what the payment provider returns</b></div>
+        <div class="sim-g">
+          <a href="BookAwaiting.dc.html">Payment succeeds<small>Paid, awaiting host approval</small></a>
+          <a href="BookProcessing.dc.html">Payment still processing<small>Waiting for the provider</small></a>
+          <a href="BookFailed.dc.html">Card declined<small>Dates released</small></a>
+          <a href="BookExpired.dc.html">Hold runs out<small>Dates released</small></a>
+        </div>
+      </section>
+    </div>
+
+    <aside class="bk-side" aria-label="Your booking">
+      <details open="{{yes}}">
+        <summary>Booking summary <span style="font: 500 0.84rem/1 var(--font-body); color: var(--gulf-ink)">Show or hide</span></summary>
+        <dc-import name="BookSummary" hint-size="100%,560px"></dc-import>
+      </details>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { secs: 30 * 60 };
+  }
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.setState((s) => ({ secs: Math.max(0, s.secs - 1) }));
+    }, 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+  renderVals() {
+    const s = this.state.secs;
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    return {
+      yes: true,
+      left: mm + ':' + ss,
+      holdCls: s < 5 * 60 ? 'is-low' : ''
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Payment not completed — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--sky-l)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.res{max-width:44rem;margin-inline:auto;padding:clamp(2rem,6vw,4.5rem) max(var(--gutter),3vw) 5rem;display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-panel);padding:clamp(1.5rem,4vw,2.75rem);display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.125rem}
+.card h1{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+.card .lede{max-width:46ch}
+.mark{width:4rem;height:4rem;border-radius:50%;background:var(--err-bg);color:var(--err);display:grid;place-items:center}
+.mark svg{width:1.75rem;height:1.75rem;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.why{width:100%;text-align:left;display:flex;flex-direction:column;gap:.5rem;padding-top:1rem;border-top:1px solid var(--line)}
+.why h2{font-size:1.1rem}
+.why ul{margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:.375rem;font-size:.92rem}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--sky-l); min-height: 100vh">
+  <dc-import name="BookBar" hint-size="100%,72px"></dc-import>
+  <main class="res">
+    <div class="card" role="alert">
+      <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></div>
+      <span class="badge bad">Payment not completed</span>
+      <h1>Your payment didn’t go through</h1>
+      <p class="lede">The payment provider declined the payment, so no booking was made. We released your hold on Nov 6 – Nov 9, so other guests can book those dates again.</p>
+      <div class="actions" style="width: 100%">
+        <a class="btn btn-navy" href="Detail.dc.html#availability">Try again <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="btn btn-line" href="tel:4086684189">Call the host</a>
+      </div>
+      <div class="why">
+        <h2>Common reasons</h2>
+        <ul>
+          <li>The card was declined by your bank. Your bank can tell you why.</li>
+          <li>The card details or billing address didn’t match.</li>
+          <li>The payment window was closed before it finished.</li>
+        </ul>
+      </div>
+      <p class="hint">Still having trouble? Email <a href="mailto:ngocanhrealtor@gmail.com">ngocanhrealtor@gmail.com</a> and the host will help.</p>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
