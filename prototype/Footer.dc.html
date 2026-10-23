@@ -14,22 +14,41 @@
 <helmet>
 <style>
 body{margin:0}
+/* Same footer as the live site: full-width deck photo under a navy fade, big line + button, link columns, status row */
+.sfoot{position:relative;isolation:isolate;overflow:hidden;color:#fff;font-family:var(--font-body);min-height:38.75rem;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;gap:3rem;padding:clamp(4rem,9vw,7rem) max(var(--gutter),4vw) calc(1.75rem + env(safe-area-inset-bottom,0px))}
+.sfoot>img{position:absolute;left:0;top:0;width:100%;height:115%;object-fit:cover;object-position:50% 70%;z-index:-2}
+.sfoot::after{content:"";position:absolute;left:0;top:0;right:0;bottom:0;z-index:-1;background:linear-gradient(180deg,rgba(31,53,82,.96) 0%,rgba(31,53,82,.8) 45%,rgba(31,53,82,.2) 78%,rgba(31,53,82,.6) 100%)}
+.sfoot .in{width:100%;max-width:var(--content-max);margin-inline:auto}
+.sfoot .ftop{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:1.5rem}
+.sfoot .big{margin:0;font:600 clamp(2.2rem,6vw,4.6rem)/1 var(--font-head);letter-spacing:-.035em;color:#fff;max-width:12ch}
+.sfoot .fcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.75rem;margin-top:2.75rem;font-size:.92rem;max-width:48rem}
+.sfoot .fcols a,.sfoot .fcols span{display:block;color:#fff;text-decoration:none;padding:.1875rem 0;overflow-wrap:anywhere;transition:color .2s,transform .3s var(--ease)}
+.sfoot .fcols a:hover{color:var(--glass);transform:translateX(.25rem)}
+.sfoot .note{margin:1.75rem 0 0;font-size:.82rem;color:#eef3f7;max-width:48rem;text-shadow:0 1px 8px rgba(15,30,48,.6)}
+.sfoot .fbot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem;font-size:.82rem;color:#e8eef4}
+.sfoot .live{position:relative;display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);padding:.4375rem .8125rem;border-radius:999px;-webkit-backdrop-filter:blur(.375rem);backdrop-filter:blur(.375rem)}
+.sfoot .live::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:#5fd38d;flex:none}
+.sfoot .live::after{content:"";position:absolute;left:.8125rem;top:50%;width:.5rem;height:.5rem;margin-top:-.25rem;border-radius:50%;background:#5fd38d;animation:sfping 2s ease-out infinite}
+@keyframes sfping{0%{transform:scale(1);opacity:.6}80%,100%{transform:scale(2.6);opacity:0}}
+@media (max-width:640px){.sfoot .fcols{grid-template-columns:1fr 1fr}.sfoot{min-height:0}}
+@media (prefers-reduced-motion:reduce){.sfoot .live::after{animation:none}}
 </style>
 </helmet>
-<div style="font-family: var(--font-body); color: #fff; padding: 0 max(var(--gutter), 1rem) max(var(--gutter), 1rem); background: var(--white)" data-motion="footer-image-rise">
-  <footer class="foot" style="border-radius: var(--radius-panel); padding: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3.5rem) 1.5rem; gap: 3rem; max-width: 90rem; margin-inline: auto">
-    <div class="ftop" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1.5rem">
-      <p class="big" style="font-size: clamp(2.4rem, 6vw, 4.6rem)">See you on the Gulf.</p>
-      <a class="btn btn-white" href="Detail.dc.html#availability">Check availability <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+<footer class="sfoot" data-motion="footer-image-rise">
+  <img src="../assets/img/deck-800.webp" srcset="../assets/img/deck-800.webp 800w, ../assets/img/deck.webp 1200w" sizes="100vw" width="1200" height="800" alt="" loading="lazy">
+  <div class="in">
+    <div class="ftop">
+      <p class="big">See you on the Gulf.</p>
+      <a class="btn btn-white" href="Homes.dc.html">Check availability <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
     </div>
     <div class="fcols">
       <div>
         <p class="fh">Explore</p>
         <a href="Main.dc.html">Home</a>
         <a href="Homes.dc.html">Homes</a>
-        <a href="Detail.dc.html">Surfside Sunrise House</a>
         <a href="Main.dc.html#faq">FAQ</a>
-        <a href="https://www.airbnb.com.vn/rooms/1769640627295243012">Airbnb listing</a>
+        <a href="Lookup.dc.html">Find my booking</a>
+        <a href="https://www.airbnb.com.vn/rooms/1769640627295243012" target="_blank" rel="noopener">Airbnb listing</a>
         <span style="color: var(--sun)">Facebook page: TODO link</span>
       </div>
       <div>
@@ -41,19 +60,20 @@ body{margin:0}
         <a href="PolicyPrivacy.dc.html">Privacy</a>
       </div>
       <div>
-        <p class="fh">Host</p>
-        <span>Ngoc Anh Ta · Realtor</span>
+        <p class="fh">Contact</p>
+        <span>Ngoc Anh Ta · Host</span>
         <a href="tel:4086684189">408-668-4189</a>
         <a href="mailto:ngocanhrealtor@gmail.com" style="overflow-wrap: normal">ngocanhrealtor<wbr>@gmail.com</a>
-        <span>Surfside Beach, Texas</span>
+        <a href="Contact.dc.html">Send a question</a>
       </div>
     </div>
-    <div class="fbot" style="padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,.16)">
-      <span>© 2026 Seathesunrise</span>
-      <span>Card payments are handled by the payment provider. This site never stores card details.</span>
-    </div>
-  </footer>
-</div>
+    <p class="note">Card payments are handled by the payment provider. This site never stores card details.</p>
+  </div>
+  <div class="in fbot">
+    <span>© 2026 Seathesunrise · Surfside Beach, Texas</span>
+    <span class="live">Available for booking</span>
+  </div>
+</footer>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":620}}'>
 class Component extends DCLogic {
