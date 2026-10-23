@@ -107,10 +107,13 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
 .scard p{color:rgba(255,255,255,.9);margin:0}
 .scard .k{font:500 .78rem/1 var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:var(--sky)}
 .scard h3{color:#fff;font-size:clamp(1.6rem,3vw,2.3rem)}
-.hostfaq{display:grid;grid-template-columns:minmax(0,22rem) minmax(0,1fr);gap:1.5rem;align-items:start}
+.hostfaq{display:grid;grid-template-columns:minmax(0,24rem) minmax(0,1fr);gap:2rem;align-items:start}
+.hostfaq .host{position:sticky;top:6.5rem}
+.host .ask{margin-top:.25rem;width:100%;justify-content:center}
 .qa .panel p{color:var(--text)}
 @media (max-width:900px){
   .feat,.hostfaq{grid-template-columns:1fr}
+  .hostfaq .host{position:static}
   .feat .ph{min-height:16rem}
   .why{grid-template-columns:repeat(2,minmax(0,1fr))}
   .search{grid-template-columns:1fr 1fr}
@@ -240,6 +243,7 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
           <a href="tel:4086684189"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>408-668-4189</a>
           <a href="mailto:ngocanhrealtor@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>ngocanhrealtor@gmail.com</a>
         </div>
+        <a class="btn btn-navy ask" href="Contact.dc.html">Send the host a question <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a>
       </div>
       <div class="faq">
         <sc-for list="{{faqs}}" as="f" hint-placeholder-count="5">
