@@ -297,14 +297,19 @@ class Component extends DCLogic {
             if (caps[i - 1]) tl.to(caps[i - 1], { yPercent: -40, opacity: 0, duration: 0.4 }, at + 0.1);
             if (caps[i]) tl.to(caps[i], { yPercent: 0, opacity: 1, duration: 0.45 }, at + 0.5);
           }
+          /* data-walk="step": each step plays through on its own once you scroll past a third of it,
+             instead of following the scroll speed */
+          const step = sec.dataset.walk === 'step';
+          if (step) tl.pause(0);
           let cur = -1;
           ST.create({
-            trigger: sec, start: 'top top', end: 'bottom bottom', scrub: 0.8, animation: tl,
+            trigger: sec, start: 'top top', end: 'bottom bottom', scrub: step ? false : 0.8, animation: step ? null : tl,
             onUpdate: (s) => {
-              if (bar) bar.style.transform = `scaleX(${s.progress})`;
-              const k = Math.min(n - 1, Math.round(s.progress * (n - 1)));
+              const k = Math.min(n - 1, step ? Math.floor(s.progress * (n - 1) + 0.66) : Math.round(s.progress * (n - 1)));
+              if (bar) bar.style.transform = `scaleX(${step ? (k + 1) / n : s.progress})`;
               if (k !== cur) {
                 cur = k;
+                if (step) gsap.to(tl, { time: k, duration: 0.85, ease: 'power4.inOut', overwrite: true });
                 steps.forEach((li, j) => li.classList.toggle('on', j === k));
                 if (count && count.firstChild) count.firstChild.nodeValue = String(k + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
               }
