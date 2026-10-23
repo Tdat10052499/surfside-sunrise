@@ -34,6 +34,15 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
 .beds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
 .beds .tile{flex-direction:column;align-items:flex-start}
 .rooms{display:flex;gap:.875rem;overflow-x:auto;padding-bottom:.5rem;scroll-snap-type:x mandatory}
+.sg{position:relative;background:var(--navy);color:#fff}
+.sg-stage{position:relative;height:min(100vh,56rem);overflow:hidden;display:grid;place-items:center}
+.sg-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.5rem,1.2vw,1rem);width:min(88vw,64rem);transform-origin:50% 50%}
+.sg-col{display:flex;flex-direction:column;gap:clamp(.5rem,1.2vw,1rem)}
+.sg-col figure{margin:0;aspect-ratio:3/2;border-radius:clamp(.5rem,1vw,1rem);overflow:hidden;background:rgba(255,255,255,.08)}
+.sg-col img{width:100%;height:100%;object-fit:cover;display:block}
+.sg-text{position:absolute;left:0;right:0;bottom:0;padding:clamp(2rem,6vh,4rem) max(var(--gutter),3vw);display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center;background:linear-gradient(180deg,rgba(15,30,48,0),rgba(15,30,48,.8))}
+.sg-text h2{color:#fff;font-size:clamp(2rem,4.6vw,3.6rem);line-height:1.05}
+.sg-text p{color:rgba(255,255,255,.92);margin:0;max-width:40ch}
 .pin-in{display:flex;flex-direction:column;gap:1.25rem;min-width:0}
 .pprog{display:flex;align-items:center;gap:1rem;font:500 .8rem/1 var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}
 .pprog i{flex:1;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
@@ -295,6 +304,23 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
       </aside>
     </div>
   </main>
+
+  <section class="sg" id="tour" data-motion="sticky-grid" aria-labelledby="tour-h">
+    <div class="sg-stage">
+      <div class="sg-grid" aria-hidden="true">
+      <div class="sg-col"><figure><img src="../assets/img/living.webp" alt="Living room" width="800" height="533" loading="lazy"></figure><figure><img src="../assets/img/kitchen.webp" alt="Kitchen" width="800" height="533" loading="lazy"></figure><figure><img src="../assets/img/lounge.webp" alt="Lounge" width="800" height="533" loading="lazy"></figure></div>
+      <div class="sg-col"><figure><img src="../assets/img/dining.webp" alt="Dining area" width="800" height="533" loading="lazy"></figure><figure><img src="../assets/img/deck.webp" alt="Covered deck facing the Gulf" width="800" height="533" loading="lazy"></figure><figure><img src="../assets/img/gulf.webp" alt="The Gulf from the deck" width="800" height="533" loading="lazy"></figure></div>
+      <div class="sg-col"><figure><img src="../assets/img/aerial.webp" alt="The house from above" width="800" height="533" loading="lazy"></figure><figure><img src="../assets/img/living.webp" alt="Living room" width="800" height="533" loading="lazy"></figure><figure><img src="../assets/img/kitchen.webp" alt="Kitchen" width="800" height="533" loading="lazy"></figure></div>
+      </div>
+      <div class="sg-text">
+        <span class="eyebrow" style="color: var(--sky)">Surfside Beach, Texas</span>
+        <h2 id="tour-h">Every Corner of the House</h2>
+        <p>Three bedrooms, two baths and a long covered deck, a few steps from the Gulf.</p>
+        <a class="btn btn-white" href="#availability">Check your dates <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+    </div>
+  </section>
+
 
   <div class="mbar sticky">
     <div><b>{{stayShort}}</b><small>Total shown before you pay</small></div>
