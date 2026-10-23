@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Edit home: photos and video — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.vid{position:relative;border-radius:var(--radius-sm);overflow:hidden;background:var(--navy);aspect-ratio:16/9}
+.vid img{width:100%;height:100%;object-fit:cover;opacity:.55}
+.vid .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;color:#fff;text-align:center;padding:1rem}
+.vid .pb{width:3.5rem;height:3.5rem;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:var(--navy)}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="homes" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb"><a href="AdminHomes.dc.html">Homes</a> / Edit</span><h1>Surfside Sunrise House</h1></div>
+      <div class="acts"><span class="badge ok">Published</span><a class="btn btn-line btn-sm" href="Detail.dc.html">View on site</a></div>
+    </header>
+    <main class="adm-body">
+      <nav class="tabs" aria-label="Edit home">
+        <a href="AdminEditContent.dc.html">Content &amp; amenities</a>
+        <a href="AdminEditMedia.dc.html" aria-current="page">Photos &amp; video</a>
+        <a href="AdminEditRules.dc.html">House rules</a>
+        <a href="AdminEditPricing.dc.html">Pricing</a>
+        <a href="AdminEditFees.dc.html">Fees</a>
+      </nav>
+      <section class="card" aria-labelledby="p-h">
+        <div class="rowb"><div><h2 id="p-h">Photos · 7</h2><p class="sub">Drag to reorder. The first photo is the cover on cards and the home page. Use WebP or JPG, at least 1600 px wide.</p></div><button type="button" class="btn btn-navy btn-sm">Upload photos</button></div>
+        <div class="thumbs">
+          <div class="thumb"><img src="../assets/img/deck.webp" alt="Covered deck"><span class="k">Cover</span><span class="n">1</span><span class="cap">Covered deck</span></div>
+          <div class="thumb"><img src="../assets/img/living.webp" alt="Living room"><span class="n">2</span><span class="cap">Living room</span></div>
+          <div class="thumb"><img src="../assets/img/kitchen.webp" alt="Kitchen"><span class="n">3</span><span class="cap">Kitchen</span></div>
+          <div class="thumb"><img src="../assets/img/dining.webp" alt="Dining area"><span class="n">4</span><span class="cap">Dining area</span></div>
+          <div class="thumb"><img src="../assets/img/gulf.webp" alt="Gulf view"><span class="n">5</span><span class="cap">Gulf view</span></div>
+          <div class="thumb"><img src="../assets/img/lounge.webp" alt="Lounge"><span class="n">6</span><span class="cap">Lounge</span></div>
+          <div class="thumb"><img src="../assets/img/aerial.webp" alt="Aerial view"><span class="n">7</span><span class="cap">Aerial view</span></div>
+          <div class="drop"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>Drop photos here</div>
+        </div>
+        <div class="hold"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>Missing: bedroom and bathroom photos. Guests often look for these before they book.</span></div>
+      </section>
+      <div class="g2">
+        <section class="card" aria-labelledby="v-h">
+          <div class="rowb"><h2 id="v-h">Video tour</h2><span class="badge wait">No video yet</span></div>
+          <div class="vid"><img src="../assets/img/aerial.webp" alt=""><div class="c"><span class="pb"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span><b>A short tour made from the house photos</b><span style="font-size: 0.86rem">MP4 or WebM, up to 60 seconds. Or paste a YouTube link.</span></div></div>
+          <div class="actions"><button type="button" class="btn btn-navy btn-sm">Upload video</button><button type="button" class="btn btn-line btn-sm">Paste a link</button></div>
+        </section>
+        <section class="card" aria-labelledby="o-h">
+          <h2 id="o-h">On the home page</h2>
+          <div>
+            <div class="sw"><div><b>Show the Video tab</b><small>Guests can switch between photos and video</small></div><button type="button" class="tg" role="switch" aria-checked="{{vidStr}}" aria-label="Show the Video tab" onClick="{{toggleVid}}"></button></div>
+            <div class="sw"><div><b>Open the video first</b><small>Otherwise photos show first</small></div><button type="button" class="tg" role="switch" aria-checked="false" aria-label="Open the video first"></button></div>
+            <div class="sw"><div><b>Photo captions</b><small>Shown on the gallery and in the lightbox</small></div><button type="button" class="tg" role="switch" aria-checked="true" aria-label="Show photo captions"></button></div>
+          </div>
+          <sc-if value="{{noVidWarn}}" hint-placeholder-val="{{false}}"><p class="err" role="status">Upload a video first. The tab stays hidden until there is one.</p></sc-if>
+        </section>
+      </div>
+    </main>
+    <div class="savebar" role="region" aria-label="Save changes"><span>Photos save as soon as they finish uploading.</span><div class="acts"><a class="btn btn-line btn-sm" href="AdminEditContent.dc.html">Back</a><a class="btn btn-navy btn-sm" href="AdminEditRules.dc.html">Next: house rules</a></div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { vid: false };
+  }
+  renderVals() {
+    const v = this.state.vid;
+    return {
+      vidStr: v ? 'true' : 'false',
+      noVidWarn: v,
+      toggleVid: () => this.setState({ vid: !v })
+    };
+  }
+}
+</script>
+</body>
+</html>

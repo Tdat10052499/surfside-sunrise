@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Bookings — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.tools{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
+.search{position:relative;flex:0 1 20rem}
+.search input{width:100%;box-sizing:border-box;height:2.75rem;border-radius:999px;border:1.5px solid var(--line);padding:0 1rem 0 2.5rem;font:inherit;font-size:.9rem;background:var(--white)}
+.search input:focus-visible{outline:2px solid var(--gulf);outline-offset:1px}
+.search svg{position:absolute;left:.875rem;top:50%;transform:translateY(-50%);width:1rem;height:1rem;fill:none;stroke:var(--muted);stroke-width:2}
+.tbl tbody tr{cursor:pointer}
+.tbl tbody tr:hover td{background:var(--sky-l)}
+.mono{font:600 .84rem/1 var(--font-mono);color:var(--navy);text-decoration:none}
+.src{font-size:.82rem;color:var(--muted)}
+.empty{padding:2rem;text-align:center;color:var(--muted);font-size:.9rem}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="bookings" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Manage</span><h1>Bookings</h1></div>
+      <div class="acts"><span class="demo">Sample data</span><a class="btn btn-line btn-sm" href="AdminCalendar.dc.html">Calendar</a><a class="btn btn-navy btn-sm" href="AdminBookingNew.dc.html">+ Add booking</a></div>
+    </header>
+    <main class="adm-body">
+      <div class="tools">
+        <div class="filters" role="group" aria-label="Filter bookings">
+          <sc-for list="{{chips}}" as="c" hint-placeholder-count="6"><button type="button" class="fchip" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for>
+        </div>
+        <label class="search"><span style="position: absolute; left: -9999px">Search bookings</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input type="search" value="{{q}}" onChange="{{setQ}}" placeholder="Code, name or email"></label>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Booking</th><th>Guest</th><th>Dates</th><th>Guests</th><th>Source</th><th>Status</th><th>Paid</th></tr></thead>
+          <tbody>
+            <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+              <tr><td><a class="mono" href="AdminBookingDetail.dc.html">{{r.code}}</a></td><td><b style="color: var(--navy); font-weight: 600">{{r.guest}}</b><span class="src" style="display: block">{{r.email}}</span></td><td>{{r.dates}}</td><td>{{r.party}}</td><td class="src">{{r.src}}</td><td><span class="badge {{r.badge}}">{{r.status}}</span></td><td class="num dash">—</td></tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <sc-if value="{{none}}" hint-placeholder-val="{{false}}"><p class="empty">No bookings match. Try another filter or search.</p></sc-if>
+      </div>
+      <p class="hint" style="margin: 0">Every booking opens the sample detail for SSR-7K4Q2M in this prototype. Amounts show “—” until nightly rates are set.</p>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 'all', q: '' };
+  }
+  renderVals() {
+    const { filter, q } = this.state;
+    const data = [
+      { code: 'SSR-7K4Q2M', guest: 'Jordan Lee', email: 'jordan.lee@example.com', dates: 'Nov 6 – 9, 2026', party: '4 · 1 pet', src: 'Website', status: 'Awaiting approval', badge: 'wait', key: 'await' },
+      { code: 'SSR-2M6V8A', guest: 'Sample guest H', email: 'guest.h@example.com', dates: 'Nov 26 – 29, 2026', party: '6', src: 'Website', status: 'Confirmed', badge: 'ok', key: 'conf' },
+      { code: 'SSR-8P3K5W', guest: 'Sample guest I', email: 'guest.i@example.com', dates: 'Dec 18 – 21, 2026', party: '5', src: 'Added by host · Airbnb', status: 'Confirmed', badge: 'ok', key: 'conf' },
+      { code: 'SSR-9W2N6T', guest: 'Sample guest B', email: 'guest.b@example.com', dates: 'Dec 11 – 14, 2026', party: '2', src: 'Website', status: 'Payment processing', badge: 'info', key: 'proc' },
+      { code: 'SSR-3H8P1D', guest: 'Sample guest C', email: 'guest.c@example.com', dates: 'Nov 20 – 22, 2026', party: '3', src: 'Website', status: 'Payment failed', badge: 'bad', key: 'fail' },
+      { code: 'SSR-5R7C2K', guest: 'Sample guest D', email: 'guest.d@example.com', dates: 'Dec 1 – 4, 2026', party: '4', src: 'Website', status: 'Declined · refunded', badge: 'off', key: 'closed' }
+    ];
+    const filters = [['all', 'All'], ['await', 'Awaiting approval'], ['conf', 'Confirmed'], ['proc', 'Processing'], ['fail', 'Failed'], ['closed', 'Cancelled or declined']];
+    const needle = q.trim().toLowerCase();
+    const rows = data.filter((d) => (filter === 'all' || d.key === filter) && (!needle || (d.code + ' ' + d.guest + ' ' + d.email).toLowerCase().includes(needle)));
+    return {
+      chips: filters.map(([k, l]) => ({ label: l + (k === 'await' ? ' (1)' : ''), on: filter === k ? 'true' : 'false', pick: () => this.setState({ filter: k }) })),
+      q, setQ: (e) => this.setState({ q: e.target.value }),
+      rows, none: rows.length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>

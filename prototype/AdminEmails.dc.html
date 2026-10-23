@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Email log — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.tpl{display:flex;flex-direction:column;gap:.375rem;font-size:.88rem}
+.tpl a{display:flex;justify-content:space-between;gap:.75rem;padding:.625rem .75rem;border-radius:var(--radius-xs);background:var(--wall);color:var(--navy);text-decoration:none}
+.tpl a:hover{background:var(--sky)}
+.tpl small{color:var(--muted)}
+.mono{font:600 .82rem/1 var(--font-mono);color:var(--navy)}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="emails" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Inbox</span><h1>Email log</h1></div>
+      <div class="acts"><span class="demo">Sample data</span></div>
+    </header>
+    <main class="adm-body">
+      <div class="kpis">
+        <div class="kpi"><small>Sent today</small><b>4</b></div>
+        <div class="kpi"><small>Failed</small><b>{{failCount}}</b></div>
+        <div class="kpi"><small>Sender</small><b style="font-size: 1rem">bookings@seathesunrise (TODO)</b></div>
+      </div>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; min-width: 0">
+          <div class="filters" role="group" aria-label="Filter emails">
+            <sc-for list="{{chips}}" as="c" hint-placeholder-count="4"><button type="button" class="fchip" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Sent</th><th>To</th><th>Email</th><th>Booking</th><th>Status</th><th><span style="position: absolute; left: -9999px">Actions</span></th></tr></thead>
+              <tbody>
+                <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+                  <tr><td>{{r.when}}</td><td>{{r.to}}</td><td><a href="{{r.href}}">{{r.tpl}}</a></td><td class="mono">{{r.code}}</td><td><span class="badge {{r.badge}}">{{r.status}}</span></td><td style="text-align: right"><sc-if value="{{r.failed}}" hint-placeholder-val="{{false}}"><button type="button" class="btn btn-line btn-sm" onClick="{{r.resend}}">Resend</button></sc-if></td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <sc-if value="{{resent}}" hint-placeholder-val="{{false}}"><div class="toast" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Queued again (demo). The status updates when the mail provider answers.</div></sc-if>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="t-h">
+            <h2 id="t-h">Email templates</h2>
+            <p class="sub" style="margin: 0">Sent automatically. Open one to preview it.</p>
+            <div class="tpl">
+              <a href="EmailGuestPaid.dc.html"><span>Paid, awaiting approval</span><small>Guest</small></a>
+              <a href="EmailGuestConfirmed.dc.html"><span>Booking confirmed</span><small>Guest</small></a>
+              <a href="EmailGuestDeclined.dc.html"><span>Declined and refunded</span><small>Guest</small></a>
+              <a href="EmailGuestCancelled.dc.html"><span>Cancelled and refunded</span><small>Guest</small></a>
+              <a href="EmailHostBooking.dc.html"><span>New booking to approve</span><small>Host</small></a>
+              <a href="EmailHostQuestion.dc.html"><span>New question</span><small>Host</small></a>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="c-h"><h2 id="c-h">Contact in emails</h2><p class="sub" style="margin: 0">The footer of every email uses the contact saved in Settings.</p><a class="btn btn-line btn-sm" href="AdminSetContact.dc.html" style="align-self: flex-start">Edit contact</a></section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { filter: 'all', resentIds: [], resent: false };
+  }
+  renderVals() {
+    const { filter, resentIds, resent } = this.state;
+    const data = [
+      { id: 1, when: 'Oct 23, 10:44', to: 'Jordan Lee (guest)', tpl: 'Paid, awaiting approval', href: 'EmailGuestPaid.dc.html', code: 'SSR-7K4Q2M', aud: 'guest', st: 'sent' },
+      { id: 2, when: 'Oct 23, 10:44', to: 'Ngoc Anh Ta (host)', tpl: 'New booking to approve', href: 'EmailHostBooking.dc.html', code: 'SSR-7K4Q2M', aud: 'host', st: 'sent' },
+      { id: 3, when: 'Oct 23, 09:40', to: 'Ngoc Anh Ta (host)', tpl: 'New question', href: 'EmailHostQuestion.dc.html', code: '—', aud: 'host', st: 'sent' },
+      { id: 4, when: 'Oct 22, 18:07', to: 'Sample guest C', tpl: 'Payment failed', href: 'BookFailed.dc.html', code: 'SSR-3H8P1D', aud: 'guest', st: 'failed' },
+      { id: 5, when: 'Oct 20, 09:30', to: 'Sample guest D', tpl: 'Declined and refunded', href: 'EmailGuestDeclined.dc.html', code: 'SSR-5R7C2K', aud: 'guest', st: 'sent' },
+      { id: 6, when: 'Oct 19, 08:02', to: 'Sample guest D', tpl: 'Declined and refunded', href: 'EmailGuestDeclined.dc.html', code: 'SSR-5R7C2K', aud: 'guest', st: 'bounced' }
+    ];
+    const stOf = (d) => (resentIds.includes(d.id) ? 'queued' : d.st);
+    const label = { sent: ['Delivered', 'ok'], failed: ['Failed', 'bad'], bounced: ['Bounced', 'bad'], queued: ['Queued', 'info'] };
+    const filters = [['all', 'All'], ['guest', 'To guests'], ['host', 'To host'], ['bad', 'Failed']];
+    const shown = data.filter((d) => filter === 'all' || (filter === 'bad' ? ['failed', 'bounced'].includes(stOf(d)) : d.aud === filter));
+    return {
+      failCount: String(data.filter((d) => ['failed', 'bounced'].includes(stOf(d))).length),
+      chips: filters.map(([k, l]) => ({ label: l, on: filter === k ? 'true' : 'false', pick: () => this.setState({ filter: k }) })),
+      rows: shown.map((d) => {
+        const s = stOf(d);
+        return { ...d, status: label[s][0], badge: label[s][1], failed: s === 'failed' || s === 'bounced',
+          resend: () => this.setState({ resentIds: resentIds.concat(d.id), resent: true }) };
+      }),
+      resent
+    };
+  }
+}
+</script>
+</body>
+</html>

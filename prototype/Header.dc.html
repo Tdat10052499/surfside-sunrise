@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Header</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<header style="font-family: var(--font-body); color: var(--navy); padding: 0.75rem max(var(--gutter), 2vw)" data-motion="bar-hide-on-scroll">
+  <div class="bar-in {{barClass}}">
+    <a class="logo" href="Main.dc.html" aria-label="Seathesunrise home" style="font-size: clamp(0.78rem, 3.5vw, 0.95rem)"><i></i>Seathesunrise</a>
+    <div class="bar-r">
+      <a class="btn btn-book" href="Detail.dc.html#availability" style="white-space: nowrap"><span>Book<span style="display: inline-block; vertical-align: bottom; overflow: hidden; max-width: max(0px, calc((100vw - 520px) * 100))">&nbsp;your stay</span></span> <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      <a class="burger" href="Menu.dc.html" aria-label="Open menu"><span></span><span></span></a>
+    </div>
+  </div>
+</header>
+<dc-import name="Motion" hint-size="0px,0px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"tone":{"editor":"enum","options":["light","photo"],"default":"light"},"$preview":{"width":1440,"height":100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const tone = this.props.tone ?? 'light';
+    return { barClass: tone === 'photo' ? '' : 'is-scrolled' };
+  }
+}
+</script>
+</body>
+</html>

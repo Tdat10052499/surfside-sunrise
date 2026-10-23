@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Settings: account — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.rules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.375rem;font-size:.86rem}
+.rules li{display:flex;gap:.5rem;align-items:center;color:var(--muted)}
+.rules li.ok{color:var(--ok-ink)}
+.rules svg{width:1rem;height:1rem;fill:none;stroke:currentColor;stroke-width:2}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="settings" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Settings</span><h1>Account</h1></div>
+      <div class="acts"><a class="btn btn-line btn-sm" href="Main.dc.html">Sign out</a></div>
+    </header>
+    <main class="adm-body">
+      <nav class="tabs" aria-label="Settings">
+        <a href="AdminSetContact.dc.html">Contact</a>
+        <a href="AdminSetFaq.dc.html">FAQ</a>
+        <a href="AdminSetPolicies.dc.html">Policies</a>
+        <a href="AdminSetAccount.dc.html" aria-current="page">Account</a>
+      </nav>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; min-width: 0">
+          <section class="card" aria-labelledby="a-h">
+            <div><h2 id="a-h">Sign-in</h2><p class="sub">The admin sign-in email. It can differ from the contact email guests see.</p></div>
+            <div class="field"><label for="le">Sign-in email</label><input id="le" type="email" value="ngocanhrealtor@gmail.com" readonly="{{yes}}"></div>
+            <p class="hint">To change the sign-in email, a link is sent to the new address first.</p>
+          </section>
+          <section class="card" aria-labelledby="pw-h">
+            <h2 id="pw-h">Change password</h2>
+            <div class="fgrid">
+              <div class="field full"><label for="op">Current password</label><input id="op" type="password" value="{{old}}" onChange="{{setOld}}" autocomplete="current-password"></div>
+              <div class="field"><label for="np">New password</label><input id="np" type="password" value="{{pw}}" onChange="{{setPw}}" autocomplete="new-password"></div>
+              <div class="field"><label for="cp">Repeat new password</label><input id="cp" type="password" value="{{pw2}}" onChange="{{setPw2}}" autocomplete="new-password"></div>
+            </div>
+            <ul class="rules">
+              <sc-for list="{{rules}}" as="r" hint-placeholder-count="3"><li class="{{r.cls}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>{{r.text}}</li></sc-for>
+            </ul>
+            <p class="err" role="alert">{{err}}</p>
+            <div class="actions" style="justify-content: flex-start"><button type="button" class="btn btn-navy btn-sm" onClick="{{change}}" style="flex: 0 0 auto">Change password</button></div>
+            <sc-if value="{{done}}" hint-placeholder-val="{{false}}"><div class="toast" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Password changed (demo). Other devices are signed out.</div></sc-if>
+          </section>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="s-h">
+            <h2 id="s-h">Signed in on</h2>
+            <div class="list" style="font-size: 0.88rem"><div><span>This browser</span><span class="badge ok">Now</span></div><div><span>Sample phone</span><span class="dash">Oct 21</span></div></div>
+            <button type="button" class="btn btn-line btn-sm" style="align-self: flex-start">Sign out other devices</button>
+          </section>
+          <section class="card" aria-labelledby="t-h"><h2 id="t-h">Two-step sign-in</h2><p class="sub" style="margin: 0">A code by email each time you sign in on a new device.</p><div class="sw"><div><b>Turn on</b><small>Recommended</small></div><button type="button" class="tg" role="switch" aria-checked="{{twoStr}}" aria-label="Two-step sign-in" onClick="{{toggleTwo}}"></button></div></section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { old: '', pw: '', pw2: '', err: '', done: false, two: false };
+  }
+  renderVals() {
+    const { old, pw, pw2, err, done, two } = this.state;
+    const checks = [[pw.length >= 12, 'At least 12 characters'], [/\d/.test(pw) && /[a-z]/i.test(pw), 'Letters and numbers'], [pw.length > 0 && pw === pw2, 'Both new passwords match']];
+    const set = (k) => (e) => this.setState({ [k]: e.target.value, err: '', done: false });
+    return {
+      yes: true,
+      old, pw, pw2, err, done,
+      setOld: set('old'), setPw: set('pw'), setPw2: set('pw2'),
+      rules: checks.map(([ok, text]) => ({ text, cls: ok ? 'ok' : '' })),
+      change: () => {
+        if (!old) { this.setState({ err: 'Enter your current password.' }); return; }
+        if (!checks.every(([ok]) => ok)) { this.setState({ err: 'The new password doesn’t meet every rule.' }); return; }
+        this.setState({ old: '', pw: '', pw2: '', done: true });
+      },
+      twoStr: two ? 'true' : 'false',
+      toggleTwo: () => this.setState({ two: !two })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Hold expired — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--sky-l)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.res{max-width:44rem;margin-inline:auto;padding:clamp(2rem,6vw,4.5rem) max(var(--gutter),3vw) 5rem;display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-panel);padding:clamp(1.5rem,4vw,2.75rem);display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.125rem}
+.card h1{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+.card .lede{max-width:46ch}
+.mark{width:4rem;height:4rem;border-radius:50%;background:var(--wall);color:var(--label-ink);display:grid;place-items:center}
+.mark svg{width:1.75rem;height:1.75rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.facts{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;text-align:left}
+.facts span{display:flex;flex-direction:column;gap:.25rem;padding:.875rem 1rem;border-radius:var(--radius-field);background:var(--wall);font-size:.88rem}
+.facts b{color:var(--navy);font:600 .95rem/1.3 var(--font-head)}
+@media (max-width:640px){.facts{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--sky-l); min-height: 100vh">
+  <dc-import name="BookBar" hint-size="100%,72px"></dc-import>
+  <main class="res">
+    <div class="card" role="status">
+      <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+      <span class="badge off">Hold expired</span>
+      <h1>Your hold on these dates ran out</h1>
+      <p class="lede">Payment wasn’t finished within the hold time, so we released Nov 6 – Nov 9. You haven’t been charged for this booking.</p>
+      <div class="facts">
+        <span><b>Your details are saved</b>Start again and we’ll fill in your name, email and phone.</span>
+        <span><b>Dates may still be free</b>Check the calendar. Someone else may have booked them.</span>
+      </div>
+      <div class="actions" style="width: 100%">
+        <a class="btn btn-navy" href="Detail.dc.html#availability">Check the dates again <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="btn btn-line" href="Main.dc.html">Back to home</a>
+      </div>
+      <p class="hint">Hold time: <span class="todo">TODO set by host</span> · Questions? <a href="tel:4086684189">408-668-4189</a></p>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

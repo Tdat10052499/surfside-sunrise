@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sign in — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--navy)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.au{min-height:100vh;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--white)}
+.au-pic{position:relative;overflow:hidden;background:var(--navy)}
+.au-pic img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.au-pic::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,30,48,.15),rgba(15,30,48,.75))}
+.au-pic .cap{position:absolute;left:2.5rem;right:2.5rem;bottom:2.5rem;z-index:1;color:#fff;display:flex;flex-direction:column;gap:.5rem}
+.au-pic .cap b{font:600 1.6rem/1.2 var(--font-head)}
+.au-pic .logo{position:absolute;left:2.5rem;top:2rem;z-index:1;color:#fff}
+.au-main{display:flex;align-items:center;justify-content:center;padding:2.5rem max(var(--gutter),2rem)}
+.box{width:100%;max-width:24rem;display:flex;flex-direction:column;gap:1.125rem}
+.box h1{font-size:clamp(1.7rem,3vw,2.1rem);line-height:1.15}
+.box .lede{margin:0;color:var(--muted)}
+.pw{position:relative}
+.pw button{position:absolute;right:.5rem;bottom:.55rem;border:0;background:transparent;color:var(--gulf-ink);font:600 .82rem/1 var(--font-body);cursor:pointer;padding:.5rem}
+.done{display:flex;gap:.75rem;align-items:flex-start;padding:1rem;border-radius:var(--radius-field);background:var(--ok-bg);color:var(--ok-ink);font-size:.92rem}
+.sim{border:1.5px dashed var(--warn-ink);background:var(--warn-bg);border-radius:var(--radius-card);padding:.75rem .875rem;font-size:.84rem;display:flex;flex-wrap:wrap;gap:.375rem .75rem}
+.rules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.375rem;font-size:.86rem}
+.rules li{display:flex;gap:.5rem;align-items:center;color:var(--muted)}
+.rules li.ok{color:var(--ok-ink)}
+.rules svg,.done svg{width:1rem;height:1rem;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.au{grid-template-columns:1fr}.au-pic{height:12rem}.au-pic .cap{display:none}}
+</style>
+</helmet>
+<div class="au" style="font-family: var(--font-body); color: var(--text)">
+  <div class="au-pic"><img src="../assets/img/aerial.webp" alt="" width="1200" height="800"><span class="logo"><i aria-hidden="true"></i>Seathesunrise</span><div class="cap"><b>Host dashboard</b><span>Bookings, calendar, prices and messages for your homes.</span></div></div>
+  <main class="au-main">
+    <div class="box">
+      <div><span class="eyebrow">Admin</span><h1>Sign in</h1><p class="lede">Only the host and people the host adds can sign in. Guests don’t need an account.</p></div>
+      <div class="field"><label for="em">Email</label><input id="em" type="email" value="{{email}}" onChange="{{setEmail}}" autocomplete="username"></div>
+      <div class="field pw"><label for="pw">Password</label><input id="pw" type="{{pwType}}" value="{{pw}}" onChange="{{setPw}}" autocomplete="current-password"><button type="button" onClick="{{togglePw}}" aria-label="Show password">{{pwLabel}}</button></div>
+      <p class="err" role="alert">{{err}}</p>
+      <button type="button" class="btn btn-navy" onClick="{{login}}">Sign in</button>
+      <p class="hint" style="margin: 0"><a href="AdminForgot.dc.html">Forgot your password?</a></p>
+      <div class="sim"><span class="demo">Prototype only</span><span>Any email and a password of 8+ characters opens the dashboard. After 5 wrong tries, sign-in pauses for 15 minutes (proposed).</span></div>
+      <sc-if value="{{ok}}" hint-placeholder-val="{{false}}"><div class="done" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Signed in (demo). <a href="AdminOverview.dc.html">Go to the dashboard</a></span></div></sc-if>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { email: 'ngocanhrealtor@gmail.com', pw: '', show: false, err: '', ok: false };
+  }
+  renderVals() {
+    const { email, pw, show, err, ok } = this.state;
+    return {
+      email, pw, err, ok,
+      pwType: show ? 'text' : 'password', pwLabel: show ? 'Hide' : 'Show',
+      setEmail: (e) => this.setState({ email: e.target.value, err: '' }),
+      setPw: (e) => this.setState({ pw: e.target.value, err: '' }),
+      togglePw: () => this.setState({ show: !show }),
+      login: () => {
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim()) || pw.length < 8) { this.setState({ err: 'That email and password don’t match.' }); return; }
+        this.setState({ ok: true });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

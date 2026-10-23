@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Payments and refunds — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.tbl tbody tr{cursor:pointer}
+.tbl tbody tr.sel td{background:var(--sky-l)}
+.tbl tbody tr:hover td{background:var(--sky-l)}
+.ev{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.625rem;font-size:.86rem}
+.ev li{display:grid;grid-template-columns:.75rem minmax(0,1fr);gap:.625rem;align-items:start}
+.ev li::before{content:"";width:.625rem;height:.625rem;border-radius:50%;background:var(--gulf);margin-top:.35rem}
+.ev small{display:block;color:var(--muted)}
+.ok-line{display:flex;gap:.5rem;align-items:center;color:var(--ok-ink);font-size:.84rem;font-weight:600}
+.overlay{position:fixed;inset:0;background:rgba(20,40,64,.45);display:grid;place-items:center;padding:1rem;z-index:20}
+.radio{display:flex;flex-direction:column;gap:.5rem}
+.radio label{display:flex;gap:.625rem;align-items:center;padding:.75rem .875rem;border-radius:var(--radius-field);border:1.5px solid var(--line);font-size:.92rem;cursor:pointer}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="payments" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Manage</span><h1>Payments and refunds</h1></div>
+      <div class="acts"><span class="demo">Sample data</span><a class="btn btn-line btn-sm" href="#export">Export CSV</a></div>
+    </header>
+    <main class="adm-body">
+      <div class="kpis">
+        <div class="kpi"><small>Paid, awaiting your approval</small><b>1</b></div>
+        <div class="kpi"><small>Processing</small><b>1</b></div>
+        <div class="kpi"><small>Refunded this month</small><b>1</b></div>
+      </div>
+      <div class="hold"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>Amounts show as “—” until nightly rates are set. Card details are never stored here; payments run through the payment provider.</span></div>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; min-width: 0">
+          <div class="filters" role="group" aria-label="Filter payments">
+            <sc-for list="{{chips}}" as="c" hint-placeholder-count="5"><button type="button" class="fchip" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>Booking</th><th>Guest</th><th>Type</th><th>Status</th><th>Amount</th><th>Date</th></tr></thead>
+              <tbody>
+                <sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+                  <tr class="{{r.cls}}" onClick="{{r.pick}}"><td><button type="button" class="code" style="all: unset; cursor: pointer; font: 600 0.84rem/1 var(--font-mono); color: var(--navy)" onClick="{{r.pick}}">{{r.code}}</button></td><td>{{r.guest}}</td><td>{{r.type}}</td><td><span class="badge {{r.badge}}">{{r.status}}</span></td><td class="num dash">—</td><td>{{r.date}}</td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <aside class="card" aria-label="Payment details">
+          <div class="rowb"><h2 style="font-family: var(--font-mono); font-size: 1rem">{{cur.code}}</h2><span class="badge {{cur.badge}}">{{cur.status}}</span></div>
+          <div class="list" style="font-size: 0.88rem">
+            <div><span class="dash">Guest</span><span>{{cur.guest}}</span></div>
+            <div><span class="dash">Stay</span><span>{{cur.stay}}</span></div>
+            <div><span class="dash">Amount</span><span class="todo">TODO</span></div>
+          </div>
+          <sc-if value="{{cur.verified}}" hint-placeholder-val="{{true}}"><p class="ok-line"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Confirmed by a signed webhook from the provider</p></sc-if>
+          <ol class="ev"><sc-for list="{{cur.events}}" as="e" hint-placeholder-count="3"><li><div>{{e.t}}<small>{{e.d}}</small></div></li></sc-for></ol>
+          <sc-if value="{{cur.canRefund}}" hint-placeholder-val="{{true}}"><button type="button" class="btn btn-danger btn-sm" onClick="{{openRefund}}">Refund…</button></sc-if>
+          <sc-if value="{{refunded}}" hint-placeholder-val="{{false}}"><div class="toast" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Refund sent to the provider (demo). The guest gets an email.</div></sc-if>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <sc-if value="{{dialog}}" hint-placeholder-val="{{false}}">
+    <div class="overlay">
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="rf-h">
+        <h3 id="rf-h">Refund {{cur.code}}</h3>
+        <p>The money goes back to the guest’s card through the payment provider. This can’t be undone.</p>
+        <div class="radio"><label><input type="radio" name="amt" checked="{{yes}}">Full refund</label><label><input type="radio" name="amt">Part of the payment</label></div>
+        <div class="field"><label for="rr">Reason (shown in the guest’s email)</label><select id="rr"><option>Host declined the booking</option><option>Guest cancelled</option><option>Other</option></select></div>
+        <div class="actions"><button type="button" class="btn btn-line btn-sm" onClick="{{closeRefund}}">Cancel</button><button type="button" class="btn btn-danger btn-sm" onClick="{{doRefund}}">Refund now</button></div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 0, filter: 'all', dialog: false, refunded: false };
+  }
+  renderVals() {
+    const { sel, filter, dialog, refunded } = this.state;
+    const data = [
+      { code: 'SSR-7K4Q2M', guest: 'Jordan Lee', type: 'Payment', status: 'Paid · awaiting approval', badge: 'wait', key: 'paid', date: 'Oct 23, 2026', stay: 'Nov 6 – 9 · 3 nights', verified: true, canRefund: true,
+        events: [{ t: 'Checkout opened', d: 'Oct 23, 10:41 · dates held' }, { t: 'Payment succeeded', d: 'Oct 23, 10:44 · webhook signature valid' }, { t: 'Waiting for host approval', d: 'Now' }] },
+      { code: 'SSR-9W2N6T', guest: 'Sample guest B', type: 'Payment', status: 'Processing', badge: 'info', key: 'proc', date: 'Oct 23, 2026', stay: 'Dec 11 – 14 · 3 nights', verified: false, canRefund: false,
+        events: [{ t: 'Checkout opened', d: 'Oct 23, 09:12 · dates held' }, { t: 'Waiting for the provider', d: 'No webhook yet' }] },
+      { code: 'SSR-3H8P1D', guest: 'Sample guest C', type: 'Payment', status: 'Failed', badge: 'bad', key: 'fail', date: 'Oct 22, 2026', stay: 'Nov 20 – 22 · 2 nights', verified: true, canRefund: false,
+        events: [{ t: 'Checkout opened', d: 'Oct 22, 18:05' }, { t: 'Card declined', d: 'Oct 22, 18:07 · dates released' }] },
+      { code: 'SSR-5R7C2K', guest: 'Sample guest D', type: 'Refund', status: 'Refunded', badge: 'off', key: 'ref', date: 'Oct 20, 2026', stay: 'Dec 1 – 4 · 3 nights', verified: true, canRefund: false,
+        events: [{ t: 'Payment succeeded', d: 'Oct 18, 14:20' }, { t: 'Host declined', d: 'Oct 19, 08:02' }, { t: 'Refund completed', d: 'Oct 20, 09:30 · webhook signature valid' }] }
+    ];
+    const filters = [['all', 'All'], ['paid', 'Awaiting approval'], ['proc', 'Processing'], ['fail', 'Failed'], ['ref', 'Refunded']];
+    const shown = data.map((d, i) => ({ ...d, i })).filter((d) => filter === 'all' || d.key === filter);
+    const cur = data[sel];
+    return {
+      yes: true,
+      chips: filters.map(([k, l]) => ({ label: l, on: filter === k ? 'true' : 'false', pick: () => this.setState({ filter: k }) })),
+      rows: shown.map((d) => ({ ...d, cls: d.i === sel ? 'sel' : '', pick: () => this.setState({ sel: d.i, refunded: false }) })),
+      cur,
+      dialog,
+      refunded,
+      openRefund: () => this.setState({ dialog: true }),
+      closeRefund: () => this.setState({ dialog: false }),
+      doRefund: () => this.setState({ dialog: false, refunded: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

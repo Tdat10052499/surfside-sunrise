@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Contact the host — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--white)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.ct{max-width:var(--content-max);margin-inline:auto;box-sizing:border-box;padding:clamp(2rem,5vw,4rem) max(var(--gutter),3vw) 5rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:clamp(1.5rem,5vw,4rem);align-items:start}
+.side{display:flex;flex-direction:column;gap:1.25rem}
+.side h1{font-size:clamp(2rem,4vw,3rem);line-height:1.08}
+.side .lede{color:var(--muted);margin:0;max-width:40ch}
+.hcard{display:flex;flex-direction:column;gap:1rem;background:var(--sand-l);border-radius:var(--radius-panel);padding:1.5rem}
+.who{display:flex;gap:1rem;align-items:center}
+.av{width:3.5rem;height:3.5rem;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font:600 1.1rem/1 var(--font-head);flex:none}
+.who b{display:block;color:var(--navy);font:600 1.1rem/1.2 var(--font-head)}
+.who small{color:var(--muted)}
+.ways{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:.5rem}
+.ways a{display:flex;flex-direction:column;gap:.25rem;padding:.875rem 1rem;border-radius:var(--radius-field);background:var(--white);text-decoration:none;color:var(--navy);font-weight:600;font-size:.92rem;overflow-wrap:anywhere}
+.ways a small{font:500 .72rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--label-ink)}
+.ways a:hover{background:var(--sky-l)}
+.pic{border-radius:var(--radius-panel);overflow:hidden;height:15rem;margin:0}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.form{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-panel);padding:clamp(1.25rem,3vw,2.25rem);display:flex;flex-direction:column;gap:1rem}
+.form h2{font-size:1.5rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.consent{display:flex;gap:.625rem;align-items:flex-start;font-size:.9rem}
+.consent input{margin-top:.2rem;width:1.125rem;height:1.125rem;accent-color:var(--navy)}
+.done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1rem;padding:2rem 1rem}
+.done .mark{width:4rem;height:4rem;border-radius:50%;background:var(--sky);color:var(--navy);display:grid;place-items:center}
+.done svg{width:1.75rem;height:1.75rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:900px){.ct{grid-template-columns:1fr}.pic{display:none}}
+@media (max-width:640px){.g2,.ways{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--white); min-height: 100vh">
+  <dc-import name="Header" tone="light" hint-size="100%,84px"></dc-import>
+  <main class="ct">
+    <div class="side">
+      <span class="eyebrow">Contact</span>
+      <h1 data-split>Ask the host anything</h1>
+      <p class="lede">Questions about the house, the beach or your dates. Call, email, or send a message below.</p>
+      <div class="hcard">
+        <div class="who"><span class="av" aria-hidden="true">NA</span><div><b>Ngoc Anh Ta</b><small>Realtor · Host of Surfside Sunrise House</small></div></div>
+        <div class="ways">
+          <a href="tel:4086684189"><small>Call</small>408-668-4189</a>
+          <a href="mailto:ngocanhrealtor@gmail.com"><small>Email</small>ngocanhrealtor@gmail.com</a>
+        </div>
+        <p class="hint" style="margin: 0">Usually replies within 1 hour. Already booked? Have your booking code ready, or <a href="Lookup.dc.html">find your booking</a>.</p>
+      </div>
+      <figure class="pic" data-clip><img src="../assets/img/deck.webp" alt="The deck of Surfside Sunrise House" width="1200" height="800" loading="lazy"></figure>
+    </div>
+    <section class="form" aria-labelledby="f-h">
+      <sc-if value="{{open}}" hint-placeholder-val="{{true}}">
+        <h2 id="f-h">Send a message</h2>
+        <div class="g2">
+          <div class="field"><label for="n">Full name</label><input id="n" type="text" value="{{f.name}}" onChange="{{set.name}}" autocomplete="name"><span class="err">{{e.name}}</span></div>
+          <div class="field"><label for="m">Email</label><input id="m" type="email" value="{{f.email}}" onChange="{{set.email}}" autocomplete="email"><span class="err">{{e.email}}</span></div>
+          <div class="field"><label for="p">Phone (optional)</label><input id="p" type="tel" value="{{f.phone}}" onChange="{{set.phone}}" autocomplete="tel"></div>
+          <div class="field"><label for="h">Home</label><select id="h"><option>Surfside Sunrise House</option></select></div>
+          <div class="field"><label for="d">Dates (optional)</label><input id="d" type="text" value="{{f.dates}}" onChange="{{set.dates}}" placeholder="e.g. Dec 10 – 14"></div>
+          <div class="field"><label for="c">Booking code (if you booked)</label><input id="c" type="text" value="{{f.code}}" onChange="{{set.code}}" placeholder="SSR-XXXXXX" style="font-family: var(--font-mono)"></div>
+        </div>
+        <div class="field"><label for="q">Your message</label><textarea id="q" value="{{f.msg}}" onChange="{{set.msg}}" style="min-height: 9rem"></textarea><span class="err">{{e.msg}}</span></div>
+        <label class="consent"><input type="checkbox" checked="{{f.ok}}" onChange="{{toggleOk}}"><span>I agree that my details are used to answer this message, as described in the <a href="PolicyPrivacy.dc.html">privacy policy</a>.</span></label>
+        <span class="err">{{e.ok}}</span>
+        <div class="actions"><button type="button" class="btn btn-navy" onClick="{{send}}">Send message</button><button type="button" class="btn btn-line btn-sm" onClick="{{fill}}">Fill sample (demo)</button></div>
+      </sc-if>
+      <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+        <div class="done" role="status">
+          <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></span>
+          <span class="demo">Demo</span>
+          <h2>Message sent</h2>
+          <p style="margin: 0; max-width: 40ch">Thanks, {{f.name}}. Ngoc Anh will reply to {{f.email}}, usually within 1 hour. A copy of your message is in your inbox.</p>
+          <div class="actions"><a class="btn btn-line btn-sm" href="Detail.dc.html">Back to the house</a><button type="button" class="btn btn-line btn-sm" onClick="{{again}}">Send another</button></div>
+          <p class="hint">Prototype: the host sees this in <a href="AdminQuestions.dc.html">Admin › Questions</a> and gets the <a href="EmailHostQuestion.dc.html">“New question” email</a>.</p>
+        </div>
+      </sc-if>
+    </section>
+  </main>
+  <dc-import name="Footer" hint-size="100%,600px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.blank = { name: '', email: '', phone: '', dates: '', code: '', msg: '', ok: false };
+    this.noErr = { name: '', email: '', msg: '', ok: '' };
+    this.state = { f: { ...this.blank }, e: { ...this.noErr }, sent: false };
+  }
+  renderVals() {
+    const { f, e, sent } = this.state;
+    const upd = (k) => (ev) => this.setState({ f: { ...f, [k]: ev.target.value }, e: { ...e, [k]: '' } });
+    return {
+      f, e, sent, open: !sent,
+      set: { name: upd('name'), email: upd('email'), phone: upd('phone'), dates: upd('dates'), code: upd('code'), msg: upd('msg') },
+      toggleOk: () => this.setState({ f: { ...f, ok: !f.ok }, e: { ...e, ok: '' } }),
+      fill: () => this.setState({ f: { name: 'Sample guest E', email: 'guest.e@example.com', phone: '', dates: 'Dec 10 – 14', code: '', msg: 'Hi! Is there a crib or pack-and-play we could use for our baby?', ok: true }, e: { ...this.noErr } }),
+      send: () => {
+        const err = { ...this.noErr };
+        if (!f.name.trim()) err.name = 'Enter your name.';
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.trim())) err.email = 'Enter a valid email.';
+        if (f.msg.trim().length < 5) err.msg = 'Write your question.';
+        if (!f.ok) err.ok = 'Tick the box so we can reply.';
+        if (Object.values(err).some(Boolean)) { this.setState({ e: err }); return; }
+        this.setState({ sent: true });
+      },
+      again: () => this.setState({ f: { ...this.blank }, e: { ...this.noErr }, sent: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

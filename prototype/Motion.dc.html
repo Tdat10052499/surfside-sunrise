@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Motion engine</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<span hidden data-motion-engine></span>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":400,"height":40}}'>
+class Component extends DCLogic {
+  componentDidMount() {
+    try { this.boot(); } catch (e) { console.warn('motion', e); }
+  }
+  renderVals() { return {}; }
+  /* Port of the live site's motion (assets/js/main.js: Lenis + GSAP ScrollTrigger) without libraries.
+     It reads the same data-* hooks. It only runs when the artboard is shown as a real, scrolling page
+     (Play / full window, or a browser), so the static canvas keeps the final, fully visible layout. */
+  boot() {
+    const W = window, D = document;
+    if (W.__ssMotion) { W.__ssMotion.scan(); return; }
+    const reduce = W.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fine = W.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const OUT = 'cubic-bezier(.215,.61,.355,1)';
+    const clamp = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+    const S = { active: false, vh: W.innerHeight, scrubs: [], tones: [], pins: [], marq: [], head: [], y: -1, lastY: 0, vel: 0, dir: 1 };
+    const api = {};
+    W.__ssMotion = api;
+
+    const isLive = () => {
+      const h = W.innerHeight;
+      return !reduce && h <= Math.max(W.screen.height || 0, 1000) + 40 && D.documentElement.scrollHeight > h + 40;
+    };
+    const absTop = (el) => el.getBoundingClientRect().top + W.scrollY;
+
+    /* ---------- smooth wheel scrolling (Lenis-like, lerp .085) ---------- */
+    let tgt = W.scrollY, cur = W.scrollY, setY = -1, anim = null;
+    const maxY = () => D.documentElement.scrollHeight - W.innerHeight;
+    const nestedScroll = (el, dy) => {
+      for (; el && el !== D.body; el = el.parentElement) {
+        if (el.scrollHeight > el.clientHeight + 1) {
+          const o = W.getComputedStyle(el).overflowY;
+          if ((o === 'auto' || o === 'scroll') && (dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0)) return true;
+        }
+      }
+      return false;
+    };
+    W.addEventListener('wheel', (e) => {
+      if (!S.active || !fine || e.ctrlKey || e.metaKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      if (nestedScroll(e.target, e.deltaY)) return;
+      e.preventDefault();
+      const k = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? W.innerHeight : 1;
+      if (anim) anim = null;
+      if (Math.abs(W.scrollY - cur) > 2) cur = tgt = W.scrollY;
+      tgt = Math.max(0, Math.min(maxY(), tgt + e.deltaY * k));
+    }, { passive: false });
+    W.addEventListener('scroll', () => { if (Math.abs(W.scrollY - setY) > 2 && !anim) { cur = tgt = W.scrollY; } }, { passive: true });
+    const scrollToY = (y) => { tgt = Math.max(0, Math.min(maxY(), y)); anim = { from: W.scrollY, to: tgt, t0: performance.now(), dur: 1400 }; };
+    D.addEventListener('click', (e) => {
+      const a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || !S.active) return;
+      const id = a.getAttribute('href').slice(1);
+      const el = id ? D.getElementById(id) : null;
+      if (!el && id !== 'top') return;
+      e.preventDefault();
+      scrollToY(el ? absTop(el) - 96 : 0);
+    });
+
+    /* ---------- helpers ---------- */
+    const splitWords = (el) => {
+      if (el.__ssSplit) return el.__ssSplit;
+      const words = [];
+      const walk = (node) => {
+        [...node.childNodes].forEach((n) => {
+          if (n.nodeType === 3 && n.textContent.trim()) {
+            const frag = D.createDocumentFragment();
+            n.textContent.split(/(\s+)/).forEach((part) => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(D.createTextNode(part)); return; }
+              const s = D.createElement('span');
+              s.className = 'w';
+              s.style.display = 'inline-block';
+              s.textContent = part;
+              words.push(s);
+              frag.appendChild(s);
+            });
+            n.replaceWith(frag);
+          } else if (n.nodeType === 1 && !n.classList.contains('w')) walk(n);
+        });
+      };
+      walk(el);
+      el.__ssSplit = words;
+      return words;
+    };
+    const entrance = (els, from, step) => els.forEach((el, i) => {
+      if (el.animate) el.animate([from, { transform: 'none', opacity: 1 }], { duration: 900, delay: i * step, easing: OUT, fill: 'backwards' });
+    });
+    const enterIO = 'IntersectionObserver' in W ? new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting || !S.active) return;
+      enterIO.unobserve(e.target);
+      e.target.__ssEnter && e.target.__ssEnter();
+    }), { rootMargin: '0px 0px -12% 0px' }) : null;
+    const toneIO = 'IntersectionObserver' in W ? new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting && S.active) setTone(e.target);
+    }), { rootMargin: '-55% 0px -45% 0px' }) : null;
+    const marqIO = 'IntersectionObserver' in W ? new IntersectionObserver((es) => es.forEach((e) => { e.target.__ssOn = e.isIntersecting; })) : null;
+    let toneRoot = null, curTone = '';
+    const setTone = (sec) => {
+      const t = sec.dataset.tone;
+      if (!toneRoot || t === curTone) return;
+      curTone = t;
+      toneRoot.style.backgroundColor = t;
+    };
+
+    /* ---------- find and wire elements (runs again when new parts mount) ---------- */
+    const scan = () => {
+      D.querySelectorAll('[data-split]').forEach((h) => {
+        if (h.__ssInit) return; h.__ssInit = 1;
+        h.__ssEnter = () => entrance(splitWords(h), { transform: 'translateY(.5em)', opacity: 0.25 }, 50);
+        enterIO && enterIO.observe(h);
+      });
+      D.querySelectorAll('[data-stagger]').forEach((g) => {
+        if (g.__ssInit) return; g.__ssInit = 1;
+        g.__ssEnter = () => entrance([...g.children], { transform: 'translateY(40px)', opacity: 0.3 }, 60);
+        enterIO && enterIO.observe(g);
+      });
+      D.querySelectorAll('[data-tone]').forEach((sec) => {
+        if (sec.__ssInit) return; sec.__ssInit = 1;
+        S.tones.push(sec);
+        if (!toneRoot) toneRoot = sec.parentElement;
+        toneIO && toneIO.observe(sec);
+      });
+      D.querySelectorAll('[data-motion="marquee-velocity"]').forEach((m) => {
+        if (m.__ssInit) return; m.__ssInit = 1;
+        const row = m.firstElementChild;
+        if (!row) return;
+        [...row.children].forEach((c) => row.appendChild(c.cloneNode(true)));
+        row.style.willChange = 'transform';
+        S.marq.push({ m, row, x: 0, half: 0 });
+        marqIO && marqIO.observe(m);
+      });
+      D.querySelectorAll('[data-motion="bar-hide-on-scroll"]').forEach((h) => {
+        if (h.__ssInit) return; h.__ssInit = 1;
+        S.head.push({ h, bar: h.querySelector('.bar-in'), hide: false, sc: null, fixed: !!h.closest('.top') });
+      });
+      D.querySelectorAll('[data-motion="menu-open"]').forEach((mn) => {
+        if (mn.__ssInit || reduce) return; mn.__ssInit = 1;
+        entrance([...mn.querySelectorAll('.mnav a')], { transform: 'translateY(1.2em)', opacity: 0.25 }, 70);
+        entrance([...mn.querySelectorAll('.zone, .mcard')], { transform: 'translateY(24px)', opacity: 0.3 }, 50);
+      });
+      D.querySelectorAll('[data-cursor]').forEach((el) => {
+        if (el.__ssCur) return; el.__ssCur = 1;
+        el.addEventListener('pointerenter', () => { if (cursor && S.active) { cursor.firstChild.textContent = el.dataset.cursor; cursor.style.opacity = '1'; cursor.firstChild.style.transform = 'scale(1)'; } });
+        el.addEventListener('pointerleave', () => { if (cursor) { cursor.style.opacity = '0'; cursor.firstChild.style.transform = 'scale(.4)'; } });
+      });
+      D.querySelectorAll('.btn').forEach((b) => {
+        if (b.__ssMag || !fine || reduce) return; b.__ssMag = 1;
+        b.addEventListener('pointermove', (e) => {
+          if (!S.active) return;
+          const r = b.getBoundingClientRect();
+          b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.18}px,${(e.clientY - r.top - r.height / 2) * 0.25}px)`;
+        });
+        b.addEventListener('pointerleave', () => { b.style.transform = ''; });
+      });
+      queueMeasure();
+    };
+    api.scan = scan;
+
+    /* ---------- custom cursor label (mouse only) ---------- */
+    let cursor = null, cx = 0, cy = 0, tx = 0, ty = 0;
+    if (fine && !reduce) {
+      cursor = D.createElement('div');
+      cursor.setAttribute('aria-hidden', 'true');
+      cursor.style.cssText = 'position:fixed;left:0;top:0;z-index:90;pointer-events:none;opacity:0;transition:opacity .25s;will-change:transform';
+      const dot = D.createElement('span');
+      dot.style.cssText = 'display:grid;place-items:center;width:5.5rem;height:5.5rem;margin:-2.75rem 0 0 -2.75rem;border-radius:50%;background:var(--navy);color:#fff;font:600 .8rem/1 var(--font-body);letter-spacing:.06em;transform:scale(.4);transition:transform .35s var(--ease)';
+      cursor.appendChild(dot);
+      D.body.appendChild(cursor);
+      W.addEventListener('pointermove', (e) => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+    }
+
+    /* ---------- measure (on resize, mount, font load) and build scrubbed effects ---------- */
+    let mq = 0;
+    const queueMeasure = () => { if (!mq) mq = W.requestAnimationFrame(() => { mq = 0; measure(); }); };
+    const resetAll = () => {
+      S.scrubs.forEach((s) => s.reset && s.reset());
+      S.pins.forEach((p) => p.reset());
+      S.head.forEach((o) => { o.h.style.transform = ''; o.h.style.position = ''; });
+      S.tones.forEach((sec) => { sec.style.background = ''; });
+      if (toneRoot) { toneRoot.style.backgroundColor = ''; curTone = ''; }
+      S.marq.forEach((o) => { o.row.style.transform = ''; });
+    };
+    const measure = () => {
+      const was = S.active;
+      S.vh = W.innerHeight;
+      S.active = isLive();
+      if (!S.active) { if (was) resetAll(); S.scrubs = []; return; }
+      const vh = S.vh, y0 = W.scrollY;
+      const list = [];
+
+      /* page tone: sections go transparent so the page colour behind them can shift */
+      S.tones.forEach((sec) => { sec.style.background = 'transparent'; });
+      if (toneRoot) toneRoot.style.transition = 'background-color .7s var(--ease)';
+
+      /* header: sticks to the top, turns into the frosted pill after the hero, hides while scrolling down */
+      S.head.forEach((o) => {
+        if (!o.fixed && !o.h.closest('.bar-top')) { o.h.style.position = 'sticky'; o.h.style.top = '0'; o.h.style.zIndex = '40'; }
+        o.h.style.transition = 'transform .5s var(--ease)';
+        o.photo = o.bar && !o.bar.classList.contains('is-scrolled') ? true : o.photo || false;
+      });
+
+      /* hero: the photo shrinks into a rounded card, the text drifts up */
+      D.querySelectorAll('[data-motion="hero-card"]').forEach((hero) => {
+        const media = hero.querySelector('.hmedia'), img = media && media.querySelector('img'), inner = hero.querySelector('.in');
+        const t = absTop(hero), h = hero.offsetHeight;
+        list.push({ a: t, b: t + h, apply: (p) => {
+          if (media) media.style.clipPath = `inset(${3 * p}% ${2.5 * p}% 0% ${2.5 * p}% round ${28 * p}px)`;
+          if (img) img.style.transform = `translate3d(0,${12 * p}%,0)`;
+          if (inner) { inner.style.transform = `translate3d(0,${-18 * p}%,0)`; inner.style.opacity = String(1 - 0.75 * p); }
+        }, reset: () => { if (media) media.style.clipPath = ''; if (img) img.style.transform = ''; if (inner) { inner.style.transform = ''; inner.style.opacity = ''; } } });
+      });
+
+      /* statement: words fill in as you scroll */
+      D.querySelectorAll('[data-motion="fill-words"]').forEach((st) => {
+        const words = splitWords(st);
+        words.forEach((w) => { w.style.transition = 'color .25s'; });
+        let filled = -1;
+        const t = absTop(st), h = st.offsetHeight;
+        list.push({ a: t - vh * 0.85, b: t + h - vh * 0.4, apply: (p) => {
+          const n = Math.round(p * words.length);
+          if (n === filled) return;
+          const lo = filled < 0 ? 0 : Math.min(n, filled), hi = filled < 0 ? words.length : Math.max(n, filled);
+          for (let i = lo; i < hi; i++) words[i].style.color = i < n ? '' : 'var(--fade)';
+          filled = n;
+        }, reset: () => { words.forEach((w) => { w.style.color = ''; }); filled = -1; } });
+      });
+
+      /* large images open from an inset rounded rectangle */
+      D.querySelectorAll('[data-clip]').forEach((el) => {
+        const t = absTop(el);
+        list.push({ a: t - vh * 0.95, b: t - vh * 0.35, apply: (p) => {
+          const q = 1 - p;
+          el.style.clipPath = `inset(${10 * q}% ${8 * q}% ${10 * q}% ${8 * q}% round ${18 + 10 * q}px)`;
+        }, reset: () => { el.style.clipPath = ''; } });
+      });
+
+      /* inner parallax (skipped inside the pinned rooms row, which moves sideways) */
+      D.querySelectorAll('[data-par]').forEach((img) => {
+        if (img.closest('[data-motion="pin-horizontal"]')) return;
+        const a = +img.dataset.par || 6, box = img.parentElement, t = absTop(box), h = box.offsetHeight;
+        img.style.willChange = 'transform';
+        list.push({ a: t - vh, b: t + h, apply: (p) => { img.style.transform = `translate3d(0,${(p - 0.5) * a}%,0)`; }, reset: () => { img.style.transform = ''; img.style.willChange = ''; } });
+      });
+
+      /* stacking cards: earlier cards sink back as the next one arrives */
+      D.querySelectorAll('[data-motion="stack-cards"]').forEach((wrap) => {
+        const cards = [...wrap.children], top0 = absTop(wrap);
+        const gap = parseFloat(W.getComputedStyle(wrap).rowGap) || 0;
+        let acc = top0;
+        const tops = cards.map((c) => { const t = acc; acc += c.offsetHeight + gap; return t; });
+        cards.forEach((c, i) => {
+          if (i === cards.length - 1) return;
+          const nx = cards[i + 1], stick = parseFloat(W.getComputedStyle(nx).top) || 120, shade = c.querySelector('.shade');
+          list.push({ a: tops[i + 1] - vh, b: tops[i + 1] - stick, apply: (p) => {
+            c.style.transform = p ? `scale(${1 - 0.08 * p})` : '';
+            if (shade) shade.style.opacity = String(0.45 * p);
+          }, reset: () => { c.style.transform = ''; if (shade) shade.style.opacity = ''; } });
+        });
+      });
+
+      /* footer content rises as the footer comes into view */
+      D.querySelectorAll('[data-motion="footer-image-rise"]').forEach((f) => {
+        const parts = [...f.querySelectorAll('.foot > div')], t = absTop(f), h = f.offsetHeight;
+        list.push({ a: t - vh, b: t + h - vh, apply: (p) => {
+          parts.forEach((el) => { el.style.transform = p < 1 ? `translate3d(0,${60 * (1 - p)}px,0)` : ''; el.style.opacity = p < 1 ? String(0.4 + 0.6 * p) : ''; });
+        }, reset: () => parts.forEach((el) => { el.style.transform = ''; el.style.opacity = ''; }) });
+      });
+
+      /* pinned horizontal rooms (desktop); swipe with a progress bar on phones */
+      S.pins.forEach((p) => p.reset());
+      S.pins = [];
+      D.querySelectorAll('[data-motion="pin-horizontal"]').forEach((sec) => {
+        const pin = sec.querySelector('.pin-in'), row = sec.querySelector('.rooms'), bar = sec.querySelector('.pprog b'), cnt = sec.querySelector('.pprog .pc');
+        if (!pin || !row) return;
+        const n = row.children.length;
+        let lastC = '';
+        const prog = (p) => {
+          if (bar) bar.style.transform = `scaleX(${p})`;
+          const c = String(Math.min(n, Math.floor(p * (n - 0.01)) + 1)).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+          if (cnt && c !== lastC) { cnt.textContent = c; lastC = c; }
+        };
+        if (W.innerWidth >= 761) {
+          row.style.scrollSnapType = 'none';
+          row.style.overflowX = 'hidden';
+          const dist = Math.max(0, row.scrollWidth - row.clientWidth);
+          const ph = pin.offsetHeight, stick = Math.max(96, (vh - ph) / 2);
+          pin.style.position = 'sticky';
+          pin.style.top = stick + 'px';
+          const cs = W.getComputedStyle(sec), extra = cs.boxSizing === 'border-box' ? parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) : 0;
+          sec.style.height = ph + dist + extra + 'px';
+          const t = absTop(sec) - stick;
+          list.push({ a: t, b: t + dist, apply: (p) => { row.scrollLeft = p * dist; prog(p); } });
+          S.pins.push({ reset: () => { row.style.scrollSnapType = ''; row.style.overflowX = ''; row.scrollLeft = 0; pin.style.position = ''; pin.style.top = ''; sec.style.height = ''; prog(0); } });
+        } else {
+          const on = () => prog(row.scrollLeft / Math.max(1, row.scrollWidth - row.clientWidth));
+          row.addEventListener('scroll', on, { passive: true });
+          on();
+          S.pins.push({ reset: () => row.removeEventListener('scroll', on) });
+        }
+      });
+
+      S.marq.forEach((o) => {
+        const gap = parseFloat(W.getComputedStyle(o.row).columnGap) || 0;
+        o.half = (o.row.scrollWidth + gap) / 2;
+      });
+
+      list.forEach((s) => { s.last = -1; });
+      S.scrubs = list;
+      if (!was) { cur = tgt = W.scrollY; S.lastY = y0; }
+      S.y = -1;
+    };
+    api.measure = measure;
+
+    /* ---------- one frame loop: smooth scroll, scrubs, header, marquee, cursor ---------- */
+    let tPrev = performance.now();
+    const frame = (now) => {
+      const dt = Math.min(3, (now - tPrev) / 16.67);
+      tPrev = now;
+      if (S.active) {
+        if (anim) {
+          const k = Math.min(1, (now - anim.t0) / anim.dur), e = 1 - Math.pow(1 - k, 4);
+          cur = anim.from + (anim.to - anim.from) * e;
+          setY = Math.round(cur); W.scrollTo(0, cur);
+          if (k >= 1) { anim = null; cur = tgt; }
+        } else if (Math.abs(tgt - cur) > 0.5) {
+          cur += (tgt - cur) * (1 - Math.pow(1 - 0.085, dt));
+          if (Math.abs(tgt - cur) < 0.5) cur = tgt;
+          setY = Math.round(cur); W.scrollTo(0, cur);
+        }
+        const y = W.scrollY;
+        if (y !== S.y) {
+          const v = y - (S.y < 0 ? y : S.y);
+          S.vel = S.vel * 0.6 + v * 0.4;
+          if (Math.abs(v) > 0.2) S.dir = v > 0 ? 1 : -1;
+          S.y = y;
+          for (const s of S.scrubs) {
+            const p = s.b > s.a ? clamp((y - s.a) / (s.b - s.a)) : (y >= s.a ? 1 : 0);
+            if (p !== s.last) { s.last = p; s.apply(p); }
+          }
+          const down = y > S.lastY + 4, up = y < S.lastY - 4;
+          S.head.forEach((o) => {
+            let hide = o.hide;
+            if (y > S.vh * 0.9 && down) hide = true;
+            if (up || y < 200) hide = false;
+            if (hide !== o.hide) { o.hide = hide; o.h.style.transform = hide ? 'translateY(-110%)' : ''; }
+            const sc = y > 60;
+            if (o.photo && o.bar && sc !== o.sc) { o.sc = sc; o.bar.classList.toggle('is-scrolled', sc); }
+          });
+          if (down || up) S.lastY = y;
+        }
+        S.marq.forEach((o) => {
+          if (o.m.__ssOn === false || !o.half || D.hidden) return;
+          o.x -= (0.6 + Math.min(Math.abs(S.vel), 40) * 0.25) * S.dir * dt;
+          if (o.x < -o.half) o.x += o.half;
+          if (o.x > 0) o.x -= o.half;
+          o.row.style.transform = `translate3d(${o.x}px,0,0)`;
+        });
+        S.vel *= 0.92;
+      }
+      if (cursor && (Math.abs(tx - cx) + Math.abs(ty - cy) > 0.5)) {
+        cx += (tx - cx) * 0.18; cy += (ty - cy) * 0.18;
+        cursor.style.transform = `translate3d(${cx}px,${cy}px,0)`;
+      }
+      W.requestAnimationFrame(frame);
+    };
+
+    /* ---------- keep everything in step with resizes and late-mounting parts ---------- */
+    let rz = null;
+    W.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(measure, 200); }, { passive: true });
+    if ('ResizeObserver' in W) new ResizeObserver(queueMeasure).observe(D.body);
+    let mo = null;
+    new MutationObserver(() => { clearTimeout(mo); mo = setTimeout(scan, 150); }).observe(D.body, { childList: true, subtree: true });
+    W.addEventListener('load', queueMeasure);
+    if (D.fonts && D.fonts.ready) D.fonts.ready.then(queueMeasure);
+    setTimeout(scan, 0);
+    setTimeout(measure, 600);
+    W.requestAnimationFrame(frame);
+  }
+}
+</script>
+</body>
+</html>

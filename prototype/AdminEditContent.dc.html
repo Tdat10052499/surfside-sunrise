@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Edit home: content — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.counts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.625rem}
+.beds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.625rem}
+@media (max-width:900px){.counts{grid-template-columns:1fr 1fr}.beds{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="homes" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb"><a href="AdminHomes.dc.html">Homes</a> / Edit</span><h1>Surfside Sunrise House</h1></div>
+      <div class="acts"><span class="badge ok">Published</span><a class="btn btn-line btn-sm" href="Detail.dc.html">View on site</a></div>
+    </header>
+    <main class="adm-body">
+      <nav class="tabs" aria-label="Edit home">
+        <a href="AdminEditContent.dc.html" aria-current="page">Content &amp; amenities</a>
+        <a href="AdminEditMedia.dc.html">Photos &amp; video</a>
+        <a href="AdminEditRules.dc.html">House rules</a>
+        <a href="AdminEditPricing.dc.html">Pricing</a>
+        <a href="AdminEditFees.dc.html">Fees</a>
+      </nav>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; min-width: 0">
+          <section class="card" aria-labelledby="c1">
+            <h2 id="c1">Basics</h2>
+            <div class="fgrid">
+              <div class="field full"><label for="nm">Home name</label><input id="nm" type="text" value="Surfside Sunrise House" onChange="{{dirty}}"></div>
+              <div class="field"><label for="lc">Location shown to guests</label><input id="lc" type="text" value="Surfside Beach, Texas" onChange="{{dirty}}"></div>
+              <div class="field"><label for="ty">Type</label><select id="ty" onChange="{{dirty}}"><option>Entire home</option><option>Apartment</option><option>Condo</option></select></div>
+              <div class="field full"><label for="sd">Short description (cards and search)</label><textarea id="sd" onChange="{{dirty}}" style="min-height: 4rem">A three-bedroom beach house in Surfside Beach, Texas, with a long covered deck that looks straight out over the Gulf of Mexico.</textarea></div>
+              <div class="field full"><label for="fd">Full description</label><textarea id="fd" onChange="{{dirty}}" style="min-height: 9rem">Made for families and friends who want the Gulf at the front door, breakfast on the deck and enough room for everyone to spread out after a day on the sand. The beach is about a 5-minute walk and Jetty Park about 10.</textarea></div>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="c2">
+            <h2 id="c2">Rooms and capacity</h2>
+            <div class="counts">
+              <div class="field"><label>Max guests</label><div class="stepper"><output>{{guests}}</output><div><button type="button" aria-label="Fewer guests" onClick="{{gDown}}">−</button><button type="button" aria-label="More guests" onClick="{{gUp}}">+</button></div></div></div>
+              <div class="field"><label for="br">Bedrooms</label><input id="br" type="text" value="3" onChange="{{dirty}}"></div>
+              <div class="field"><label for="bd">Beds</label><input id="bd" type="text" value="6" onChange="{{dirty}}"></div>
+              <div class="field"><label for="ba">Bathrooms</label><input id="ba" type="text" value="2" onChange="{{dirty}}"></div>
+            </div>
+            <p class="field-label" style="font: 500 0.72rem/1 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--label-ink)">Sleeping arrangements</p>
+            <div class="beds">
+              <div class="field"><label for="b1">Bedroom 1</label><input id="b1" type="text" value="1 queen bed" onChange="{{dirty}}"></div>
+              <div class="field"><label for="b2">Bedroom 2</label><input id="b2" type="text" value="1 queen bed" onChange="{{dirty}}"></div>
+              <div class="field"><label for="b3">Bedroom 3</label><input id="b3" type="text" value="2 bunk beds" onChange="{{dirty}}"></div>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="c3">
+            <div class="rowb"><div><h2 id="c3">Amenities</h2><p class="sub">Highlighted amenities appear on the home page. {{amenCount}} of 12 highlighted. The full list of 55 comes from the Airbnb listing.</p></div><a href="#all-amenities" style="font-size: 0.88rem; font-weight: 600">Edit full list (55)</a></div>
+            <div class="chips">
+              <sc-for list="{{amen}}" as="a" hint-placeholder-count="12">
+                <button type="button" class="chip {{a.cls}}" aria-pressed="{{a.on}}" onClick="{{a.toggle}}">{{a.label}}</button>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="s1">
+            <h2 id="s1">Publishing</h2>
+            <div class="sw"><div><b>Visible on website</b><small>Guests can see and book it</small></div><button type="button" class="tg" role="switch" aria-checked="true" aria-label="Visible on website"></button></div>
+            <div class="field"><label for="sl">Page address</label><input id="sl" type="text" value="/homes/surfside-sunrise-house" onChange="{{dirty}}"></div>
+            <div class="field"><label for="ab">Airbnb listing</label><input id="ab" type="url" value="airbnb.com.vn/rooms/1769640627295243012" onChange="{{dirty}}"></div>
+          </section>
+          <section class="card" aria-labelledby="s2">
+            <h2 id="s2">Map pin</h2>
+            <p class="sub" style="margin: 0">Guests see an approximate area. The exact address is sent only after a booking is confirmed.</p>
+            <div class="g2"><div class="field"><label for="la">Latitude</label><input id="la" type="text" value="28.9438" onChange="{{dirty}}"></div><div class="field"><label for="lo">Longitude</label><input id="lo" type="text" value="-95.2913" onChange="{{dirty}}"></div></div>
+            <div class="field"><label for="ad">Exact address (private)</label><input id="ad" type="text" placeholder="Shared with confirmed guests only" onChange="{{dirty}}"></div>
+          </section>
+          <section class="card" aria-labelledby="s3">
+            <h2 id="s3">Search preview</h2>
+            <div style="font-size: 0.86rem; display: flex; flex-direction: column; gap: 0.25rem"><span style="color: var(--ok-ink)">seathesunrise.com › homes › surfside-sunrise-house</span><b style="color: #1a0dab; font-weight: 500; font-size: 1rem">Surfside Sunrise House · Surfside Beach TX beach house rental</b><span class="dash">A three-bedroom beach house in Surfside Beach, Texas, with a long covered deck…</span></div>
+            <span class="todo" style="align-self: flex-start">Domain TODO</span>
+          </section>
+        </aside>
+      </div>
+    </main>
+    <div class="savebar" role="region" aria-label="Save changes">
+      <span>{{saveText}}</span>
+      <div class="acts"><button type="button" class="btn btn-line btn-sm" onClick="{{discard}}">Discard</button><button type="button" class="btn btn-navy btn-sm" onClick="{{save}}">Save changes</button></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      guests: 8, dirty: false, saved: false,
+      on: ['Beach access', 'Gulf-view deck', 'Full kitchen', 'Dishwasher', 'Outdoor dining', 'Wi-Fi', 'Dedicated workspace', 'Free parking', 'EV charger', 'Central air', 'Washer & dryer', 'Self check-in']
+    };
+  }
+  renderVals() {
+    const { guests, dirty, saved, on } = this.state;
+    const all = ['Beach access', 'Gulf-view deck', 'Full kitchen', 'Dishwasher', 'Outdoor dining', 'Wi-Fi', 'Dedicated workspace', 'Free parking', 'EV charger', 'Central air', 'Washer & dryer', 'Self check-in'];
+    const mark = () => this.setState({ dirty: true, saved: false });
+    return {
+      guests,
+      gDown: () => this.setState({ guests: Math.max(1, guests - 1), dirty: true, saved: false }),
+      gUp: () => this.setState({ guests: guests + 1, dirty: true, saved: false }),
+      dirty: mark,
+      amenCount: on.length,
+      amen: all.map((a) => ({
+        label: a,
+        on: on.includes(a) ? 'true' : 'false',
+        cls: on.includes(a) ? 'on' : '',
+        toggle: () => this.setState({ on: on.includes(a) ? on.filter((x) => x !== a) : on.concat(a), dirty: true, saved: false })
+      })),
+      saveText: saved ? 'Saved (demo). The website updates right away.' : dirty ? 'You have unsaved changes.' : 'All changes saved.',
+      save: () => this.setState({ dirty: false, saved: true }),
+      discard: () => this.setState({ dirty: false, saved: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

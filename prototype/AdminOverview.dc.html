@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Overview — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.kpis.k4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi a{font-size:.82rem;font-weight:600}
+.act{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:1rem 1.125rem;border-radius:var(--radius-field);background:var(--warn-bg);border:1px solid rgba(0,0,0,.04)}
+.act b{display:block;color:var(--navy);font:600 1rem/1.3 var(--font-head)}
+.act small{color:var(--text);font-size:.86rem}
+.mono{font:600 .84rem/1 var(--font-mono);color:var(--navy)}
+.up{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.up li{display:grid;grid-template-columns:3.5rem minmax(0,1fr) auto;gap:.875rem;align-items:center;padding:.75rem 0;border-top:1px solid var(--line)}
+.up li:first-child{border-top:0}
+.dt{display:flex;flex-direction:column;align-items:center;justify-content:center;height:3.5rem;border-radius:.75rem;background:var(--sky-l);color:var(--navy)}
+.dt small{font:600 .68rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--label-ink)}
+.dt b{font:600 1.25rem/1.1 var(--font-head)}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.75rem;font-size:.88rem}
+.feed li{display:grid;grid-template-columns:.75rem minmax(0,1fr);gap:.625rem}
+.feed li::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--gulf);margin-top:.4rem}
+.feed small{display:block;color:var(--muted)}
+@media (max-width:1100px){.kpis.k4{grid-template-columns:1fr 1fr}}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="overview" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Friday, Oct 23, 2026</span><h1>Good morning, Ngoc Anh</h1></div>
+      <div class="acts"><span class="demo">Sample data</span><a class="btn btn-line btn-sm" href="AdminBookingNew.dc.html">+ Add booking</a></div>
+    </header>
+    <main class="adm-body">
+      <div class="act" role="status">
+        <div><b>1 booking is waiting for your approval</b><small>SSR-7K4Q2M · Jordan Lee · Nov 6 – 9 · paid, dates held. Decide by <span class="todo">TODO</span>.</small></div>
+        <a class="btn btn-navy btn-sm" href="AdminBookingDetail.dc.html">Review booking</a>
+      </div>
+      <div class="kpis k4">
+        <div class="kpi"><small>Awaiting approval</small><b>1</b><a href="AdminBookings.dc.html">View</a></div>
+        <div class="kpi"><small>Upcoming stays</small><b>1</b><a href="AdminCalendar.dc.html">Calendar</a></div>
+        <div class="kpi"><small>Questions to answer</small><b>2</b><a href="AdminQuestions.dc.html">Inbox</a></div>
+        <div class="kpi"><small>Paid this month (USD)</small><b><span class="todo">TODO</span></b><a href="AdminPayments.dc.html">Payments</a></div>
+      </div>
+      <div class="split">
+        <section class="card" aria-labelledby="u-h">
+          <div class="rowb"><h2 id="u-h">Next arrivals</h2><a class="btn btn-line btn-sm" href="AdminBookings.dc.html">All bookings</a></div>
+          <ul class="up">
+            <li><span class="dt"><small>Nov</small><b>6</b></span><div><b style="color: var(--navy)">Jordan Lee</b><span class="dash" style="display: block; font-size: 0.84rem">Nov 6 – 9 · 4 guests, 1 pet · <span class="mono">SSR-7K4Q2M</span></span></div><span class="badge wait">Awaiting approval</span></li>
+            <li><span class="dt"><small>Nov</small><b>26</b></span><div><b style="color: var(--navy)">Sample guest H</b><span class="dash" style="display: block; font-size: 0.84rem">Nov 26 – 29 · 6 guests · <span class="mono">SSR-2M6V8A</span></span></div><span class="badge ok">Confirmed</span></li>
+            <li><span class="dt"><small>Dec</small><b>11</b></span><div><b style="color: var(--navy)">Sample guest B</b><span class="dash" style="display: block; font-size: 0.84rem">Dec 11 – 14 · 2 guests · <span class="mono">SSR-9W2N6T</span></span></div><span class="badge info">Payment processing</span></li>
+          </ul>
+        </section>
+        <section class="card" aria-labelledby="f-h">
+          <h2 id="f-h">Recent activity</h2>
+          <ul class="feed">
+            <li><div>Payment confirmed for SSR-7K4Q2M<small>Today, 10:44 · signed webhook</small></div></li>
+            <li><div>New question from Sample guest E<small>Today, 9:40</small></div></li>
+            <li><div>Checkout opened for SSR-9W2N6T<small>Today, 9:12 · dates held</small></div></li>
+            <li><div>Payment failed for SSR-3H8P1D, dates released<small>Yesterday, 18:07</small></div></li>
+            <li><div>You declined SSR-5R7C2K and refunded it<small>Oct 19–20</small></div></li>
+          </ul>
+        </section>
+      </div>
+      <section class="card" aria-labelledby="s-h">
+        <div class="rowb"><div><h2 id="s-h">Before guests can book</h2><p class="sub">The website needs these from you.</p></div><a class="btn btn-line btn-sm" href="AdminEditPricing.dc.html">Set prices</a></div>
+        <div class="list" style="font-size: 0.9rem"><div><span>Nightly rate</span><span class="badge wait">Missing</span></div><div><span>Check-in and check-out times</span><span class="badge wait">Missing</span></div><div><span>Lodging tax</span><span class="badge wait">Missing</span></div><div><span>Policies approved</span><a href="AdminSetPolicies.dc.html">0 of 5</a></div></div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

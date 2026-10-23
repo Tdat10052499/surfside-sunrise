@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Edit home: house rules — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--navy);box-shadow:0 1px 2px rgba(20,40,64,.12)}
+.prev{display:flex;flex-direction:column;gap:.5rem;font-size:.88rem}
+.prev div{display:flex;justify-content:space-between;gap:.75rem;padding:.625rem .75rem;border-radius:var(--radius-xs);background:var(--wall)}
+.prev b{color:var(--navy);font-weight:600;text-align:right}
+.prev span{white-space:nowrap}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="homes" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb"><a href="AdminHomes.dc.html">Homes</a> / Edit</span><h1>Surfside Sunrise House</h1></div>
+      <div class="acts"><span class="badge ok">Published</span><a class="btn btn-line btn-sm" href="Detail.dc.html">View on site</a></div>
+    </header>
+    <main class="adm-body">
+      <nav class="tabs" aria-label="Edit home">
+        <a href="AdminEditContent.dc.html">Content &amp; amenities</a>
+        <a href="AdminEditMedia.dc.html">Photos &amp; video</a>
+        <a href="AdminEditRules.dc.html" aria-current="page">House rules</a>
+        <a href="AdminEditPricing.dc.html">Pricing</a>
+        <a href="AdminEditFees.dc.html">Fees</a>
+      </nav>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; min-width: 0">
+          <section class="card" aria-labelledby="r1">
+            <div><h2 id="r1">Arrival and stay</h2><p class="sub">Empty fields show as “Confirmed when you book” on the website.</p></div>
+            <div class="fgrid">
+              <div class="field"><label for="ci">Check-in from</label><input id="ci" type="text" placeholder="e.g. 4:00 PM"></div>
+              <div class="field"><label for="co">Check-out by</label><input id="co" type="text" placeholder="e.g. 10:00 AM"></div>
+              <div class="field"><label for="mn">Minimum nights</label><input id="mn" type="text" placeholder="Set by host"></div>
+              <div class="field"><label for="mg">Maximum guests</label><input id="mg" type="text" value="8"></div>
+              <div class="field full"><label for="ck">Check-in method</label><input id="ck" type="text" value="Self check-in with a lockbox"></div>
+              <div class="field full"><label for="ins">Arrival instructions (sent only to confirmed guests)</label><textarea id="ins" placeholder="Lockbox code, parking spot, Wi-Fi name and password"></textarea></div>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="r2">
+            <h2 id="r2">Pets, smoking and events</h2>
+            <div>
+              <div class="sw"><div><b>Pets allowed</b><small>Pet fee is set on the Fees tab ($50 per pet per stay)</small></div><button type="button" class="tg" role="switch" aria-checked="{{petsStr}}" aria-label="Pets allowed" onClick="{{togglePets}}"></button></div>
+              <sc-if value="{{pets}}" hint-placeholder-val="{{true}}"><div class="sw"><div><b>Maximum pets</b><small>Guests can’t pick more than this</small></div><div class="field" style="width: 8rem"><label for="mp">Pets</label><input id="mp" type="text" placeholder="Set"></div></div></sc-if>
+              <div class="sw"><div><b>Smoking</b><small>Shown on the house rules page</small></div><div class="seg" role="group" aria-label="Smoking"><button type="button" aria-pressed="{{smNo}}" onClick="{{smokeNo}}">Not allowed</button><button type="button" aria-pressed="{{smOut}}" onClick="{{smokeOut}}">Outside only</button></div></div>
+              <div class="sw"><div><b>Parties and events</b><small>Shown on the house rules page</small></div><div class="seg" role="group" aria-label="Parties"><button type="button" aria-pressed="{{ptNo}}" onClick="{{partyNo}}">Not allowed</button><button type="button" aria-pressed="{{ptAsk}}" onClick="{{partyAsk}}">Ask the host</button></div></div>
+            </div>
+            <p class="hint">Smoking and party rules are not set yet. Nothing is selected until the host decides.</p>
+          </section>
+          <section class="card" aria-labelledby="r3">
+            <h2 id="r3">Other rules</h2>
+            <div class="fgrid">
+              <div class="field"><label for="qh">Quiet hours</label><input id="qh" type="text" placeholder="e.g. 10 PM – 7 AM"></div>
+              <div class="field"><label for="dm">Security deposit</label><input id="dm" type="text" placeholder="Set on the Fees tab"></div>
+              <div class="field full"><label for="dp">Damage and lost items</label><textarea id="dp" placeholder="What happens if something is broken or lost"></textarea></div>
+            </div>
+          </section>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="pv">
+            <h2 id="pv">How guests see it</h2>
+            <div class="prev">
+              <div><span>Check-in</span><b>Confirmed when you book</b></div>
+              <div><span>Check-out</span><b>Confirmed when you book</b></div>
+              <div><span>Guests</span><b>Up to 8</b></div>
+              <div><span>Pets</span><b>{{petsPreview}}</b></div>
+              <div><span>Smoking</span><b>{{smokePreview}}</b></div>
+            </div>
+            <p class="sub" style="margin: 0">Guests tick “I agree to the house rules” in booking step 2.</p>
+          </section>
+          <section class="card" aria-labelledby="pl"><h2 id="pl">Full house rules page</h2><p class="sub" style="margin: 0">The longer text lives in Settings › Policies, shared by all homes.</p><a class="btn btn-line btn-sm" href="AdminSetPolicies.dc.html" style="align-self: flex-start">Edit policy text</a></section>
+        </aside>
+      </div>
+    </main>
+    <div class="savebar" role="region" aria-label="Save changes"><span>{{saveText}}</span><div class="acts"><button type="button" class="btn btn-line btn-sm" onClick="{{discard}}">Discard</button><button type="button" class="btn btn-navy btn-sm" onClick="{{save}}">Save changes</button></div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { pets: true, smoke: null, party: null, saved: false };
+  }
+  renderVals() {
+    const { pets, smoke, party, saved } = this.state;
+    const p = (v) => (v ? 'true' : 'false');
+    return {
+      pets,
+      petsStr: p(pets),
+      togglePets: () => this.setState({ pets: !pets, saved: false }),
+      smNo: p(smoke === 'no'), smOut: p(smoke === 'out'),
+      smokeNo: () => this.setState({ smoke: 'no', saved: false }),
+      smokeOut: () => this.setState({ smoke: 'out', saved: false }),
+      ptNo: p(party === 'no'), ptAsk: p(party === 'ask'),
+      partyNo: () => this.setState({ party: 'no', saved: false }),
+      partyAsk: () => this.setState({ party: 'ask', saved: false }),
+      petsPreview: pets ? '$50 per pet per stay' : 'Not allowed',
+      smokePreview: smoke === 'no' ? 'Not allowed' : smoke === 'out' ? 'Outside only' : 'Ask the host',
+      saveText: saved ? 'Saved (demo).' : 'Changes apply to new bookings only.',
+      save: () => this.setState({ saved: true }),
+      discard: () => this.setState({ smoke: null, party: null, saved: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

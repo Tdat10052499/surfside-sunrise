@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Find my booking — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--sky-l)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.lk{max-width:var(--content-max);margin-inline:auto;box-sizing:border-box;padding:clamp(2rem,5vw,4rem) max(var(--gutter),3vw) 5rem;display:grid;grid-template-columns:minmax(0,25rem) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:start}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-panel);padding:clamp(1.25rem,3vw,2.25rem);display:flex;flex-direction:column;gap:1.125rem}
+.lk-head h1{font-size:clamp(1.9rem,3.6vw,2.6rem);line-height:1.1}
+.lk-head .lede{color:var(--muted);margin:0}
+.bcode{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--sky-l);border-radius:var(--radius-field);padding:1rem 1.125rem}
+.bcode small{display:block;font:500 .72rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--label-ink);margin-bottom:.375rem}
+.bcode b{font:700 1.2rem/1 var(--font-mono);color:var(--navy);letter-spacing:.06em}
+.tl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem}
+.tl li{display:flex;flex-direction:column;gap:.5rem;font-size:.84rem;color:var(--muted)}
+.tl li::before{content:"";height:4px;border-radius:2px;background:var(--line)}
+.tl li.done::before{background:var(--gulf)}
+.tl li.now{color:var(--navy);font-weight:600}
+.tl li.now::before{background:var(--navy)}
+.tl li.stop::before{background:var(--bad-ink,#b42318)}
+.tl b{font:600 .9rem/1.3 var(--font-head);color:inherit}
+.kv{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.625rem 1rem;font-size:.92rem}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;text-align:right;color:var(--navy);font-weight:600;overflow-wrap:anywhere}
+.note{display:flex;gap:.75rem;align-items:flex-start;padding:.875rem 1rem;border-radius:var(--radius-field);background:var(--wall);font-size:.9rem}
+.note svg{flex:none;margin-top:.15rem;width:1.125rem;height:1.125rem;fill:none;stroke:var(--gulf-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.75rem;padding:3rem 1.5rem;color:var(--muted)}
+.empty svg{width:2.5rem;height:2.5rem;fill:none;stroke:var(--gulf-ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.sim{border:1.5px dashed var(--warn-ink);background:var(--warn-bg);border-radius:var(--radius-card);padding:.875rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;font-size:.86rem}
+.sim button{all:unset;cursor:pointer;padding:.375rem .75rem;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--navy);font-weight:600}
+.sim button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sim button:focus-visible{outline:2px solid var(--gulf);outline-offset:2px}
+@media (max-width:900px){.lk{grid-template-columns:1fr}.tl{grid-template-columns:1fr 1fr}}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--sky-l); min-height: 100vh">
+  <dc-import name="Header" tone="light" hint-size="100%,84px"></dc-import>
+  <main class="lk">
+    <section class="panel" aria-labelledby="lk-h">
+      <div class="lk-head" style="display: flex; flex-direction: column; gap: 0.75rem; text-align: left"><span class="eyebrow">Your booking</span><h1 id="lk-h">Find my booking</h1><p class="lede">Enter the booking code from your email and the email you booked with. No account needed.</p></div>
+      <div class="field"><label for="bc">Booking code</label><input id="bc" type="text" value="{{code}}" onChange="{{setCode}}" placeholder="SSR-XXXXXX" autocomplete="off" style="font-family: var(--font-mono); text-transform: uppercase"></div>
+      <div class="field"><label for="be">Email</label><input id="be" type="email" value="{{email}}" onChange="{{setEmail}}" autocomplete="email"></div>
+      <p class="err" role="alert">{{err}}</p>
+      <button type="button" class="btn btn-navy" onClick="{{find}}">Find booking</button>
+      <button type="button" class="btn btn-line btn-sm" onClick="{{fill}}" style="align-self: flex-start">Fill sample booking (demo)</button>
+      <p class="hint">Lost your code? Contact the host with the name and dates you booked: <a href="tel:4086684189">408-668-4189</a> · <a href="mailto:ngocanhrealtor@gmail.com">ngocanhrealtor@gmail.com</a></p>
+    </section>
+    <div style="display: flex; flex-direction: column; gap: 1rem; min-width: 0">
+      <sc-if value="{{none}}" hint-placeholder-val="{{false}}">
+        <section class="panel"><div class="empty"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><b style="color: var(--navy)">Your booking will show here</b><span>Status, dates, guests and what you paid.</span></div></section>
+      </sc-if>
+      <sc-if value="{{found}}" hint-placeholder-val="{{true}}">
+        <section class="panel" aria-labelledby="st-h" role="status">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap"><h2 id="st-h" style="font-size: 1.5rem">{{s.title}}</h2><span class="badge {{s.badge}}">{{s.label}}</span></div>
+          <div class="bcode"><div><small>Booking code <span class="demo" style="margin-left: 0.25rem">Sample</span></small><b>SSR-7K4Q2M</b></div><span class="hint" style="margin: 0">Booked Oct 23, 2026</span></div>
+          <ol class="tl" aria-label="Booking progress">
+            <sc-for list="{{s.steps}}" as="t" hint-placeholder-count="4"><li class="{{t.cls}}"><b>{{t.name}}</b>{{t.sub}}</li></sc-for>
+          </ol>
+          <dl class="kv">
+            <dt>Home</dt><dd><a href="Detail.dc.html">Surfside Sunrise House</a></dd>
+            <dt>Dates</dt><dd>Fri, Nov 6 – Mon, Nov 9, 2026 · 3 nights</dd>
+            <dt>Guests</dt><dd>4 guests · 1 pet</dd>
+            <dt>Guest</dt><dd>Jordan Lee</dd>
+            <dt>{{s.moneyLabel}}</dt><dd><span class="todo">TODO</span></dd>
+          </dl>
+          <div class="note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>{{s.note}}</span></div>
+          <sc-if value="{{s.arrival}}" hint-placeholder-val="{{false}}">
+            <dl class="kv" style="padding-top: 1rem; border-top: 1px solid var(--line)"><dt>Check-in</dt><dd><span class="todo">TODO</span></dd><dt>Check-out</dt><dd><span class="todo">TODO</span></dd><dt>Getting in</dt><dd>Self check-in with a lockbox</dd></dl>
+          </sc-if>
+        </section>
+        <section class="panel" aria-labelledby="ch-h">
+          <h2 id="ch-h" style="font-size: 1.25rem">Change dates or cancel</h2>
+          <p style="margin: 0">Changes are made by the host. Call or email Ngoc Anh and give your booking code <b style="font-family: var(--font-mono); color: var(--navy)">SSR-7K4Q2M</b>.</p>
+          <div class="actions">
+            <a class="btn btn-navy btn-sm" href="tel:4086684189">Call 408-668-4189</a>
+            <a class="btn btn-line btn-sm" href="mailto:ngocanhrealtor@gmail.com?subject=Booking%20SSR-7K4Q2M">Email the host</a>
+            <a class="btn btn-line btn-sm" href="PolicyCancellation.dc.html">Cancellation policy</a>
+          </div>
+        </section>
+        <div class="sim" role="group" aria-label="Preview other statuses"><span class="demo">Prototype only</span><span>Show status:</span>
+          <sc-for list="{{sims}}" as="m" hint-placeholder-count="6"><button type="button" aria-pressed="{{m.on}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+  <dc-import name="Footer" hint-size="100%,600px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { code: '', email: '', err: '', found: false, st: 'await' };
+  }
+  renderVals() {
+    const { code, email, err, found, st } = this.state;
+    const S = {
+      proc: { label: 'Payment processing', badge: 'info', title: 'We’re waiting for the payment provider', moneyLabel: 'Amount (USD)', note: 'Your dates are held. This page updates when the payment provider confirms.', at: 0 },
+      await: { label: 'Paid · awaiting host approval', badge: 'wait', title: 'The host is reviewing your booking', moneyLabel: 'Paid (USD)', note: 'Your dates are reserved while the host reviews. If the host declines, your payment is refunded in full.', at: 1 },
+      conf: { label: 'Confirmed', badge: 'ok', title: 'Your stay is confirmed', moneyLabel: 'Paid (USD)', note: 'The address and lockbox code are sent by email before you arrive.', at: 3, arrival: true },
+      decl: { label: 'Declined · refunded', badge: 'bad', title: 'The host couldn’t approve this booking', moneyLabel: 'Refunded (USD)', note: 'Your payment was refunded in full to the card you paid with. Other dates may still be free.', at: 2, stop: true },
+      canc: { label: 'Cancelled · refunded', badge: 'off', title: 'This booking is cancelled', moneyLabel: 'Refunded (USD)', note: 'The refund follows the cancellation policy you agreed to when you paid.', at: 2, stop: true },
+      fail: { label: 'Payment failed', badge: 'bad', title: 'The payment didn’t go through', moneyLabel: 'Charged (USD)', note: 'Nothing was charged and the dates were released. You can book again.', at: 0, stop: true }
+    };
+    const s = S[st];
+    const names = [['Payment', 'Card payment through the provider'], ['Host review', 'Ngoc Anh approves or declines'], [s.stop && s.at === 2 ? (st === 'decl' ? 'Declined' : 'Cancelled') : 'Confirmed', s.stop && s.at === 2 ? 'Refund sent' : 'Email with your details'], ['Stay', 'Nov 6 – 9, 2026']];
+    const steps = names.map(([name, sub], i) => ({ name, sub, cls: s.stop && i === s.at ? 'stop' : i < s.at || (st === 'conf' && i < 3) ? 'done' : i === s.at ? 'now' : '' }));
+    const sims = [['proc', 'Processing'], ['await', 'Awaiting approval'], ['conf', 'Confirmed'], ['decl', 'Declined'], ['canc', 'Cancelled'], ['fail', 'Failed']];
+    return {
+      code, email, err,
+      setCode: (e) => this.setState({ code: e.target.value.toUpperCase(), err: '' }),
+      setEmail: (e) => this.setState({ email: e.target.value, err: '' }),
+      fill: () => this.setState({ code: 'SSR-7K4Q2M', email: 'jordan.lee@example.com', err: '' }),
+      find: () => {
+        if (!/^SSR-[A-Z0-9]{6}$/.test(code.trim())) { this.setState({ err: 'Booking codes look like SSR-7K4Q2M.', found: false }); return; }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) { this.setState({ err: 'Enter the email you booked with.', found: false }); return; }
+        if (code.trim() !== 'SSR-7K4Q2M' || email.trim().toLowerCase() !== 'jordan.lee@example.com') { this.setState({ err: 'We couldn’t find a booking with that code and email. Check both, or contact the host.', found: false }); return; }
+        this.setState({ found: true, err: '' });
+      },
+      none: !found, found,
+      s: { ...s, steps, arrival: !!s.arrival },
+      sims: sims.map(([k, label]) => ({ label, on: st === k ? 'true' : 'false', pick: () => this.setState({ st: k }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

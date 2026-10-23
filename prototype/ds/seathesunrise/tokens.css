@@ -1,0 +1,22 @@
+/* Seathesunrise — generated from tokens.json */
+:root, [data-theme="light"] {--white:#ffffff;--sky-l:#eef6fa;--sand-l:#f6f0e7;--wall:#eef1f2;--line:#dde3e7;--navy:#1f3552;--navy-2:#2a4769;--text:#2c3946;--muted:#6a7784;--fade:#c3ccd4;--gulf:#3d7ea8;--gulf-ink:#336f97;--sky:#e4f0f6;--deck:#d9c7ae;--oak:#6d5444;--glass:#7cc5c7;--sun:#f1bf45;--label-ink:#525f6c;--ok-ink:#1d6b45;--ok-bg:#e3f5eb;--ok-dot:#2fa66a;--err:#b3261e;--err-bg:#fbe9e7;--warn-ink:#8a5a00;--warn-bg:#fdf1d6;--shadow:0 24px 60px -28px rgba(20,40,64,.45);--shadow-hover:0 18px 40px -24px rgba(20,40,64,.4);--shadow-amen:0 18px 40px -26px rgba(109,84,68,.55);--shadow-faq:0 18px 44px -28px rgba(20,40,64,.45);--shadow-float:0 40px 80px -36px rgba(0,0,0,.65);--shadow-bar:0 10px 30px -18px rgba(20,40,64,.45), inset 0 0 0 1px rgba(255,255,255,.6);--focus-halo:0 0 0 4px rgba(61,126,168,.14);}
+:root {--space-4:4px;--space-6:6px;--space-8:8px;--space-10:10px;--space-12:12px;--space-14:14px;--space-18:18px;--space-20:20px;--space-22:22px;--space-26:26px;--space-40:40px;--gutter:16px;--section-y-min:80px;--section-y-max:140px;--head-gap-max:60px;--bar-height:60px;--content-max:1180px;--narrow-max:780px;--radius-xs:6px;--radius-focus:8px;--radius-sm:12px;--radius-field:14px;--radius-card:16px;--radius-r:18px;--radius-lg:20px;--radius-panel:24px;--radius-clip:28px;--radius-pill:999px;--dur-200:.2s;--dur-250:.25s;--dur-300:.3s;--dur-350:.35s;--dur-450:.45s;--dur-500:.5s;--dur-800:.8s;--dur-900:.9s;--dur-1200:1.2s;--ease:cubic-bezier(.22,.7,.18,1);--font-head:"Plus Jakarta Sans", "Plus Jakarta Sans Fallback", "Segoe UI", system-ui, sans-serif;--font-body:"Inter", "Inter Fallback", "Segoe UI", system-ui, sans-serif;--font-mono:ui-monospace, Menlo, Consolas, monospace;}
+.hero-title{font-family:var(--font-head);font-size:80px;line-height:1.04;font-weight:600;letter-spacing:-0.025em;}
+.section-title{font-family:var(--font-head);font-size:46.4px;line-height:1.15;font-weight:600;letter-spacing:-0.025em;}
+.marquee{font-family:var(--font-head);font-size:41.6px;line-height:1;font-weight:600;letter-spacing:-0.02em;}
+.statement{font-family:var(--font-head);font-size:38.4px;line-height:1.3;font-weight:600;letter-spacing:-0.02em;}
+.footer-big{font-family:var(--font-head);font-size:73.6px;line-height:1;font-weight:600;letter-spacing:-0.035em;}
+.card-title{font-family:var(--font-head);font-size:24.8px;line-height:1.6;font-weight:600;letter-spacing:-0.025em;}
+.tile-title{font-family:var(--font-head);font-size:15.68px;line-height:1.25;font-weight:600;}
+.faq-question{font-family:var(--font-head);font-size:16px;line-height:1.4;font-weight:600;}
+.logo{font-family:var(--font-head);font-size:15.2px;line-height:1;font-weight:700;letter-spacing:0.1em;}
+.body{font-family:var(--font-body);font-size:16px;line-height:1.6;font-weight:400;}
+.field-input{font-family:var(--font-body);font-size:15.36px;line-height:1.3;font-weight:500;}
+.button{font-family:var(--font-body);font-size:14.72px;line-height:1;font-weight:600;}
+.meta{font-family:var(--font-body);font-size:14.08px;line-height:1.6;font-weight:400;}
+.small{font-family:var(--font-body);font-size:13.12px;line-height:1.5;font-weight:400;}
+.eyebrow{font-family:var(--font-body);font-size:12.48px;line-height:1;font-weight:500;letter-spacing:0.14em;}
+.field-label{font-family:var(--font-body);font-size:11.2px;line-height:1;font-weight:500;letter-spacing:0.06em;}
+.code{font-family:var(--font-mono);font-size:13.44px;line-height:1.55;font-weight:600;}
+@font-face{font-family:'Plus Jakarta Sans';src:url('fonts/plus-jakarta-sans-latin-var.woff2') format('woff2');font-weight:200 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/inter-latin-var.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Calendar — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.mhead{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.mhead h2{font-size:1.25rem}
+.nav2{display:flex;gap:.375rem}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.375rem}
+.dow{font:500 .72rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--label-ink);text-align:center;padding:.375rem 0}
+.cell{all:unset;box-sizing:border-box;cursor:pointer;min-height:5.25rem;border-radius:.75rem;border:1px solid var(--line);background:var(--white);padding:.5rem;display:flex;flex-direction:column;gap:.25rem;font-size:.78rem;color:var(--text)}
+.cell b{font:600 .92rem/1 var(--font-head);color:var(--navy)}
+.cell:hover{border-color:var(--gulf)}
+.cell:focus-visible{outline:2px solid var(--gulf);outline-offset:1px}
+.cell.pad{visibility:hidden}
+.cell.past{background:var(--wall);color:var(--muted);cursor:default}
+.cell.past b{color:var(--muted)}
+.cell.conf{background:var(--navy);border-color:var(--navy);color:#fff}
+.cell.conf b{color:#fff}
+.cell.wait{background:var(--warn-bg);border-color:var(--warn-ink)}
+.cell.held{background:var(--sky);border-color:var(--gulf)}
+.cell.block{background:repeating-linear-gradient(135deg,var(--wall) 0 6px,#fff 6px 12px);border-style:dashed}
+.cell.sel{box-shadow:0 0 0 2px var(--gulf) inset}
+.cell .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:.82rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.375rem}
+.legend i{width:.875rem;height:.875rem;border-radius:.25rem;border:1px solid var(--line);display:inline-block}
+.legend .l-conf{background:var(--navy)}.legend .l-wait{background:var(--warn-bg);border-color:var(--warn-ink)}.legend .l-held{background:var(--sky)}.legend .l-block{background:repeating-linear-gradient(135deg,var(--wall) 0 3px,#fff 3px 6px)}
+.mono{font:600 .84rem/1 var(--font-mono);color:var(--navy)}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="calendar" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb">Manage</span><h1>Calendar</h1></div>
+      <div class="acts"><span class="demo">Sample data</span><select aria-label="Home" style="height: 2.5rem; border-radius: 999px; border: 1.5px solid var(--line); padding: 0 1rem; font: inherit; font-size: 0.88rem"><option>Surfside Sunrise House</option></select><a class="btn btn-navy btn-sm" href="AdminBookingNew.dc.html">+ Add booking</a></div>
+    </header>
+    <main class="adm-body">
+      <div class="split">
+        <section class="card" aria-labelledby="m-h">
+          <div class="mhead"><h2 id="m-h">{{monthName}}</h2><div class="nav2"><button type="button" class="btn btn-line btn-sm" onClick="{{prev}}" aria-label="Previous month">‹</button><button type="button" class="btn btn-line btn-sm" onClick="{{next}}" aria-label="Next month">›</button></div></div>
+          <div class="grid" role="grid" aria-labelledby="m-h">
+            <sc-for list="{{dows}}" as="d" hint-placeholder-count="7"><span class="dow" role="columnheader">{{d}}</span></sc-for>
+            <sc-for list="{{cells}}" as="c" hint-placeholder-count="35"><button type="button" class="cell {{c.cls}}" onClick="{{c.pick}}" aria-label="{{c.aria}}" role="gridcell"><b>{{c.n}}</b><span class="t">{{c.tag}}</span></button></sc-for>
+          </div>
+          <div class="legend"><span><i class="l-conf"></i>Confirmed</span><span><i class="l-wait"></i>Paid, awaiting approval</span><span><i class="l-held"></i>Held during payment</span><span><i class="l-block"></i>Blocked by host</span><span><i></i>Free</span></div>
+        </section>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="d-h">
+            <h2 id="d-h">{{sel.title}}</h2>
+            <sc-if value="{{sel.none}}" hint-placeholder-val="{{true}}"><p class="sub" style="margin: 0">Pick a day to see who’s staying, block it or set a price for that night.</p></sc-if>
+            <sc-if value="{{sel.isBooking}}" hint-placeholder-val="{{false}}">
+              <div class="list" style="font-size: 0.9rem"><div><span>Booking</span><span class="mono">{{sel.code}}</span></div><div><span>Guest</span><span>{{sel.guest}}</span></div><div><span>Stay</span><span>{{sel.stay}}</span></div><div><span>Status</span><span class="badge {{sel.badge}}">{{sel.status}}</span></div></div>
+              <a class="btn btn-line btn-sm" href="AdminBookingDetail.dc.html" style="align-self: flex-start">Open booking</a>
+            </sc-if>
+            <sc-if value="{{sel.isFree}}" hint-placeholder-val="{{false}}">
+              <div class="field"><label for="pr">Price for this night ($)</label><input id="pr" type="text" inputmode="decimal" placeholder="Base rate (TODO)"></div>
+              <div class="field"><label for="rs">Reason for blocking (private)</label><input id="rs" type="text" placeholder="e.g. Family stay, repairs"></div>
+              <button type="button" class="btn btn-navy btn-sm" onClick="{{toggleBlock}}" style="align-self: flex-start">Block this night</button>
+            </sc-if>
+            <sc-if value="{{sel.isBlock}}" hint-placeholder-val="{{false}}">
+              <p class="sub" style="margin: 0">Guests see this night as unavailable.</p>
+              <button type="button" class="btn btn-line btn-sm" onClick="{{toggleBlock}}" style="align-self: flex-start">Unblock this night</button>
+            </sc-if>
+          </section>
+          <section class="card" aria-labelledby="r-h">
+            <h2 id="r-h">How dates are kept safe</h2>
+            <ul style="margin: 0; padding-left: 1.125rem; font-size: 0.88rem; line-height: 1.6; display: flex; flex-direction: column; gap: 0.375rem">
+              <li>Blocked and booked nights show as taken on the website calendar.</li>
+              <li>While a guest is paying, the nights are held; they open again if the payment fails or the hold runs out (<span class="todo">TODO</span> minutes).</li>
+              <li>The database refuses two bookings on the same night.</li>
+            </ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { m: 10, sel: null, blocks: ['2026-11-14', '2026-11-15'] };
+  }
+  renderVals() {
+    const { m, sel, blocks } = this.state;
+    const Y = 2026;
+    const today = '2026-10-23';
+    const stays = [
+      { code: 'SSR-7K4Q2M', guest: 'Jordan Lee', a: '2026-11-06', b: '2026-11-09', stay: 'Nov 6 – 9', cls: 'wait', status: 'Awaiting approval', badge: 'wait' },
+      { code: 'SSR-2M6V8A', guest: 'Sample guest H', a: '2026-11-26', b: '2026-11-29', stay: 'Nov 26 – 29', cls: 'conf', status: 'Confirmed', badge: 'ok' },
+      { code: 'SSR-9W2N6T', guest: 'Sample guest B', a: '2026-12-11', b: '2026-12-14', stay: 'Dec 11 – 14', cls: 'held', status: 'Payment processing', badge: 'info' },
+      { code: 'SSR-8P3K5W', guest: 'Sample guest I', a: '2026-12-18', b: '2026-12-21', stay: 'Dec 18 – 21', cls: 'conf', status: 'Confirmed (Airbnb)', badge: 'ok' }
+    ];
+    const pad = (n) => String(n).padStart(2, '0');
+    const first = new Date(Date.UTC(Y, m, 1)).getUTCDay();
+    const days = new Date(Date.UTC(Y, m + 1, 0)).getUTCDate();
+    const name = new Date(Date.UTC(Y, m, 1)).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+    const cells = [];
+    for (let i = 0; i < first; i++) cells.push({ n: '', tag: '', cls: 'pad', aria: '', pick: () => {} });
+    for (let d = 1; d <= days; d++) {
+      const iso = Y + '-' + pad(m + 1) + '-' + pad(d);
+      const s = stays.find((x) => iso >= x.a && iso < x.b);
+      const blocked = blocks.includes(iso);
+      let cls = '', tag = '';
+      if (iso < today) cls = 'past';
+      else if (s) { cls = s.cls; tag = iso === s.a ? s.guest : ''; }
+      else if (blocked) { cls = 'block'; tag = 'Blocked'; }
+      if (sel === iso) cls += ' sel';
+      cells.push({ n: String(d), tag, cls, aria: name.split(' ')[0] + ' ' + d + (s ? ', ' + s.status : blocked ? ', blocked' : ', free'), pick: () => { if (iso >= today) this.setState({ sel: iso }); } });
+    }
+    const s = sel ? stays.find((x) => sel >= x.a && sel < x.b) : null;
+    const isBlock = !!sel && !s && blocks.includes(sel);
+    const title = sel ? new Date(sel + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' }) : 'No day selected';
+    return {
+      monthName: name,
+      dows: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      cells,
+      prev: () => this.setState({ m: Math.max(9, m - 1), sel: null }),
+      next: () => this.setState({ m: Math.min(11, m + 1), sel: null }),
+      sel: { title, none: !sel, isBooking: !!s, isFree: !!sel && !s && !isBlock, isBlock, ...(s || {}) },
+      toggleBlock: () => this.setState({ blocks: isBlock ? blocks.filter((x) => x !== sel) : blocks.concat(sel) })
+    };
+  }
+}
+</script>
+</body>
+</html>

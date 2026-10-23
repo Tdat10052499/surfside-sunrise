@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Payment received, awaiting host approval — Seathesunrise</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--sky-l)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.res{max-width:44rem;margin-inline:auto;padding:clamp(2rem,6vw,4.5rem) max(var(--gutter),3vw) 5rem;display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-panel);padding:clamp(1.5rem,4vw,2.75rem);display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.125rem}
+.card h1{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+.card .lede{max-width:46ch}
+.mark{width:4rem;height:4rem;border-radius:50%;background:var(--sky);color:var(--navy);display:grid;place-items:center}
+.mark svg{width:1.75rem;height:1.75rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bcode{width:100%;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--sky-l);border-radius:var(--radius-field);padding:1rem 1.125rem;text-align:left}
+.bcode small{display:block;font:500 .72rem/1 var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--label-ink);margin-bottom:.375rem}
+.bcode b{font:700 1.2rem/1 var(--font-mono);color:var(--navy);letter-spacing:.06em}
+.tl{width:100%;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;text-align:left}
+.tl li{display:flex;flex-direction:column;gap:.5rem;font-size:.86rem;color:var(--muted)}
+.tl li::before{content:"";height:4px;border-radius:2px;background:var(--line)}
+.tl li.done::before{background:var(--gulf)}
+.tl li.now{color:var(--navy);font-weight:600}
+.tl li.now::before{background:var(--navy)}
+.tl b{font:600 .92rem/1.3 var(--font-head);color:inherit}
+.kv{width:100%;margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.625rem 1rem;text-align:left;font-size:.92rem;padding-top:1rem;border-top:1px solid var(--line)}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;text-align:right;color:var(--navy);font-weight:600;overflow-wrap:anywhere}
+.note{width:100%;display:flex;gap:.75rem;align-items:flex-start;text-align:left;padding:.875rem 1rem;border-radius:var(--radius-field);background:var(--wall);font-size:.9rem}
+.sim{border:1.5px dashed var(--warn-ink);background:var(--warn-bg);border-radius:var(--radius-card);padding:1rem 1.125rem;display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;font-size:.9rem}
+@media (max-width:640px){.tl{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--sky-l); min-height: 100vh">
+  <dc-import name="BookBar" hint-size="100%,72px"></dc-import>
+  <main class="res">
+    <div class="card" role="status">
+      <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg></div>
+      <span class="badge wait">Paid · awaiting host approval</span>
+      <h1>Payment received. The host is reviewing your booking.</h1>
+      <p class="lede">We emailed your receipt to jordan.lee@example.com. You’ll get another email as soon as the host confirms your stay.</p>
+      <div class="bcode">
+        <div><small>Booking code <span class="demo" style="margin-left: 0.25rem">Sample</span></small><b>SSR-7K4Q2M</b></div>
+        <button type="button" class="btn btn-sm btn-line" onClick="{{copy}}">{{copyLabel}}</button>
+      </div>
+      <ol class="tl" aria-label="Booking progress">
+        <li class="done"><b>Payment received</b>Confirmed by the payment provider</li>
+        <li class="now" aria-current="step"><b>Host review</b>Deadline <span class="todo">TODO</span></li>
+        <li><b>Confirmed</b>Email with your booking details</li>
+      </ol>
+      <dl class="kv">
+        <dt>Home</dt><dd>Surfside Sunrise House</dd>
+        <dt>Dates</dt><dd>Fri, Nov 6 – Mon, Nov 9, 2026 · 3 nights</dd>
+        <dt>Guests</dt><dd>4 guests · 1 pet</dd>
+        <dt>Paid (USD)</dt><dd><span class="todo">TODO</span></dd>
+      </dl>
+      <div class="note"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--gulf-ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 0.15rem"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>Your dates are reserved for you while the host reviews. If the host declines, your payment is refunded and we email you.</span></div>
+      <div class="actions" style="width: 100%">
+        <a class="btn btn-navy" href="Lookup.dc.html">Check booking status</a>
+        <a class="btn btn-line" href="Main.dc.html">Back to home</a>
+      </div>
+      <p class="hint">Need to change something? Contact the host with your booking code: <a href="tel:4086684189">408-668-4189</a> · <a href="mailto:ngocanhrealtor@gmail.com">ngocanhrealtor@gmail.com</a></p>
+    </div>
+    <div class="sim"><span class="demo">Prototype only</span><a href="BookConfirmed.dc.html">Host approves the booking</a><a href="EmailGuestDeclined.dc.html">Host declines: refund email</a></div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { copied: false };
+  }
+  renderVals() {
+    return {
+      copyLabel: this.state.copied ? 'Copied' : 'Copy code',
+      copy: () => this.setState({ copied: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

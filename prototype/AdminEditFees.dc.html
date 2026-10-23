@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Edit home: fees — Seathesunrise admin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.fee{display:grid;grid-template-columns:minmax(0,1fr) 11rem 12rem;gap:.75rem;align-items:center;padding:.875rem 0;border-top:1px solid var(--line)}
+.fee:first-of-type{border-top:0}
+.fee b{display:block;color:var(--navy)}
+.fee small{color:var(--muted);font-size:.82rem}
+@media (max-width:900px){.fee{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="adm">
+  <dc-import name="AdminSide" current="homes" hint-size="240px,100%"></dc-import>
+  <div class="adm-main">
+    <header class="adm-top">
+      <div><span class="crumb"><a href="AdminHomes.dc.html">Homes</a> / Edit</span><h1>Surfside Sunrise House</h1></div>
+      <div class="acts"><span class="badge ok">Published</span><a class="btn btn-line btn-sm" href="Detail.dc.html">View on site</a></div>
+    </header>
+    <main class="adm-body">
+      <nav class="tabs" aria-label="Edit home">
+        <a href="AdminEditContent.dc.html">Content &amp; amenities</a>
+        <a href="AdminEditMedia.dc.html">Photos &amp; video</a>
+        <a href="AdminEditRules.dc.html">House rules</a>
+        <a href="AdminEditPricing.dc.html">Pricing</a>
+        <a href="AdminEditFees.dc.html" aria-current="page">Fees</a>
+      </nav>
+      <div class="split">
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; min-width: 0">
+          <section class="card" aria-labelledby="f-h">
+            <div><h2 id="f-h">Fees for this home (USD)</h2><p class="sub">Every fee is listed to the guest before they pay.</p></div>
+            <div>
+              <div class="fee"><div><b>Cleaning fee</b><small>Charged once per stay</small></div><div class="field"><label for="cf">Amount</label><input id="cf" type="text" value="{{clean}}" onChange="{{setClean}}"></div><div class="field"><label for="cu">Charged</label><select id="cu"><option>Per stay</option><option>Per night</option></select></div></div>
+              <div class="fee"><div><b>Pet fee</b><small>Charged for each pet, once per stay</small></div><div class="field"><label for="pf">Amount</label><input id="pf" type="text" value="{{pet}}" onChange="{{setPet}}"></div><div class="field"><label for="pu">Charged</label><select id="pu"><option>Per pet, per stay</option><option>Per pet, per night</option></select></div></div>
+              <div class="fee"><div><b>Lodging tax</b><small>Percent of nights and fees</small></div><div class="field"><label for="tx">Rate (%)</label><input id="tx" type="text" placeholder="Set by host"></div><div><span class="badge wait">Needs host</span></div></div>
+              <div class="fee"><div><b>Security deposit</b><small>Held, then returned after check-out</small></div><div class="field"><label for="dp">Amount</label><input id="dp" type="text" placeholder="None"></div><div><span class="badge wait">Needs host</span></div></div>
+              <sc-for list="{{extra}}" as="x" hint-placeholder-count="0">
+                <div class="fee"><div><b>{{x.name}}</b><small>Custom fee</small></div><div class="field"><label>Amount</label><input type="text" value="{{x.amount}}" readonly="{{yes}}"></div><div><button type="button" class="btn btn-line btn-sm" onClick="{{x.remove}}">Remove</button></div></div>
+              </sc-for>
+            </div>
+            <div class="rowb" style="padding-top: 0.75rem; border-top: 1px solid var(--line)">
+              <div class="g2" style="flex: 1 1 24rem">
+                <div class="field"><label for="xn">New fee name</label><input id="xn" type="text" value="{{xName}}" onChange="{{setXName}}"></div>
+                <div class="field"><label for="xa">Amount ($)</label><input id="xa" type="text" value="{{xAmt}}" onChange="{{setXAmt}}"></div>
+              </div>
+              <button type="button" class="btn btn-line btn-sm" onClick="{{addFee}}">+ Add fee</button>
+            </div>
+            <p class="err" role="alert">{{err}}</p>
+          </section>
+        </div>
+        <aside style="display: flex; flex-direction: column; gap: 1.25rem">
+          <section class="card" aria-labelledby="pv-h">
+            <h2 id="pv-h">Example: 3 nights, 1 pet</h2>
+            <div class="price">
+              <div class="ln"><span>3 nights × nightly rate</span><span class="todo">TODO</span></div>
+              <div class="ln"><span>Cleaning fee</span><span>{{cleanFmt}}</span></div>
+              <div class="ln"><span>Pet fee (× 1)</span><span>{{petFmt}}</span></div>
+              <sc-for list="{{extra}}" as="x" hint-placeholder-count="0"><div class="ln"><span>{{x.name}}</span><span>{{x.fmt}}</span></div></sc-for>
+              <div class="ln"><span>Lodging tax</span><span class="todo">TODO</span></div>
+              <div class="ln tot"><span>Total</span><span class="todo">TODO</span></div>
+            </div>
+            <p class="sub" style="margin: 0">Fixed fees so far: <b style="color: var(--navy)">{{fixedFmt}}</b></p>
+          </section>
+          <section class="card" aria-labelledby="ch-h"><h2 id="ch-h">Changing fees</h2><p class="sub" style="margin: 0">New fees apply to new bookings. Paid bookings keep the price the guest agreed to.</p></section>
+        </aside>
+      </div>
+    </main>
+    <div class="savebar" role="region" aria-label="Save changes"><span>{{saveText}}</span><div class="acts"><a class="btn btn-line btn-sm" href="AdminEditPricing.dc.html">Back</a><button type="button" class="btn btn-navy btn-sm" onClick="{{save}}">Save changes</button></div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { clean: '175.00', pet: '50.00', extra: [], xName: '', xAmt: '', err: '', saved: false };
+  }
+  renderVals() {
+    const { clean, pet, extra, xName, xAmt, err, saved } = this.state;
+    const cents = (v) => { const n = Math.round(parseFloat(String(v).replace(/[$,]/g, '')) * 100); return n > 0 ? n : 0; };
+    const fmt = (c) => '$' + (c / 100).toFixed(2);
+    const fixed = cents(clean) + cents(pet) + extra.reduce((a, x) => a + x.cents, 0);
+    return {
+      yes: true,
+      clean, pet,
+      setClean: (e) => this.setState({ clean: e.target.value, saved: false }),
+      setPet: (e) => this.setState({ pet: e.target.value, saved: false }),
+      cleanFmt: fmt(cents(clean)),
+      petFmt: fmt(cents(pet)),
+      fixedFmt: fmt(fixed),
+      extra: extra.map((x, i) => ({ name: x.name, amount: (x.cents / 100).toFixed(2), fmt: fmt(x.cents), remove: () => this.setState({ extra: extra.filter((_, j) => j !== i) }) })),
+      xName, xAmt,
+      setXName: (e) => this.setState({ xName: e.target.value }),
+      setXAmt: (e) => this.setState({ xAmt: e.target.value }),
+      addFee: () => {
+        const c = cents(xAmt);
+        if (!xName.trim() || !c) { this.setState({ err: 'Give the fee a name and an amount.' }); return; }
+        this.setState({ extra: extra.concat({ name: xName.trim(), cents: c }), xName: '', xAmt: '', err: '', saved: false });
+      },
+      err,
+      saveText: saved ? 'Saved (demo).' : 'Cleaning $175 and pet $50 come from the host’s current fees.',
+      save: () => this.setState({ saved: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

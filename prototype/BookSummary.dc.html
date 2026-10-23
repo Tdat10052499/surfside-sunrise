@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Booking summary</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-panel); overflow: hidden; display: flex; flex-direction: column">
+  <div style="display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem; align-items: center; padding: 1.25rem; border-bottom: 1px solid var(--line)">
+    <img src="../assets/img/deck.webp" alt="" width="800" height="533" style="width: 6.5rem; height: 5rem; object-fit: cover; border-radius: 0.75rem">
+    <div style="display: flex; flex-direction: column; gap: 0.25rem; min-width: 0">
+      <span style="font-size: 0.8rem; color: var(--muted)">Surfside Beach, Texas</span>
+      <b style="font: 600 1.05rem/1.25 var(--font-head); color: var(--navy)">Surfside Sunrise House</b>
+      <span class="demo" style="align-self: flex-start">Demo booking</span>
+    </div>
+  </div>
+  <dl style="margin: 0; padding: 1.25rem; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.625rem 1rem; font-size: 0.92rem; border-bottom: 1px solid var(--line)">
+    <dt style="color: var(--muted)">Check-in</dt><dd style="margin: 0; text-align: right; color: var(--navy); font-weight: 600">Fri, Nov 6, 2026</dd>
+    <dt style="color: var(--muted)">Check-out</dt><dd style="margin: 0; text-align: right; color: var(--navy); font-weight: 600">Mon, Nov 9, 2026</dd>
+    <dt style="color: var(--muted)">Stay</dt><dd style="margin: 0; text-align: right">3 nights</dd>
+    <dt style="color: var(--muted)">Guests</dt><dd style="margin: 0; text-align: right">4 guests · 1 pet</dd>
+  </dl>
+  <div class="price" style="padding: 1.25rem">
+    <div class="ln"><span>3 nights × nightly rate</span><span class="todo">TODO</span></div>
+    <div class="ln"><span>Cleaning fee</span><span>$175.00</span></div>
+    <div class="ln"><span>Pet fee ($50 × 1)</span><span>$50.00</span></div>
+    <div class="ln"><span>Taxes</span><span class="todo">TODO</span></div>
+    <div class="ln tot"><span>Total (USD)</span><span class="todo">TODO</span></div>
+    <p class="note">Prices are recalculated on our server before you pay.</p>
+  </div>
+  <a href="Detail.dc.html#availability" style="padding: 0 1.25rem 1.25rem; font-size: 0.88rem; font-weight: 600; color: var(--gulf-ink)">Change dates or guests</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":420,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

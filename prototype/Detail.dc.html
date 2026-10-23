@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Surfside Sunrise House — Surfside Beach TX beach house rental</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/seathesunrise/tokens.css">
+<link rel="stylesheet" href="ds/seathesunrise/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:var(--white)}
+a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
+.wrap{max-width:var(--content-max);margin-inline:auto;padding-inline:max(var(--gutter),3vw)}
+.ico svg,.amen svg,.dist svg,.rule svg{width:1.3125rem;height:1.3125rem;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.bar-top{position:sticky;top:0;z-index:6}
+.gal{grid-template-rows:repeat(2,clamp(8rem,15vw,14rem))}
+.gal img{height:100%;margin-top:0}
+.vid{position:relative;height:calc(clamp(8rem,15vw,14rem) * 2 + .75rem);border-radius:var(--radius-r);overflow:hidden;background:var(--navy)}
+.vid img{width:100%;height:100%;object-fit:cover;opacity:.7}
+.vid .play{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;color:#fff;text-align:center;padding:1rem}
+.vid .play span.pb{width:4.5rem;height:4.5rem;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;color:var(--navy)}
+.cols{display:flex;flex-wrap:wrap;gap:clamp(1.5rem,4vw,4rem);align-items:flex-start}
+.main-col{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:clamp(3rem,5vw,4.5rem)}
+.side-col{flex:1 1 340px;min-width:0;position:sticky;top:6rem}
+.blk{display:flex;flex-direction:column;gap:1.25rem;padding-top:clamp(2rem,4vw,3rem);border-top:1px solid var(--line)}
+.blk h2{font-size:clamp(1.6rem,2.6vw,2.1rem)}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}
+.specs .tile{flex-direction:column;align-items:flex-start;padding:1rem}
+.beds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+.beds .tile{flex-direction:column;align-items:flex-start}
+.rooms{display:flex;gap:.875rem;overflow-x:auto;padding-bottom:.5rem;scroll-snap-type:x mandatory}
+.pin-in{display:flex;flex-direction:column;gap:1.25rem;min-width:0}
+.pprog{display:flex;align-items:center;gap:1rem;font:500 .8rem/1 var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}
+.pprog i{flex:1;height:2px;background:var(--line);border-radius:2px;overflow:hidden}
+.pprog b{display:block;height:100%;background:var(--navy);transform:scaleX(0);transform-origin:0 50%}
+.room{flex:0 0 min(78%,20rem);scroll-snap-align:start;display:flex;flex-direction:column;gap:.625rem}
+.room .ph{height:14rem;border-radius:var(--radius-r);overflow:hidden;background:var(--wall)}
+.room .ph img{width:100%;height:120%;margin-top:-10%;object-fit:cover}
+.room b{font:600 1rem/1.2 var(--font-head);color:var(--navy)}
+.room small{color:var(--muted);font-size:.86rem}
+.amen{grid-template-columns:repeat(3,minmax(0,1fr))}
+.map{position:relative;height:clamp(18rem,32vw,24rem);border-radius:var(--radius-r);overflow:hidden;background:var(--sand-l);border:1px solid var(--line)}
+.map .sea{position:absolute;left:-10%;right:-10%;bottom:-30%;height:62%;background:var(--sky);transform:rotate(-14deg);border-top:3px solid var(--deck)}
+.map .road{position:absolute;left:-5%;right:-5%;top:34%;height:.5rem;background:#fff;transform:rotate(-14deg);box-shadow:0 0 0 1px var(--line)}
+.map .road2{position:absolute;left:58%;top:-5%;bottom:-5%;width:.4rem;background:#fff;transform:rotate(-14deg);box-shadow:0 0 0 1px var(--line)}
+.map .pin{position:absolute;left:44%;top:43%;display:flex;flex-direction:column;align-items:center;gap:.375rem;transform:translate(-50%,-100%)}
+.map .pin i{width:4.5rem;height:4.5rem;border-radius:50%;background:rgba(61,126,168,.18);box-shadow:inset 0 0 0 2px var(--gulf);display:grid;place-items:center}
+.map .pin i::after{content:"";width:.875rem;height:.875rem;border-radius:50%;background:var(--navy);box-shadow:0 0 0 3px #fff}
+.map .pin span{background:#fff;color:var(--navy);font:600 .78rem/1 var(--font-body);padding:.4375rem .625rem;border-radius:999px;box-shadow:var(--shadow-hover)}
+.map .lbl{position:absolute;font:600 .8rem/1 var(--font-body);color:var(--gulf-ink);letter-spacing:.08em;text-transform:uppercase}
+.map .ctl{position:absolute;right:.75rem;top:.75rem;display:flex;flex-direction:column;gap:.375rem}
+.map .ctl button{width:2.5rem;height:2.5rem;border-radius:.75rem;border:0;background:#fff;color:var(--navy);font:600 1.1rem/1 var(--font-body);box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.map .osm{position:absolute;right:.5rem;bottom:.5rem;background:rgba(255,255,255,.9);font-size:.72rem;color:var(--text);padding:.25rem .5rem;border-radius:.375rem}
+.dists{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+.cal-g .sp{visibility:hidden}
+.cal-g .d:disabled{cursor:not-allowed}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.rule{display:flex;gap:.875rem;align-items:flex-start;padding:1rem 1.125rem;border:1px solid var(--line);border-radius:var(--radius-card)}
+.rule b{display:block;font:600 .95rem/1.3 var(--font-head);color:var(--navy);margin-bottom:.25rem}
+.rule span.v{font-size:.9rem;color:var(--text)}
+.rule .ico{width:2.5rem;height:2.5rem}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;align-items:start}
+.qform{display:flex;flex-direction:column;gap:.75rem;background:var(--white);border:1px solid var(--line);border-radius:1.25rem;padding:1.5rem}
+.widget{max-width:none;border:1px solid var(--line);box-shadow:var(--shadow-hover)}
+.widget .row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.mbar{display:none;position:sticky;bottom:0;z-index:6}
+@media (max-width:900px){
+  .side-col{display:none}
+  .mbar{display:flex}
+  .specs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .duo,.rules{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .gal{grid-template-columns:1fr 1fr;grid-template-rows:14rem 7rem 7rem}
+  .gal .feat{grid-column:1/-1;grid-row:auto}
+  .vid{height:20rem}
+  .beds,.dists{grid-template-columns:1fr}
+  .amen{grid-template-columns:1fr 1fr}
+}
+</style>
+</helmet>
+<div style="font-family: var(--font-body); color: var(--text); background: var(--white)">
+  <div class="bar-top"><dc-import name="Header" tone="light" hint-size="100%,84px"></dc-import></div>
+
+  <main class="wrap" style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem; padding-bottom: clamp(4rem, 8vw, 7rem)">
+    <nav aria-label="Breadcrumb" style="font-size: 0.88rem; color: var(--muted)"><a href="Homes.dc.html">Homes</a> / Surfside Sunrise House</nav>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1rem">
+      <div style="display: flex; flex-direction: column; gap: 0.625rem">
+        <h1 style="font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.1">Surfside Sunrise House</h1>
+        <div class="meta"><span>Beach house in Surfside Beach, Texas</span><span>Entire home</span><span class="badge info">New listing</span></div>
+      </div>
+      <div class="seg" role="tablist" aria-label="Photos or video">
+        <button type="button" role="tab" aria-selected="{{photoSel}}" onClick="{{showPhotos}}">Photos</button>
+        <button type="button" role="tab" aria-selected="{{videoSel}}" onClick="{{showVideo}}">Video</button>
+      </div>
+    </div>
+
+    <sc-if value="{{isPhotos}}" hint-placeholder-val="{{true}}">
+      <div class="gal" data-clip>
+        <button type="button" class="feat" data-cursor="View" aria-label="Open photo: covered deck"><img src="../assets/img/deck.webp" alt="Covered deck with rocking chairs facing the Gulf" width="800" height="533"><span class="tag">Covered deck</span></button>
+        <button type="button" data-cursor="View" aria-label="Open photo: living room"><img src="../assets/img/living.webp" alt="Living room with two big sofas" width="800" height="533" loading="lazy"><span class="tag">Living room</span></button>
+        <button type="button" data-cursor="View" aria-label="Open photo: kitchen"><img src="../assets/img/kitchen.webp" alt="Full kitchen with dishwasher" width="800" height="533" loading="lazy"><span class="tag">Kitchen</span></button>
+        <button type="button" data-cursor="View" aria-label="Open photo: dining area"><img src="../assets/img/dining.webp" alt="Round dining table in the open living area" width="720" height="480" loading="lazy"><span class="tag">Dining area</span></button>
+        <button type="button" class="more" data-cursor="View" aria-label="Show all 7 photos"><img src="../assets/img/gulf.webp" alt="" width="741" height="495" loading="lazy"><span class="all">All photos<small>7 photos</small></span></button>
+      </div>
+    </sc-if>
+    <sc-if value="{{isVideo}}" hint-placeholder-val="{{false}}">
+      <div class="vid">
+        <img src="../assets/img/aerial.webp" alt="" width="800" height="533">
+        <div class="play">
+          <span class="pb"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span>
+          <b style="font: 600 1.2rem/1.2 var(--font-head)">A short tour made from the house photos</b>
+          <span class="todo">TODO video file, added by the host in the dashboard</span>
+        </div>
+      </div>
+    </sc-if>
+
+    <div class="cols">
+      <div class="main-col">
+        <div class="specs" data-stagger>
+          <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span><div><b>Up to 8 guests</b><small>Entire home</small></div></div>
+          <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path><path d="M12 4v6"></path><path d="M2 18h20"></path></svg></span><div><b>3 bedrooms</b><small>Queen, queen, bunks</small></div></div>
+          <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8"></path><path d="M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"></path><path d="M3 18h18"></path></svg></span><div><b>6 beds</b><small>2 queens, 4 bunks</small></div></div>
+          <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"></path><line x1="10" x2="8" y1="5" y2="7"></line><line x1="2" x2="22" y1="12" y2="12"></line><line x1="7" x2="7" y1="19" y2="21"></line><line x1="17" x2="17" y1="19" y2="21"></line></svg></span><div><b>2 bathrooms</b><small>In the house</small></div></div>
+        </div>
+
+        <section class="blk" id="about">
+          <h2 data-split>About This Surfside Beach House</h2>
+          <p>A three-bedroom beach house in Surfside Beach, Texas, with a long covered deck that looks straight out over the Gulf of Mexico.</p>
+          <p>Made for families and friends who want the Gulf at the front door, breakfast on the deck and enough room for everyone to spread out after a day on the sand. The beach is about a 5-minute walk and Jetty Park about 10.</p>
+          <p>Inside there is a full kitchen with a dishwasher, a round dining table, a living room with two big sofas, Wi-Fi with a dedicated workspace, central air and a washer and dryer. Parking on site is free, with an EV charger. Check-in is self check-in with a lockbox.</p>
+        </section>
+
+        <section class="blk" id="sleep">
+          <h2>Where You’ll Sleep</h2>
+          <div class="beds" data-stagger>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path><path d="M12 4v6"></path><path d="M2 18h20"></path></svg></span><div><b>Bedroom 1</b><small>1 queen bed</small></div></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"></path><path d="M12 4v6"></path><path d="M2 18h20"></path></svg></span><div><b>Bedroom 2</b><small>1 queen bed</small></div></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8"></path><path d="M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"></path><path d="M3 18h18"></path></svg></span><div><b>Bedroom 3</b><small>2 bunk beds</small></div></div>
+          </div>
+          <p class="hint">Bedroom and bathroom photos will be added when the host sends them.</p>
+        </section>
+
+        <section class="blk" id="spaces" data-motion="pin-horizontal">
+          <div class="pin-in">
+          <h2>Rooms and Spaces</h2>
+          <div class="rooms" aria-label="Rooms, scroll sideways">
+            <div class="room"><div class="ph"><img src="../assets/img/living.webp" alt="Living room with two big sofas" width="800" height="533" loading="lazy" data-par="6"></div><b>Living Room</b><small>Two big sofas</small></div>
+            <div class="room"><div class="ph"><img src="../assets/img/kitchen.webp" alt="Kitchen with dishwasher" width="800" height="533" loading="lazy" data-par="6"></div><b>Kitchen</b><small>Full kitchen with dishwasher</small></div>
+            <div class="room"><div class="ph"><img src="../assets/img/dining.webp" alt="Round dining table" width="720" height="480" loading="lazy" data-par="6"></div><b>Dining Area</b><small>Round table</small></div>
+            <div class="room"><div class="ph"><img src="../assets/img/lounge.webp" alt="Lounge with coastal decor" width="800" height="533" loading="lazy" data-par="6"></div><b>Lounge</b><small>Coastal décor</small></div>
+            <div class="room"><div class="ph"><img src="../assets/img/deck.webp" alt="Covered deck facing the Gulf" width="800" height="533" loading="lazy" data-par="6"></div><b>Covered Deck</b><small>Faces the Gulf</small></div>
+          </div>
+          <div class="pprog" aria-hidden="true"><span class="pc">01 / 05</span><i><b></b></i></div>
+          </div>
+        </section>
+
+        <section class="blk" id="amenities">
+          <h2>What This Place Offers</h2>
+          <p style="color: var(--muted)">Highlights from the 55 amenities listed on Airbnb.</p>
+          <div class="amen" data-stagger>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12a10.06 10.06 1 0 0-20 0Z"></path><path d="M12 12v8a2 2 0 0 0 4 0"></path><path d="M12 2v1"></path></svg></span>Beach access</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v8"></path><path d="m4.93 10.93 1.41 1.41"></path><path d="M2 18h2"></path><path d="M20 18h2"></path><path d="m19.07 10.93-1.41 1.41"></path><path d="M22 22H2"></path><path d="m8 6 4-4 4 4"></path><path d="M16 18a4 4 0 0 0-8 0"></path></svg></span>Gulf-view deck</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" x2="18" y1="17" y2="17"></line></svg></span>Full kitchen</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg></span>Dishwasher</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"></path><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"></path><path d="m2.1 21.8 6.4-6.3"></path><path d="m19 5-7 7"></path></svg></span>Outdoor dining</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h.01"></path><path d="M2 8.82a15 15 0 0 1 20 0"></path><path d="M5 12.859a10 10 0 0 1 14 0"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path></svg></span>Wi-Fi</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path></svg></span>Dedicated workspace</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></svg></span>Free parking</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z"></path><path d="m2 22 3-3"></path><path d="M7.5 13.5 10 11"></path><path d="M10.5 16.5 13 14"></path><path d="m18 3-4 4h6l-4 4"></path></svg></span>EV charger</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 8h12"></path><path d="M18.3 17.7a2.5 2.5 0 0 1-3.16 3.83 2.53 2.53 0 0 1-1.14-2V12"></path><path d="M6.6 15.6A2 2 0 1 0 10 17v-5"></path></svg></span>Central air</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h3"></path><path d="M17 6h.01"></path><rect width="18" height="20" x="3" y="2" rx="2"></rect><circle cx="12" cy="13" r="5"></circle><path d="M12 18a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 1 0-5"></path></svg></span>Washer &amp; dryer</div>
+            <div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"></path><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle></svg></span>Self check-in</div>
+          </div>
+          <div><a class="btn btn-line" href="https://www.airbnb.com.vn/rooms/1769640627295243012">Show all 55 amenities <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+        </section>
+
+        <section class="blk" id="location">
+          <h2 data-split>Location: Surfside Beach, Texas</h2>
+          <p>On the Texas Gulf Coast in Brazoria County, with the beach and Jetty Park within walking distance.</p>
+          <div class="map" role="region" aria-label="Map of Surfside Beach, Texas" data-clip>
+            <div class="road"></div><div class="road2"></div><div class="sea"></div>
+            <span class="lbl" style="left: 8%; bottom: 14%">Gulf of Mexico</span>
+            <span class="lbl" style="right: 8%; top: 12%; color: var(--oak)">Jetty Park</span>
+            <div class="pin"><i></i><span>Approximate location</span></div>
+            <div class="ctl"><button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">−</button><button type="button" aria-label="Recenter map">⌖</button></div>
+            <span class="osm">© OpenStreetMap contributors</span>
+          </div>
+          <p class="hint">The exact address is sent after the host confirms your booking.</p>
+          <div class="dists" data-stagger>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path></svg></span><div><b>Gulf of Mexico</b><small>A few steps</small></div></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12a10.06 10.06 1 0 0-20 0Z"></path><path d="M12 12v8a2 2 0 0 0 4 0"></path><path d="M12 2v1"></path></svg></span><div><b>Surfside Beach</b><small>5 min walk</small></div></div>
+            <div class="tile"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"></path><path d="M18 12v.5"></path><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"></path><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"></path></svg></span><div><b>Jetty Park</b><small>10 min walk</small></div></div>
+          </div>
+        </section>
+
+        <section class="blk" id="availability">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap">
+            <h2>Availability</h2>
+            <span class="demo">Demo dates</span>
+          </div>
+          <p style="color: var(--muted)">{{calHint}}</p>
+          <div class="cal-nav"><button type="button" class="icon-btn" aria-label="Previous months"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button><button type="button" class="btn btn-sm btn-line" onClick="{{clear}}">Clear dates</button><button type="button" class="icon-btn" aria-label="Next months"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div>
+          <div class="cal">
+            <sc-for list="{{months}}" as="m" hint-placeholder-count="2">
+              <div class="cal-m">
+                <h4>{{m.title}}</h4>
+                <div class="cal-g">
+                  <span class="dow">Su</span><span class="dow">Mo</span><span class="dow">Tu</span><span class="dow">We</span><span class="dow">Th</span><span class="dow">Fr</span><span class="dow">Sa</span>
+                  <sc-for list="{{m.cells}}" as="c" hint-placeholder-count="35">
+                    <button type="button" class="d {{c.cls}}" disabled="{{c.dis}}" aria-label="{{c.aria}}" onClick="{{c.pick}}">{{c.n}}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div class="cal-key">
+            <span><i style="background: var(--navy)"></i>Your dates</span>
+            <span><i style="background: var(--sky)"></i>Nights in your stay</span>
+            <span><i style="background: var(--white); box-shadow: inset 0 0 0 1px var(--line)"></i><s>12</s> Booked</span>
+            <span><i style="background: repeating-linear-gradient(135deg, transparent 0 3px, rgba(31,53,82,.2) 3px 5px)"></i>Closed by host</span>
+          </div>
+        </section>
+
+        <section class="blk" id="rules">
+          <h2>Good to Know</h2>
+          <div class="rules">
+            <div class="rule"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><div><b>Check-in</b><span class="v">Self check-in with a lockbox. Time: <span class="todo">TODO set by host</span></span></div></div>
+            <div class="rule"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></span><div><b>Check-out</b><span class="v"><span class="todo">TODO set by host</span></span></div></div>
+            <div class="rule"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg></span><div><b>Minimum stay</b><span class="v"><span class="todo">TODO nights</span></span></div></div>
+            <div class="rule"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span><div><b>Pets</b><span class="v">$50 per pet per stay. Maximum: <span class="todo">TODO</span></span></div></div>
+            <div class="rule"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg></span><div><b>Cancellation</b><span class="v"><span class="todo">TODO policy from host</span></span></div></div>
+            <div class="rule"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg></span><div><b>Guests</b><span class="v">Up to 8 guests</span></div></div>
+          </div>
+          <div><a href="PolicyHouseRules.dc.html" style="font-weight: 600">Read the full house rules</a></div>
+        </section>
+
+        <section class="blk" id="reviews">
+          <h2>Guest Reviews</h2>
+          <div class="tile" style="align-items: flex-start"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg></span><div style="display: flex; flex-direction: column; gap: 0.5rem"><b>New listing</b><p>Our first guest review is on Airbnb. The average rating appears there once the listing has three reviews.</p><a href="https://www.airbnb.com.vn/rooms/1769640627295243012" style="font-weight: 600">Read reviews on Airbnb →</a></div></div>
+        </section>
+
+        <section class="blk" id="ask">
+          <h2>Ask the Host</h2>
+          <div class="duo">
+            <div class="host" style="max-width: none">
+              <div class="who"><div class="av">N</div><div><b>Ngoc Anh Ta</b><small>Realtor · Your host</small></div></div>
+              <div class="meta"><span>Replies within 1 hour</span><span>100% response rate</span></div>
+              <div class="contact">
+                <a href="tel:4086684189"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>408-668-4189</a>
+                <a href="mailto:ngocanhrealtor@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>ngocanhrealtor@gmail.com</a>
+              </div>
+            </div>
+            <form class="qform" aria-label="Ask the host a question">
+              <div class="field"><label for="qn">Your name</label><input id="qn" type="text" autocomplete="name"></div>
+              <div class="field"><label for="qe">Email</label><input id="qe" type="email" autocomplete="email"></div>
+              <div class="field"><label for="qm">Question</label><textarea id="qm"></textarea></div>
+              <label class="consent"><input type="checkbox"><span>I agree to the <a href="PolicyPrivacy.dc.html">privacy policy</a>.</span></label>
+              <button type="button" class="btn btn-navy" onClick="{{ask}}">Send question</button>
+              <sc-if value="{{asked}}" hint-placeholder-val="{{false}}">
+                <div class="toast" role="status"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Question sent to the host (demo)</div>
+              </sc-if>
+            </form>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-col" aria-label="Book this home">
+        <div class="bcard widget">
+          <div class="bcard-top">
+            <div><span class="todo">TODO</span> <span style="color: var(--muted)">/ night</span></div>
+            <span class="pill-ok">Dates available</span>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="wci">Check-in</label><input id="wci" type="text" value="{{ciText}}" readonly="{{yes}}"></div>
+            <div class="field"><label for="wco">Check-out</label><input id="wco" type="text" value="{{coText}}" readonly="{{yes}}"></div>
+          </div>
+          <div class="field"><label>Guests</label><div class="stepper"><output>{{guestsText}}</output><div><button type="button" aria-label="Fewer guests" onClick="{{lessG}}" disabled="{{gMin}}">−</button><button type="button" aria-label="More guests" onClick="{{moreG}}" disabled="{{gMax}}">+</button></div></div></div>
+          <div class="field"><label>Pets</label><div class="stepper"><output>{{petsText}}</output><div><button type="button" aria-label="Fewer pets" onClick="{{lessP}}" disabled="{{pMin}}">−</button><button type="button" aria-label="More pets" onClick="{{moreP}}">+</button></div></div></div>
+          <div class="price">
+            <div class="ln"><span>{{nightsLine}}</span><span class="todo">TODO</span></div>
+            <div class="ln"><span>Cleaning fee</span><span>$175.00</span></div>
+            <div class="ln"><span>{{petLine}}</span><span>{{petFee}}</span></div>
+            <div class="ln"><span>Taxes</span><span class="todo">TODO</span></div>
+            <div class="ln tot"><span>Total (USD)</span><span class="todo">TODO</span></div>
+            <p class="note">The server recalculates the price before you pay. You pay in step 3; the host then confirms your booking.</p>
+          </div>
+          <a class="btn btn-navy" href="Book1.dc.html">Request these dates <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="mbar sticky">
+    <div><b>{{stayShort}}</b><small>Total shown before you pay</small></div>
+    <a class="btn btn-navy btn-sm" href="Book1.dc.html">Request dates</a>
+  </div>
+
+  <dc-import name="Footer" hint-size="100%,600px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // Sample availability (demo): today is 2026-10-23
+    this.state = { tab: 'photos', ci: '2026-11-06', co: '2026-11-09', guests: 4, pets: 0, asked: false };
+  }
+  iso(y, m, d) {
+    return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+  }
+  status(iso) {
+    const booked = ['2026-10-30', '2026-10-31', '2026-11-01', '2026-11-26', '2026-11-27', '2026-11-28'];
+    const blocked = ['2026-11-13', '2026-11-14', '2026-11-15'];
+    if (iso < '2026-10-23') return 'past';
+    if (booked.includes(iso)) return 'booked';
+    if (blocked.includes(iso)) return 'blocked';
+    return 'free';
+  }
+  rangeFree(a, b) {
+    const d = new Date(a + 'T12:00:00Z');
+    const end = new Date(b + 'T12:00:00Z');
+    while (d < end) {
+      if (this.status(d.toISOString().slice(0, 10)) !== 'free') return false;
+      d.setUTCDate(d.getUTCDate() + 1);
+    }
+    return true;
+  }
+  pick(iso) {
+    const { ci, co } = this.state;
+    if (!ci || co || iso <= ci) {
+      if (this.status(iso) === 'free') this.setState({ ci: iso, co: null });
+      return;
+    }
+    if (this.rangeFree(ci, iso)) this.setState({ co: iso });
+    else if (this.status(iso) === 'free') this.setState({ ci: iso, co: null });
+  }
+  fmt(iso) {
+    if (!iso) return 'Add date';
+    const d = new Date(iso + 'T12:00:00Z');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  }
+  month(y, m) {
+    const first = new Date(Date.UTC(y, m, 1)).getUTCDay();
+    const days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    const { ci, co } = this.state;
+    const cells = [];
+    for (let i = 0; i < first; i++) cells.push({ n: '', cls: 'sp', dis: true, aria: '', pick: null });
+    for (let d = 1; d <= days; d++) {
+      const iso = this.iso(y, m, d);
+      const st = this.status(iso);
+      let cls = st === 'free' ? '' : st;
+      if (iso === ci) cls = 'start';
+      else if (iso === co) cls = 'end';
+      else if (ci && co && iso > ci && iso < co) cls = 'in';
+      const canEnd = ci && !co && iso > ci && this.rangeFree(ci, iso);
+      const dis = st !== 'free' && !canEnd;
+      const label = this.fmt(iso) + (st === 'booked' ? ', booked' : st === 'blocked' ? ', closed by host' : st === 'past' ? ', past' : ', available');
+      cells.push({ n: String(d), cls, dis, aria: label, pick: () => this.pick(iso) });
+    }
+    const title = new Date(Date.UTC(y, m, 1)).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+    return { title, cells };
+  }
+  renderVals() {
+    const { tab, ci, co, guests, pets, asked } = this.state;
+    const nights = ci && co ? Math.round((new Date(co) - new Date(ci)) / 86400000) : 0;
+    const petCents = pets * 5000;
+    const money = (c) => '$' + (c / 100).toFixed(2);
+    return {
+      yes: true,
+      isPhotos: tab === 'photos',
+      isVideo: tab === 'video',
+      photoSel: tab === 'photos' ? 'true' : 'false',
+      videoSel: tab === 'video' ? 'true' : 'false',
+      showPhotos: () => this.setState({ tab: 'photos' }),
+      showVideo: () => this.setState({ tab: 'video' }),
+      months: [this.month(2026, 9), this.month(2026, 10)],
+      clear: () => this.setState({ ci: null, co: null }),
+      calHint: !ci ? 'Select a check-in date.' : !co ? 'Now select a check-out date.' : nights + (nights === 1 ? ' night: ' : ' nights: ') + this.fmt(ci) + ' to ' + this.fmt(co) + '.',
+      ciText: this.fmt(ci),
+      coText: this.fmt(co),
+      guestsText: guests + (guests === 1 ? ' guest' : ' guests'),
+      petsText: pets + (pets === 1 ? ' pet' : ' pets'),
+      gMin: guests <= 1,
+      gMax: guests >= 8,
+      pMin: pets <= 0,
+      lessG: () => this.setState({ guests: Math.max(1, guests - 1) }),
+      moreG: () => this.setState({ guests: Math.min(8, guests + 1) }),
+      lessP: () => this.setState({ pets: Math.max(0, pets - 1) }),
+      moreP: () => this.setState({ pets: pets + 1 }),
+      nightsLine: nights ? nights + (nights === 1 ? ' night × nightly rate' : ' nights × nightly rate') : 'Nights × nightly rate',
+      petLine: 'Pet fee ($50 × ' + pets + ')',
+      petFee: money(petCents),
+      stayShort: nights ? this.fmt(ci).replace(', 2026', '') + ' – ' + this.fmt(co).replace(', 2026', '') + ' · ' + nights + ' nights' : 'Add your dates',
+      asked,
+      ask: () => this.setState({ asked: true })
+    };
+  }
+}
+</script>
+</body>
+</html>
