@@ -18,13 +18,13 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
 .wrap{max-width:var(--content-max);margin-inline:auto;padding-inline:max(var(--gutter),3vw)}
 .sec{padding-block:clamp(5rem,9vw,8.75rem)}
 .ico svg,.ti svg{width:1.3125rem;height:1.3125rem;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.hero{position:relative;min-height:50rem;padding-top:6rem;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;overflow:hidden;background:var(--navy)}
+.hero{position:relative;min-height:100vh;min-height:100svh;padding-top:6rem;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;overflow:hidden;background:var(--navy)}
 .hmedia{position:absolute;inset:0;overflow:hidden;background:var(--navy)}
 .hmedia img{position:absolute;inset:0;width:100%;height:120%;margin-top:-10%;object-fit:cover;will-change:transform}
 .hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,30,48,.5) 0,rgba(15,30,48,0) 28%,rgba(15,30,48,.12) 55%,rgba(15,30,48,.72) 100%)}
 .hero .top{position:fixed;top:0;left:0;right:0;z-index:40;will-change:transform}
 .hero .in{position:relative;z-index:2;will-change:transform,opacity;padding-bottom:3rem;display:flex;flex-direction:column;gap:1.5rem}
-.hero h1{color:#fff;font-size:clamp(2.6rem,6.2vw,5rem);line-height:1.04;max-width:14ch;animation:riseSoft 1.2s var(--ease) .1s both}
+.hero h1{color:#fff;font-size:clamp(2.6rem,min(6.2vw,9.5vh),5rem);line-height:1.04;max-width:14ch;animation:riseSoft 1.2s var(--ease) .1s both}
 .hero .lede{font-size:1.1rem;max-width:44ch;color:rgba(255,255,255,.92)}
 .search{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:center;background:#fff;border-radius:1.5rem;padding:.5rem;box-shadow:var(--shadow-float);max-width:56rem}
 .search .field{background:var(--wall)}
@@ -116,8 +116,12 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
   .search{grid-template-columns:1fr 1fr}
   .search .btn{grid-column:1/-1}
 }
+@media (max-height:720px) and (min-width:761px){
+  .hero{padding-top:5rem}
+  .hero .in{gap:1rem;padding-bottom:2rem}
+  .hero .lede{font-size:1rem}
+}
 @media (max-width:640px){
-  .hero{min-height:46rem}
   .scard{top:calc(5.25rem + var(--i) * .875rem);height:min(70vh,28rem)}
   .why{grid-template-columns:1fr}
   .search{grid-template-columns:1fr}
