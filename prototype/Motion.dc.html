@@ -184,12 +184,12 @@ class Component extends DCLogic {
         D.querySelectorAll('[data-split]').forEach((h) => {
           if (!once(h, 'split')) return;
           const ws = splitWords(h, true);
-          gsap.from(ws, { yPercent: 70, opacity: 0.25, rotate: 3, duration: 1.1, ease: 'expo.out', stagger: 0.045, scrollTrigger: { trigger: h, start: 'top 88%', once: true } });
+          gsap.from(ws, { yPercent: 90, opacity: 0.25, duration: 0.9, ease: 'expo.out', stagger: 0.04, scrollTrigger: { trigger: h, start: 'top 90%', once: true } });
         });
         /* section intro lines next to the heading */
         D.querySelectorAll('.head > .eyebrow, .head > p').forEach((el) => {
           if (!once(el, 'fade')) return;
-          gsap.from(el, { y: 24, opacity: 0.25, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+          gsap.from(el, { y: 40, opacity: 0.25, duration: 0.9, ease: 'expo.out', delay: el.matches('p') ? 0.12 : 0, scrollTrigger: { trigger: el, start: 'top 92%', once: true } });
         });
 
         /* statement: words fill in as you scroll */
@@ -218,8 +218,20 @@ class Component extends DCLogic {
         /* grids: children rise in turn */
         D.querySelectorAll('[data-stagger]').forEach((g) => {
           if (!once(g, 'stagger')) return;
-          gsap.from(g.children, { y: 60, opacity: 0.25, duration: 1.1, ease: 'expo.out', stagger: 0.08, scrollTrigger: { trigger: g, start: 'top 88%', once: true } });
+          gsap.from(g.children, { y: 80, opacity: 0.25, duration: 0.9, ease: 'expo.out', stagger: 0.07, scrollTrigger: { trigger: g, start: 'top 90%', once: true } });
         });
+
+        /* content blocks: everything else in a section rises into place once, in reading order.
+           Blocks already on screen when motion starts are left alone, so nothing jumps. */
+        const rise = [];
+        const skip = '.head, [data-split], [data-stagger], [data-clip], [data-motion], script, style';
+        D.querySelectorAll('.sec .wrap > *, section.blk:not(.walk) > *, section.ask > *, section.form > *, section.sim > *').forEach((el) => {
+          if (!once(el, 'rise') || el.matches(skip) || el.querySelector('[data-split], [data-stagger], [data-clip]')) return;
+          if (el.getBoundingClientRect().top < W.innerHeight * 0.92) return;
+          gsap.set(el, { y: 80, opacity: 0.25 });
+          rise.push(el);
+        });
+        if (rise.length) ST.batch(rise, { start: 'top 92%', once: true, onEnter: (b) => gsap.to(b, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.08, overwrite: true }) });
 
         /* marquee: speed and skew follow scroll velocity */
         D.querySelectorAll('[data-motion="marquee-velocity"]').forEach((m) => {
