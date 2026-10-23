@@ -28,11 +28,97 @@ class Component extends DCLogic {
      (browser, Play or full window); the static canvas, reduced motion, or a failed script keep the
      final, fully visible layout. Pins use CSS sticky inside a section whose height is set here,
      so no wrapper elements are added to the component tree. */
+  /* Menu as on the live site: the burger opens Menu.dc.html as a full-screen layer that spreads out
+     in a circle from the button (clip-path circle, .8s), and shrinks back into it on close.
+     Without this (script error, menu not loaded in time) the burger is a plain link to the menu page. */
+  menuOverlay(W, D, reduce, overlay) {
+    if (overlay) {
+      /* inside the layer: close and Esc go back to the page, other links open in the page */
+      const close = () => W.parent.postMessage('ss-menu-close', '*');
+      D.addEventListener('click', (e) => {
+        const a = e.target.closest && e.target.closest('a[href]');
+        if (!a) return;
+        e.preventDefault();
+        if (a.classList.contains('close')) close(); else W.parent.location.href = a.href;
+      }, true);
+      D.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+      return;
+    }
+    if (W.__ssMenu) return;
+    const st = W.__ssMenu = { frame: null, ready: false, open: false, btn: null };
+    const dur = reduce ? 0 : 800, ease = 'cubic-bezier(.22,.7,.18,1)';
+    const origin = () => {
+      const r = st.btn && st.btn.getBoundingClientRect();
+      return r && r.width ? `${Math.round(r.left + r.width / 2)}px ${Math.round(r.top + r.height / 2)}px` : `calc(100% - 2.875rem) 2.625rem`;
+    };
+    const build = (href) => {
+      if (st.frame) return st.frame;
+      const f = st.frame = D.createElement('iframe');
+      f.title = 'Menu';
+      f.setAttribute('aria-hidden', 'true');
+      f.tabIndex = -1;
+      f.style.cssText = `position:fixed;inset:0;width:100%;height:100%;border:0;z-index:9999;background:#1f3552;visibility:hidden;clip-path:circle(0px at ${origin()});transition:clip-path ${dur}ms ${ease},visibility 0s ${dur}ms`;
+      f.addEventListener('load', () => { st.ready = true; });
+      f.src = href + (href.includes('?') ? '&' : '?') + 'overlay=1';
+      D.body.appendChild(f);
+      return f;
+    };
+    const setOpen = (o) => {
+      const f = st.frame;
+      if (!f || o === st.open) return;
+      st.open = o;
+      const at = origin(), m = W.__ssMotion || {};
+      if (o) {
+        f.style.transition = 'none';
+        f.style.clipPath = `circle(0px at ${at})`;
+        void f.offsetWidth;
+        f.style.transition = `clip-path ${dur}ms ${ease}`;
+        f.style.visibility = 'visible';
+        f.style.clipPath = `circle(150vmax at ${at})`;
+        f.removeAttribute('aria-hidden');
+        f.tabIndex = 0;
+        if (m.lenis) m.lenis.stop();
+        D.documentElement.style.overflow = 'hidden';
+        try { const cm = f.contentWindow.__ssMotion; if (cm && cm.menuIn) cm.menuIn(); } catch (e) {}
+        setTimeout(() => { try { f.focus(); } catch (e) {} }, 50);
+      } else {
+        f.style.transition = `clip-path ${dur}ms ${ease},visibility 0s ${dur}ms`;
+        f.style.clipPath = `circle(0px at ${at})`;
+        f.style.visibility = 'hidden';
+        f.setAttribute('aria-hidden', 'true');
+        f.tabIndex = -1;
+        if (m.lenis) m.lenis.start();
+        D.documentElement.style.overflow = '';
+        if (st.btn) st.btn.focus();
+      }
+    };
+    const warm = (e) => {
+      const b = e.target.closest && e.target.closest('a.burger[href]');
+      if (b) { st.btn = b; build(b.getAttribute('href')); }
+    };
+    D.addEventListener('pointerover', warm);
+    D.addEventListener('focusin', warm);
+    D.addEventListener('click', (e) => {
+      const b = e.target.closest && e.target.closest('a.burger[href]');
+      if (!b || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      st.btn = b;
+      const f = build(b.getAttribute('href'));
+      e.preventDefault();
+      if (st.ready) { setOpen(true); return; }
+      /* not loaded yet: open as soon as it is, or fall back to a normal page load */
+      const t = setTimeout(() => { W.location.href = b.href; }, 2500);
+      f.addEventListener('load', () => { clearTimeout(t); setOpen(true); }, { once: true });
+    }, true);
+    W.addEventListener('message', (e) => { if (e.data === 'ss-menu-close' && st.frame && e.source === st.frame.contentWindow) setOpen(false); });
+    W.addEventListener('keydown', (e) => { if (e.key === 'Escape' && st.open) setOpen(false); });
+  }
   boot() {
     const W = window, D = document;
     if (W.__ssMotion) { W.__ssMotion.scan && W.__ssMotion.scan(); return; }
     const api = W.__ssMotion = {};
     const reduce = W.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const overlay = /[?&]overlay=1/.test(W.location.search);
+    try { this.menuOverlay(W, D, reduce, overlay); } catch (e) { console.warn('menu', e); }
     if (reduce) return;
     const fine = W.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const isLive = () => W.innerHeight <= 1600 && W.innerHeight <= Math.max(W.screen.height || 0, 1000) + 40 && D.documentElement.scrollHeight > W.innerHeight + 40;
@@ -395,6 +481,7 @@ class Component extends DCLogic {
         D.querySelectorAll('[data-motion="menu-open"]').forEach((mn) => {
           if (!once(mn, 'menu')) return;
           const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+          api.menuIn = () => tl.restart();
           tl.from(mn.querySelectorAll('.word > *'), { yPercent: 60, opacity: 0.25, duration: 1.2, stagger: 0.08 })
             .from(mn.querySelectorAll('.mnav a'), { y: 40, opacity: 0.25, duration: 1, stagger: 0.06 }, 0.15)
             .from(mn.querySelectorAll('.zone, .mcard, .mrow'), { y: 24, opacity: 0.25, duration: 0.9, stagger: 0.04 }, 0.3);
