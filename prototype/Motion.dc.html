@@ -256,8 +256,19 @@ class Component extends DCLogic {
           if (!once(hero, 'hero')) return;
           const media = hero.querySelector('.hmedia'), img = media && media.querySelector('img'), inner = hero.querySelector('.in');
           if (img) gsap.fromTo(img, { scale: 1.18 }, { scale: 1.04, duration: 2.2, ease: 'power3.out' });
-          const tl = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
-          if (media) tl.fromTo(media, { clipPath: 'inset(0% 0% 0% 0% round 0px)' }, { clipPath: 'inset(4% 3% 0% 3% round 32px)', ease: 'none' }, 0);
+          const tl = gsap.timeline({ scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
+          /* The card shape is fixed (inset box, rounded corners) and only its scale is scrubbed: a scrubbed
+             clip-path repaints the full-screen photo every frame, a transform stays on the compositor.
+             It starts scaled up far enough that the rounded corners sit outside the hero. */
+          if (media) {
+            Object.assign(media.style, { inset: '4% 3% 0 3%', borderRadius: '2rem', willChange: 'transform', transformOrigin: '50% 50%' });
+            const r = 40;
+            tl.fromTo(media, {
+              scaleX: () => (hero.offsetWidth + 2 * r) / media.offsetWidth,
+              scaleY: () => (hero.offsetHeight + 2 * r) / media.offsetHeight,
+              y: () => -hero.offsetHeight * 0.02,
+            }, { scaleX: 1, scaleY: 1, y: 0, ease: 'none' }, 0);
+          }
           if (img) tl.to(img, { yPercent: 14, ease: 'none' }, 0);
           if (inner) tl.to(inner, { yPercent: -22, opacity: 0.2, ease: 'none' }, 0);
         });
@@ -293,8 +304,11 @@ class Component extends DCLogic {
         D.querySelectorAll('[data-clip]').forEach((el) => {
           if (!once(el, 'clip')) return;
           const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 30%', scrub: true } });
-          tl.fromTo(el, { clipPath: 'inset(12% 10% 12% 10% round 36px)' }, { clipPath: 'inset(0% 0% 0% 0% round 18px)', ease: 'none' }, 0);
-          const im = el.querySelector('img:not([data-par])');
+          /* scale, not clip-path: a scrubbed clip-path repaints the photo on every frame */
+          el.style.willChange = 'transform';
+          tl.fromTo(el, { scale: 0.8 }, { scale: 1, ease: 'none' }, 0);
+          const im = el.querySelector('img');
+          if (im) im.style.willChange = 'transform';
           if (im) tl.fromTo(im, { scale: 1.25 }, { scale: 1, ease: 'none' }, 0);
         });
 
@@ -302,6 +316,8 @@ class Component extends DCLogic {
         D.querySelectorAll('[data-par]').forEach((img) => {
           if (img.closest('[data-motion="pin-horizontal"]') || !once(img, 'par')) return;
           const a = +img.dataset.par || 6;
+          /* on a wrapper (figure), move the photo inside it, not the frame */
+          if (img.tagName !== 'IMG') img = img.querySelector('img') || img;
           gsap.fromTo(img, { yPercent: -a }, { yPercent: a, ease: 'none', scrollTrigger: { trigger: img.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } });
         });
 
