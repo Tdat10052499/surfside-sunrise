@@ -8,6 +8,10 @@ A one-page marketing and booking-request site for **Surfside Sunrise House**, a 
 
 Live site: `https://tdat10052499.github.io/surfside-sunrise/` (GitHub Pages, branch `main`, folder `/`).
 
+## Booking app (`web/`)
+
+The booking system (Next.js + Supabase + Stripe) is being built in `web/`; read `web/README.md` and `web/AGENTS.md` before changing it. Everything above describes the static site in the repository root, which stays live on GitHub Pages until the new app replaces it.
+
 ## Stack
 
 Plain static site, no build step.
