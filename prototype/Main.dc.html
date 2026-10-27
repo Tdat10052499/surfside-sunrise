@@ -21,7 +21,11 @@ a{color:var(--gulf-ink)}a:hover{color:var(--navy)}
 .hero{position:relative;min-height:100vh;min-height:100svh;padding-top:6rem;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;overflow:hidden;background:var(--navy)}
 .hmedia{position:absolute;inset:0;overflow:hidden;background:var(--navy)}
 .hmedia img{position:absolute;inset:0;width:100%;height:120%;margin-top:-10%;object-fit:cover;will-change:transform}
-.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,30,48,.5) 0,rgba(15,30,48,0) 28%,rgba(15,30,48,.12) 55%,rgba(15,30,48,.72) 100%)}
+/* Scrim under the hero text. Homes are uploaded by admins, so the photo can be bright anywhere:
+   phones darken the top half where the title sits, wider screens darken the left and the bottom. */
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,30,48,.78) 0,rgba(15,30,48,.66) 40%,rgba(15,30,48,.32) 64%,rgba(15,30,48,.8) 100%)}
+@media (min-width:761px){.hero .shade{background:linear-gradient(90deg,rgba(15,30,48,.62) 0,rgba(15,30,48,.4) 45%,rgba(15,30,48,.12) 70%,rgba(15,30,48,0) 85%),linear-gradient(180deg,rgba(15,30,48,.45) 0,rgba(15,30,48,0) 22%,rgba(15,30,48,.25) 45%,rgba(15,30,48,.8) 100%)}}
+.hero .eyebrow,.hero h1,.hero .lede,.hero .trust{text-shadow:0 1px 2px rgba(15,30,48,.35),0 4px 24px rgba(15,30,48,.45)}
 .hero .top{position:fixed;top:0;left:0;right:0;z-index:40;will-change:transform}
 .hero .in{position:relative;z-index:2;will-change:transform,opacity;padding-bottom:3rem;display:flex;flex-direction:column;gap:1.5rem}
 .hero h1{color:#fff;font-size:clamp(2.6rem,min(6.2vw,9.5vh),5rem);line-height:1.04;max-width:14ch;animation:riseSoft 1.2s var(--ease) .1s both}
