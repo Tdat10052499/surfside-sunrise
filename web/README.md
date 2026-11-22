@@ -40,7 +40,7 @@ For a local Supabase stack (Postgres, Auth, Storage in Docker) use the [Supabase
 
 ## Database migrations
 
-`npm run db:migrate` applies the files in `supabase/migrations` in name order, each once, and records them in `public.schema_migrations`. Add `-- --seed` to load `supabase/seed.sql` (once). It reads `MIGRATION_DATABASE_URL`, or `DATABASE_URL` when that is empty. On Supabase use the session pooler or direct connection for migrations; the app itself uses the transaction pooler.
+`npm run db:migrate` applies the files in `supabase/migrations` in name order, each once, and records them in `public.schema_migrations`. Add `-- --seed` to load `supabase/seed.sql` (once). It reads the first of `MIGRATION_DATABASE_URL`, `POSTGRES_URL_NON_POOLING` and `DATABASE_URL` that is set. On Supabase use the session pooler or direct connection for migrations; the app itself uses the transaction pooler.
 
 ## Configuration and health
 
@@ -48,7 +48,7 @@ The server checks its environment when it starts (`src/instrumentation.ts`). A m
 
 ## Deploy (preview)
 
-Vercel project settings: Root Directory `web`, framework Next.js, default build command. Set `DATABASE_URL` for Preview (and later Production), run `npm run db:migrate -- --seed` against the database once, then open `/api/health` on the deployment.
+Vercel project settings: Root Directory `web`, framework Next.js, default build command. Connect the Supabase integration to the project (it sets `POSTGRES_URL`, which the app uses when `DATABASE_URL` is unset), run `npm run db:migrate -- --seed` against the database once, then open `/api/health` on the deployment.
 
 ## Test
 

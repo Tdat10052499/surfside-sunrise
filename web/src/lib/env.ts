@@ -34,15 +34,19 @@ export class EnvError extends Error {
   }
 }
 
-/** Parses a set of variables. Error messages name the variable but never echo its value. */
+/**
+ * Parses a set of variables. Error messages name the variable but never echo its value.
+ * DATABASE_URL falls back to POSTGRES_URL, the pooled connection string that the
+ * Supabase integration on Vercel sets, so no secret has to be copied by hand.
+ */
 export function parseServerEnv(source: Record<string, string | undefined>): ServerEnv {
-  const result = serverEnvSchema.safeParse(source);
+  const blank = (v: string | undefined) => v === undefined || v.trim() === "";
+  const input = blank(source.DATABASE_URL) ? { ...source, DATABASE_URL: source.POSTGRES_URL } : source;
+  const result = serverEnvSchema.safeParse(input);
   if (result.success) return result.data;
   const problems = result.error.issues.map((issue) => {
     const name = issue.path.join(".");
-    return issue.code === "invalid_type" && source[name] === undefined
-      ? `${name} is not set`
-      : `${name} ${issue.message}`;
+    return issue.code === "invalid_type" && blank(input[name]) ? `${name} is not set` : `${name} ${issue.message}`;
   });
   throw new EnvError(problems);
 }

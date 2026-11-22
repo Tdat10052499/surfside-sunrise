@@ -1,9 +1,10 @@
 // Usage: npm run db:migrate [-- --seed]
-// Reads MIGRATION_DATABASE_URL, or DATABASE_URL when that is not set.
+// Reads the first of MIGRATION_DATABASE_URL, POSTGRES_URL_NON_POOLING (set by the Supabase
+// integration on Vercel), DATABASE_URL.
 // On Supabase use the direct or session-pooler connection string, not the transaction pooler.
 import { applyMigrations } from "../src/db/migrations.ts";
 
-const url = process.env.MIGRATION_DATABASE_URL || process.env.DATABASE_URL;
+const url = process.env.MIGRATION_DATABASE_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.DATABASE_URL;
 if (!url) {
   console.error("Set MIGRATION_DATABASE_URL or DATABASE_URL first (see web/.env.example).");
   process.exit(1);

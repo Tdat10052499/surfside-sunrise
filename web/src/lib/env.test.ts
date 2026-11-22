@@ -18,6 +18,15 @@ describe("parseServerEnv", () => {
     expect(parseServerEnv({ DATABASE_URL: db })).toEqual({ DATABASE_URL: db });
   });
 
+  it("falls back to POSTGRES_URL from the Supabase integration", () => {
+    expect(parseServerEnv({ POSTGRES_URL: db })).toEqual({ DATABASE_URL: db });
+    expect(parseServerEnv({ DATABASE_URL: "", POSTGRES_URL: db })).toEqual({ DATABASE_URL: db });
+  });
+
+  it("prefers DATABASE_URL when both are set", () => {
+    expect(parseServerEnv({ DATABASE_URL: db, POSTGRES_URL: "postgres://other" }).DATABASE_URL).toBe(db);
+  });
+
   it("names a missing database URL", () => {
     expect(problems({})).toEqual(["DATABASE_URL is not set"]);
   });
