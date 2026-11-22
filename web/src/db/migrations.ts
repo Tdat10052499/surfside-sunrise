@@ -34,6 +34,9 @@ export async function applyMigrations(
         version    text primary key,
         applied_at timestamptz not null default now()
       )`;
+    // Supabase exposes the public schema over its REST API; with RLS on and no policy,
+    // only the server's own connection can read this table.
+    await sql`alter table public.schema_migrations enable row level security`;
     const done = new Set(
       (await sql<{ version: string }[]>`select version from public.schema_migrations`).map((r) => r.version),
     );
