@@ -48,7 +48,9 @@ The server checks its environment when it starts (`src/instrumentation.ts`). A m
 
 ## Deploy (preview)
 
-Vercel project settings: Root Directory `web`, framework Next.js, default build command. Connect the Supabase integration to the project (it sets `POSTGRES_URL`, which the app uses when `DATABASE_URL` is unset), run `npm run db:migrate -- --seed` against the database once, then open `/api/health` on the deployment.
+Vercel project settings: Root Directory `web`, framework Next.js, default build command. Connect the Supabase integration to the project (it sets `POSTGRES_URL`, which the app uses when `DATABASE_URL` is unset), then open `/api/health` on the deployment.
+
+Vercel runs `npm run vercel-build` (`scripts/vercel-build.ts`). On production deployments, that is every merge to `main`, it runs `npm run db:migrate -- --seed` before `next build`; a failing migration fails the deploy and the previous one keeps serving. Preview deployments never migrate, so a migration in an open pull request never reaches the shared database. The seed contains only confirmed facts and is applied once.
 
 ## Test
 
