@@ -47,7 +47,7 @@ export async function listHomes(db: Db): Promise<PublicHome[]> {
     .orderBy(asc(properties.name));
 }
 
-async function findHome(db: Db, slug: string) {
+export async function findHome(db: Db, slug: string) {
   const [row] = await db
     .select({ id: properties.id, ...publicColumns })
     .from(properties)

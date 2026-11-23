@@ -23,6 +23,18 @@ export const serverEnvSchema = z.object({
   STRIPE_SECRET_KEY: optional(prefixed("sk_test_", "sk_live_", "rk_test_", "rk_live_")),
   STRIPE_WEBHOOK_SECRET: optional(prefixed("whsec_")),
   RESEND_API_KEY: optional(prefixed("re_")),
+  // Encrypts keys pasted on the Connections page: 32 random bytes, base64
+  // (`openssl rand -base64 32`). Set once by the site team; changing it means
+  // pasting the keys again.
+  SECRETS_KEY: optional(
+    z
+      .string()
+      .trim()
+      .refine((v) => Buffer.from(v, "base64").length === 32, "must be 32 bytes, base64-encoded"),
+  ),
+  // Public address of the live site, e.g. https://www.example.com. Falls back to
+  // Vercel's production domain. Stripe sends webhooks here.
+  SITE_URL: optional(z.string().trim().url()),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
