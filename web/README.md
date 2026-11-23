@@ -52,6 +52,19 @@ Vercel project settings: Root Directory `web`, framework Next.js, default build 
 
 Vercel runs `npm run vercel-build` (`scripts/vercel-build.ts`). On production deployments, that is every merge to `main`, it runs `npm run db:migrate -- --seed` before `next build`; a failing migration fails the deploy and the previous one keeps serving. Preview deployments never migrate, so a migration in an open pull request never reaches the shared database. The seed contains only confirmed facts and is applied once.
 
+## Public API
+
+Read-only JSON for the public site. It only ever shows published homes, and it never returns guest data or why a night is taken.
+
+| Route                                                         | Returns                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/homes`                                              | Published homes: slug, name, max guests and pets, minimum nights, currency, time zone, cleaning and pet fees (cents). Cached 60 s at the CDN.                                                                                                                     |
+| `GET /api/homes/:slug`                                        | One published home, or `404 NOT_FOUND`.                                                                                                                                                                                                                           |
+| `GET /api/homes/:slug/calendar?from=&to=`                     | Taken nights merged into ranges `[start, end)`. Defaults to the next 12 months from today in the home's time zone; at most 550 days. Bookings that hold dates, holds still running and owner blocks count; rejected bookings and holds whose time ran out do not. |
+| `GET /api/homes/:slug/quote?checkIn=&checkOut=&guests=&pets=` | A server-side quote (`src/lib/pricing/quote.ts`) from the home's rates and active taxes, after checking the nights are free.                                                                                                                                      |
+
+Quote errors: `400` for a malformed request (`INVALID_REQUEST`, `INVALID_DATES`, `PAST_DATES`, `TOO_FAR_AHEAD`, `TOO_LONG`, `MIN_NIGHTS`, `TOO_MANY_GUESTS`, `TOO_MANY_PETS`), `409 DATES_TAKEN` with the taken ranges, `422 RATE_MISSING` while the owner has not set a rate for a night (true for every night until prices are entered). Limits marked ASSUMPTION in `src/lib/public/homes.ts` (stay up to 60 nights, start up to 548 days ahead) wait for the owner. Availability and quotes are `no-store`.
+
 ## Admin sign-in
 
 Only accounts in `admin_users` can sign in at `/admin/login`; there is no sign-up. The first account comes from `ADMIN_EMAIL` and `ADMIN_INITIAL_PASSWORD`: `npm run admin:bootstrap` creates it once (production deploys run it after migrating), and does nothing once any admin exists. That password is temporary: until the admin replaces it at `/admin/change-password`, every admin page redirects there.
