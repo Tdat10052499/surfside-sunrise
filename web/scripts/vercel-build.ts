@@ -9,6 +9,8 @@ const run = (args: string[]) => execFileSync("npm", ["run", ...args], { stdio: "
 
 if (process.env.VERCEL_ENV === "production") {
   run(["db:migrate", "--", "--seed"]);
+  // Creates the first admin once, from ADMIN_EMAIL and ADMIN_INITIAL_PASSWORD if set.
+  run(["admin:bootstrap"]);
 } else {
   console.log(`Skipping database migration (VERCEL_ENV=${process.env.VERCEL_ENV ?? "unset"}).`);
 }

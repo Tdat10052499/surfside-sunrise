@@ -156,3 +156,24 @@ export const siteSettings = pgTable("site_settings", {
   value: jsonb().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const adminUsers = pgTable("admin_users", {
+  id: uuid().primaryKey().defaultRandom(),
+  email: text().notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  mustChangePassword: boolean("must_change_password").notNull().default(true),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+  lockedUntil: timestamp("locked_until", { withTimezone: true }),
+  passwordChangedAt: timestamp("password_changed_at", { withTimezone: true }),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  ...timestamps,
+});
+
+export const adminSessions = pgTable("admin_sessions", {
+  tokenHash: text("token_hash").primaryKey(),
+  adminId: uuid("admin_id")
+    .notNull()
+    .references(() => adminUsers.id, { onDelete: "cascade" }),
+  ...timestamps,
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});

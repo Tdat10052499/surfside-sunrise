@@ -12,6 +12,7 @@
     "test:integration": "vitest run --project integration",
     "format": "prettier --write .",
     "db:migrate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/migrate.ts",
+    "admin:bootstrap": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/admin-bootstrap.ts",
     "vercel-build": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/vercel-build.ts"
   },
   "dependencies": {

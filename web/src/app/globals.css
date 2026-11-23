@@ -10,6 +10,20 @@
   --color-foreground: var(--foreground);
 }
 
+/* Surfside Sunrise palette (see the root CLAUDE.md design system). */
+@theme {
+  --color-navy: #1f3552;
+  --color-gulf: #3d7ea8;
+  --color-gulf-ink: #336f97;
+  --color-wall: #eef1f2;
+  --color-sand-l: #f6f0e7;
+  --color-muted: #5b6878;
+  --color-ok-ink: #2f6b4f;
+  --color-ok-bg: #e6f3ec;
+  --color-err-ink: #a23b2a;
+  --color-err-bg: #fbeae6;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
