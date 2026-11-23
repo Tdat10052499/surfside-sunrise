@@ -65,7 +65,7 @@ Read-only JSON for the public site. It only ever shows published homes, and it n
 
 Quote errors: `400` for a malformed request (`INVALID_REQUEST`, `INVALID_DATES`, `PAST_DATES`, `TOO_FAR_AHEAD`, `TOO_LONG`, `MIN_NIGHTS`, `TOO_MANY_GUESTS`, `TOO_MANY_PETS`), `409 DATES_TAKEN` with the taken ranges, `422 RATE_MISSING` while the owner has not set a rate for a night (true for every night until prices are entered). Limits marked ASSUMPTION in `src/lib/public/homes.ts` (stay up to 60 nights, start up to 548 days ahead) wait for the owner. Availability and quotes are `no-store`.
 
-## Booking and payment (step 4)
+## Booking and payment (steps 4–5)
 
 - `POST /api/bookings` with `{slug, checkIn, checkOut, guests, pets, guestName, guestEmail, guestPhone, message?, acceptPolicies: true}` quotes again on the server, holds the nights (`createHold`) and returns `{code, checkoutUrl}` for Stripe Checkout. The Checkout Session only authorises the card (`capture_method: manual`); the host's approval captures it (step 6). Checkout closes after 31 minutes (Stripe's minimum is 30) and the nights stay held for 35, so a last-second payment still finds them. Errors: the quote errors above, `503 PAYMENTS_OFF` when Stripe isn't connected, `502 PAYMENT_ERROR` when Stripe fails (the hold is released).
 - Stripe returns the guest to `/book/done?session_id=…` or `/book/cancelled?session_id=…`. Cancelling frees the nights at once and expires the Checkout Session.
@@ -73,7 +73,24 @@ Quote errors: `400` for a malformed request (`INVALID_REQUEST`, `INVALID_DATES`,
 
 ### Connections (`/admin/connections`)
 
-The owner connects Stripe by pasting one restricted key; nothing goes into Vercel by hand. The server checks the key by creating the webhook endpoint (`/api/stripe/webhook`, at `SITE_URL` or Vercel's production domain) with the events in `WEBHOOK_EVENTS`, then stores the key and the returned signing secret AES-256-GCM-encrypted with `SECRETS_KEY` (`src/lib/secrets.ts`) in `service_credentials`. Only the last 4 characters are shown again. Connecting a new key deletes the old endpoint. When nothing is stored, `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` from the environment are used (development). The webhook handler itself is step 5.
+The owner connects Stripe by pasting one restricted key; nothing goes into Vercel by hand. The server checks the key by creating the webhook endpoint (`/api/stripe/webhook`, at `SITE_URL` or Vercel's production domain) with the events in `WEBHOOK_EVENTS`, then stores the key and the returned signing secret AES-256-GCM-encrypted with `SECRETS_KEY` (`src/lib/secrets.ts`) in `service_credentials`. Only the last 4 characters are shown again. Connecting a new key deletes the old endpoint. When nothing is stored, `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` from the environment are used (development).
+
+### Stripe webhook (step 5)
+
+`POST /api/stripe/webhook` checks Stripe's signature on the raw body with the stored signing secret (`400` if it doesn't match or is older than 5 minutes; `503` until Stripe is connected, so Stripe retries). Each event id goes into `stripe_events` in the same transaction as its effect (`src/lib/payments/webhook.ts`), so a repeated event does nothing and a failed one is retried by Stripe after a `500`.
+
+| Event                                              | Effect                                                                                                                                                                                                                                                                                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `checkout.session.completed`                       | Stores the PaymentIntent id on the booking.                                                                                                                                                                                                                                                                                           |
+| `payment_intent.amount_capturable_updated`         | `HOLD` (or a hold that ran out seconds earlier) becomes `AWAITING_APPROVAL`, only if the authorised amount and currency equal the stored quote. Otherwise, or if the nights went to someone else meanwhile, the authorisation is cancelled and the booking becomes `EXPIRED` with `status_reason` `AMOUNT_MISMATCH` or `DATES_TAKEN`. |
+| `checkout.session.expired`                         | An unpaid `HOLD` becomes `EXPIRED` (`CHECKOUT_EXPIRED`), freeing the nights.                                                                                                                                                                                                                                                          |
+| `payment_intent.succeeded`                         | `AWAITING_APPROVAL` becomes `CONFIRMED` when the captured amount equals the quote (capture itself is step 6).                                                                                                                                                                                                                         |
+| `payment_intent.canceled`                          | `HOLD`/`AWAITING_APPROVAL` becomes `EXPIRED` (`PAYMENT_CANCELED`), e.g. an authorisation that ran out after 7 days.                                                                                                                                                                                                                   |
+| `payment_intent.payment_failed`, `charge.refunded` | Recorded only: the guest can retry on the same Checkout page; refunds are step 6.                                                                                                                                                                                                                                                     |
+
+`/book/done` shows what the booking's status says: "confirming" (refreshing every 3 s while `HOLD`), "with the host", "confirmed", or "didn't go through".
+
+To try it locally: `stripe listen --forward-to localhost:3000/api/stripe/webhook` and put the printed `whsec_…` in `STRIPE_WEBHOOK_SECRET` with a test `STRIPE_SECRET_KEY`.
 
 ## Admin sign-in
 

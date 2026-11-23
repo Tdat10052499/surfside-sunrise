@@ -122,6 +122,7 @@ export type GuestBooking = {
   guests: number;
   pets: number;
   status: (typeof bookings.$inferSelect)["status"];
+  statusReason: (typeof bookings.$inferSelect)["statusReason"];
   totalCents: number | null;
   currency: string;
   lines: QuoteLine[];
@@ -136,6 +137,7 @@ const guestColumns = {
   guests: bookings.guests,
   pets: bookings.pets,
   status: bookings.status,
+  statusReason: bookings.statusReason,
   totalCents: bookings.totalCents,
   currency: properties.currency,
   quote: bookings.quote,

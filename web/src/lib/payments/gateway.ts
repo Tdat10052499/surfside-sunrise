@@ -25,9 +25,11 @@ export interface StripeGateway {
   deleteWebhook(id: string): Promise<void>;
   createCheckout(req: CheckoutRequest): Promise<{ id: string; url: string }>;
   expireCheckout(id: string): Promise<void>;
+  /** Releases a card authorisation that will not be captured. */
+  cancelPaymentIntent(id: string): Promise<void>;
 }
 
-/** Events the webhook handler (step 5) acts on. */
+/** Events the webhook handler (src/lib/payments/webhook.ts) acts on. */
 export const WEBHOOK_EVENTS = [
   "checkout.session.completed",
   "checkout.session.expired",
@@ -94,5 +96,18 @@ export function stripeGateway(key: string): StripeGateway {
     async expireCheckout(id) {
       await stripe.checkout.sessions.expire(id);
     },
+    async cancelPaymentIntent(id) {
+      const pi = await stripe.paymentIntents.retrieve(id);
+      if (pi.status === "canceled") return; // already released
+      await stripe.paymentIntents.cancel(id);
+    },
   };
+}
+
+/**
+ * Checks Stripe's signature on a webhook body and parses it. Throws if the body was
+ * not signed with this secret or is older than five minutes (replayed).
+ */
+export function verifyStripeEvent(payload: string, signature: string, secret: string): Stripe.Event {
+  return Stripe.webhooks.constructEvent(payload, signature, secret);
 }
