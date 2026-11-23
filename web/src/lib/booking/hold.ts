@@ -9,8 +9,14 @@ import type { IsoDate } from "@/lib/dates";
 import type { Quote } from "@/lib/pricing/quote";
 import { newBookingCode } from "./code";
 
-/** ASSUMPTION: 30 minutes, the shortest expiry Stripe Checkout allows. Owner to confirm. */
-export const HOLD_MINUTES = 30;
+/**
+ * Stripe Checkout must stay open at least 30 minutes, so the payment page closes
+ * after 31 (src/lib/payments/checkout.ts) and the dates stay held a few minutes
+ * longer, so a guest who pays in the last second still has them when Stripe's
+ * webhook arrives. ASSUMPTION: owner to confirm the hold time.
+ */
+export const CHECKOUT_MINUTES = 31;
+export const HOLD_MINUTES = 35;
 
 export type HoldInput = {
   propertyId: string;

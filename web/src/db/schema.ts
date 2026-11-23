@@ -101,6 +101,8 @@ export const bookings = pgTable("bookings", {
   totalCents: integer("total_cents"),
   policyVersion: text("policy_version"),
   holdExpiresAt: timestamp("hold_expires_at", { withTimezone: true }),
+  stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
+  stripePaymentIntentId: text("stripe_payment_intent_id").unique(),
   ...timestamps,
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -176,4 +178,13 @@ export const adminSessions = pgTable("admin_sessions", {
     .references(() => adminUsers.id, { onDelete: "cascade" }),
   ...timestamps,
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});
+
+export const serviceCredentials = pgTable("service_credentials", {
+  service: text().primaryKey().$type<"stripe" | "resend">(),
+  secretEnc: text("secret_enc").notNull(),
+  extraEnc: text("extra_enc"),
+  meta: jsonb().notNull().default({}),
+  updatedBy: uuid("updated_by").references(() => adminUsers.id, { onDelete: "set null" }),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

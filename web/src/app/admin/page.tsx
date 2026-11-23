@@ -33,6 +33,12 @@ async function Dashboard({ searchParams }: Pick<PageProps<"/admin">, "searchPara
       <p className="text-muted">Bookings, calendar and prices arrive here in the next steps.</p>
       <div className="flex flex-wrap gap-3">
         <Link
+          href="/admin/connections"
+          className="rounded-full border border-navy px-5 py-2.5 font-semibold text-navy hover:bg-wall"
+        >
+          Connections
+        </Link>
+        <Link
           href="/admin/change-password"
           className="rounded-full border border-navy px-5 py-2.5 font-semibold text-navy hover:bg-wall"
         >

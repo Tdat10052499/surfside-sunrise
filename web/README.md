@@ -65,6 +65,16 @@ Read-only JSON for the public site. It only ever shows published homes, and it n
 
 Quote errors: `400` for a malformed request (`INVALID_REQUEST`, `INVALID_DATES`, `PAST_DATES`, `TOO_FAR_AHEAD`, `TOO_LONG`, `MIN_NIGHTS`, `TOO_MANY_GUESTS`, `TOO_MANY_PETS`), `409 DATES_TAKEN` with the taken ranges, `422 RATE_MISSING` while the owner has not set a rate for a night (true for every night until prices are entered). Limits marked ASSUMPTION in `src/lib/public/homes.ts` (stay up to 60 nights, start up to 548 days ahead) wait for the owner. Availability and quotes are `no-store`.
 
+## Booking and payment (step 4)
+
+- `POST /api/bookings` with `{slug, checkIn, checkOut, guests, pets, guestName, guestEmail, guestPhone, message?, acceptPolicies: true}` quotes again on the server, holds the nights (`createHold`) and returns `{code, checkoutUrl}` for Stripe Checkout. The Checkout Session only authorises the card (`capture_method: manual`); the host's approval captures it (step 6). Checkout closes after 31 minutes (Stripe's minimum is 30) and the nights stay held for 35, so a last-second payment still finds them. Errors: the quote errors above, `503 PAYMENTS_OFF` when Stripe isn't connected, `502 PAYMENT_ERROR` when Stripe fails (the hold is released).
+- Stripe returns the guest to `/book/done?session_id=…` or `/book/cancelled?session_id=…`. Cancelling frees the nights at once and expires the Checkout Session.
+- `POST /api/bookings/lookup` with `{code, email}` returns the guest's own booking, without contact details. A wrong email and an unknown code get the same `404`.
+
+### Connections (`/admin/connections`)
+
+The owner connects Stripe by pasting one restricted key; nothing goes into Vercel by hand. The server checks the key by creating the webhook endpoint (`/api/stripe/webhook`, at `SITE_URL` or Vercel's production domain) with the events in `WEBHOOK_EVENTS`, then stores the key and the returned signing secret AES-256-GCM-encrypted with `SECRETS_KEY` (`src/lib/secrets.ts`) in `service_credentials`. Only the last 4 characters are shown again. Connecting a new key deletes the old endpoint. When nothing is stored, `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` from the environment are used (development). The webhook handler itself is step 5.
+
 ## Admin sign-in
 
 Only accounts in `admin_users` can sign in at `/admin/login`; there is no sign-up. The first account comes from `ADMIN_EMAIL` and `ADMIN_INITIAL_PASSWORD`: `npm run admin:bootstrap` creates it once (production deploys run it after migrating), and does nothing once any admin exists. That password is temporary: until the admin replaces it at `/admin/change-password`, every admin page redirects there.
