@@ -56,6 +56,12 @@ class FakeStripe implements StripeGateway {
   async cancelPaymentIntent(id: string) {
     this.log("cancelPaymentIntent", id);
   }
+  async capturePaymentIntent(id: string) {
+    this.log("capturePaymentIntent", id);
+  }
+  async refund(paymentIntentId: string, amountCents: number) {
+    this.log("refund", { paymentIntentId, amountCents });
+  }
 }
 const gatewayFor = (key: string) => new FakeStripe(key);
 

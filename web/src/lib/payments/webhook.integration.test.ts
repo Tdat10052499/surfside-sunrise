@@ -37,6 +37,8 @@ class FakeStripe implements StripeGateway {
     if (this.failCancel) throw new Error("Stripe is down");
     this.canceled.push(id);
   }
+  async capturePaymentIntent() {}
+  async refund() {}
 }
 let stripe: FakeStripe;
 
