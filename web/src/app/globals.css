@@ -36,3 +36,159 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Admin sign-in panel: a sunrise over the Gulf in flat shapes (src/app/admin/auth-shell.tsx).
+   Tiles rise in one after another, then the sun climbs out of its tile. Every
+   animation starts from a state that is fine to stop on, and none run with reduced motion. */
+.auth-panel {
+  --navy: #1f3552;
+  --gulf: #3d7ea8;
+  --deck: #d9c7ae;
+  --sky: #e4f0f6;
+  --glass: #7cc5c7;
+  --sun: #f1bf45;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1rem;
+  background: #f6f0e7;
+  overflow: hidden;
+}
+.auth-mosaic {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 1fr;
+  gap: 0.4rem;
+  height: 4.5rem;
+}
+.auth-tile {
+  position: relative;
+  grid-area: var(--band);
+  overflow: hidden;
+  animation: auth-tile-in 0.8s var(--ease) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+.auth-tall-only {
+  display: none;
+}
+.auth-c-navy {
+  background: var(--navy);
+}
+.auth-c-gulf {
+  background: var(--gulf);
+}
+.auth-c-deck {
+  background: var(--deck);
+}
+.auth-c-sky {
+  background: var(--sky);
+}
+.auth-c-glass {
+  background: var(--glass);
+}
+
+/* Shapes: which corners are fully round. */
+.auth-pill {
+  border-radius: 999px;
+}
+.auth-arch {
+  border-radius: 999px 999px 0 0;
+}
+.auth-wave {
+  border-radius: 999px 999px 0 0;
+}
+.auth-cap-l {
+  border-radius: 999px 0 0 999px;
+}
+.auth-q-br {
+  border-radius: 0 0 100% 0;
+}
+.auth-q-tr {
+  border-radius: 0 100% 0 0;
+}
+.auth-q-tl {
+  border-radius: 100% 0 0 0;
+}
+.auth-sky {
+  border-radius: 0.75rem;
+}
+
+.auth-sun {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: 72%;
+  aspect-ratio: 1;
+  margin-left: -36%;
+  border-radius: 50%;
+  background: var(--sun);
+  animation: auth-sun-rise 1.6s var(--ease) 0.55s both;
+}
+
+@keyframes auth-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem) scale(0.92);
+  }
+}
+@keyframes auth-sun-rise {
+  from {
+    transform: translateY(115%);
+  }
+}
+
+/* The form fades up just after the panel starts; it never starts fully hidden. */
+.auth-form {
+  animation: auth-form-in 0.7s var(--ease, ease-out) 0.15s both;
+}
+@keyframes auth-form-in {
+  from {
+    opacity: 0.25;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (min-width: 901px) {
+  .auth-panel {
+    min-height: 100vh;
+    padding: 2rem 2.5rem 2.5rem;
+  }
+  .auth-mosaic {
+    flex: 1;
+    min-height: 0;
+    align-self: center;
+    width: min(100%, calc((100vh - 12rem) * 0.75));
+    height: auto;
+    aspect-ratio: 3 / 4;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 0.6rem;
+    max-height: calc(100vh - 12rem);
+    overflow: hidden; /* the bottom row rises out of its own edge, like waves */
+  }
+  .auth-tile {
+    grid-area: var(--area);
+  }
+  .auth-tall-only {
+    display: block;
+  }
+  .auth-wave {
+    animation-name: auth-wave-in;
+  }
+}
+@keyframes auth-wave-in {
+  from {
+    opacity: 0;
+    transform: translateY(45%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-tile,
+  .auth-sun,
+  .auth-form {
+    animation: none;
+  }
+}
