@@ -81,6 +81,9 @@ export const taxRates = pgTable("tax_rates", {
   ...timestamps,
 });
 
+/** Why a booking left the normal path (step 5); see the 20261125 migration. */
+export type StatusReason = "CHECKOUT_EXPIRED" | "PAYMENT_CANCELED" | "AMOUNT_MISMATCH" | "DATES_TAKEN";
+
 export const bookings = pgTable("bookings", {
   id: uuid().primaryKey().defaultRandom(),
   code: text().notNull().unique(),
@@ -103,6 +106,7 @@ export const bookings = pgTable("bookings", {
   holdExpiresAt: timestamp("hold_expires_at", { withTimezone: true }),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id").unique(),
+  statusReason: text("status_reason").$type<StatusReason>(),
   ...timestamps,
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

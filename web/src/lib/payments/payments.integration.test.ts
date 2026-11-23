@@ -53,6 +53,9 @@ class FakeStripe implements StripeGateway {
   async expireCheckout(id: string) {
     this.log("expireCheckout", id);
   }
+  async cancelPaymentIntent(id: string) {
+    this.log("cancelPaymentIntent", id);
+  }
 }
 const gatewayFor = (key: string) => new FakeStripe(key);
 
