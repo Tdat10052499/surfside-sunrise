@@ -38,7 +38,8 @@ body {
 }
 
 /* Admin sign-in panel: a sunrise over the Gulf in flat shapes (src/app/admin/auth-shell.tsx).
-   Tiles rise in one after another, then the sun climbs out of its tile. Every
+   Tiles rise in one after another, then the sun climbs out of its tile. The form
+   itself appears at once. Every
    animation starts from a state that is fine to stop on, and none run with reduced motion. */
 .auth-panel {
   --navy: #1f3552;
@@ -139,17 +140,6 @@ body {
   }
 }
 
-/* The form fades up just after the panel starts; it never starts fully hidden. */
-.auth-form {
-  animation: auth-form-in 0.7s var(--ease, ease-out) 0.15s both;
-}
-@keyframes auth-form-in {
-  from {
-    opacity: 0.25;
-    transform: translateY(0.75rem);
-  }
-}
-
 @media (min-width: 901px) {
   .auth-panel {
     min-height: 100vh;
@@ -187,8 +177,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .auth-tile,
-  .auth-sun,
-  .auth-form {
+  .auth-sun {
     animation: none;
   }
 }

@@ -47,7 +47,7 @@ export function AuthShell({ title, lede, children }: { title: string; lede?: Rea
         </div>
       </div>
       <main className="flex items-start justify-center px-4 py-10 sm:px-8 min-[901px]:items-center">
-        <div className="auth-form flex w-full max-w-sm flex-col gap-4">
+        <div className="flex w-full max-w-sm flex-col gap-4">
           <p className="text-sm font-semibold tracking-wider text-gulf-ink uppercase">Admin</p>
           <h1 className="text-3xl leading-tight font-semibold text-navy">{title}</h1>
           {lede && <div className="text-muted">{lede}</div>}
