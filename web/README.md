@@ -52,6 +52,16 @@ Vercel project settings: Root Directory `web`, framework Next.js, default build 
 
 Vercel runs `npm run vercel-build` (`scripts/vercel-build.ts`). On production deployments, that is every merge to `main`, it runs `npm run db:migrate -- --seed` before `next build`; a failing migration fails the deploy and the previous one keeps serving. Preview deployments never migrate, so a migration in an open pull request never reaches the shared database. The seed contains only confirmed facts and is applied once.
 
+## Admin sign-in
+
+Only accounts in `admin_users` can sign in at `/admin/login`; there is no sign-up. The first account comes from `ADMIN_EMAIL` and `ADMIN_INITIAL_PASSWORD`: `npm run admin:bootstrap` creates it once (production deploys run it after migrating), and does nothing once any admin exists. That password is temporary: until the admin replaces it at `/admin/change-password`, every admin page redirects there.
+
+- Passwords: scrypt hashes, at least 12 characters with letters and numbers (`src/lib/auth/password-rules.ts`).
+- Five wrong passwords in a row lock the account for 15 minutes. An unknown email gets the same answer as a wrong password.
+- Sessions: a random token in an `httpOnly` cookie (`ssr_admin`), stored as a SHA-256 hash, valid 7 days. Changing the password signs out every other browser.
+- `src/proxy.ts` only redirects visitors without a cookie. Each admin page and action checks the session itself with `requireAdmin()` (`src/lib/auth/session.ts`).
+- Forgotten password, until email reset exists: set `ADMIN_INITIAL_PASSWORD` to a new temporary value and run `npm run admin:bootstrap -- --reset` against the database.
+
 ## Test
 
 ```bash
