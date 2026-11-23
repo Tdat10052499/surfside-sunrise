@@ -9,7 +9,9 @@ Architecture and the reasons behind it: [proposal doc](https://claude.ai/artifac
 ```
 supabase/migrations/   SQL schema, the source of truth (constraints, triggers)
 supabase/seed.sql      development data (only confirmed facts; unknowns are TODO)
-src/db/                Drizzle schema mirror and database client (server only)
+src/db/                Drizzle schema mirror, database client and migration runner (server only)
+src/lib/env.ts         server configuration, checked when the server starts
+src/app/api/health/    health check for uptime monitors
 src/lib/dates.ts       stay dates, half-open [check-in, check-out)
 src/lib/money.ts       integer cents helpers
 src/lib/pricing/       server-side quote: nightly rates, fees, taxes
@@ -35,6 +37,20 @@ npm run dev
 ```
 
 For a local Supabase stack (Postgres, Auth, Storage in Docker) use the [Supabase CLI](https://supabase.com/docs/guides/local-development): `supabase start` applies `supabase/migrations` and `supabase/seed.sql`.
+
+## Database migrations
+
+`npm run db:migrate` applies the files in `supabase/migrations` in name order, each once, and records them in `public.schema_migrations`. Add `-- --seed` to load `supabase/seed.sql` (once). It reads the first of `MIGRATION_DATABASE_URL`, `POSTGRES_URL_NON_POOLING` and `DATABASE_URL` that is set. On Supabase use the session pooler or direct connection for migrations; the app itself uses the transaction pooler.
+
+## Configuration and health
+
+The server checks its environment when it starts (`src/instrumentation.ts`). A missing or malformed variable stops it with the variable's name; values are never printed. `GET /api/health` returns `200` with `{"status":"ok"}` when the configuration is valid and the database answers within 3 seconds, otherwise `503` with which check failed. It never returns error details.
+
+## Deploy (preview)
+
+Vercel project settings: Root Directory `web`, framework Next.js, default build command. Connect the Supabase integration to the project (it sets `POSTGRES_URL`, which the app uses when `DATABASE_URL` is unset), then open `/api/health` on the deployment.
+
+Vercel runs `npm run vercel-build` (`scripts/vercel-build.ts`). On production deployments, that is every merge to `main`, it runs `npm run db:migrate -- --seed` before `next build`; a failing migration fails the deploy and the previous one keeps serving. Preview deployments never migrate, so a migration in an open pull request never reaches the shared database. The seed contains only confirmed facts and is applied once.
 
 ## Test
 

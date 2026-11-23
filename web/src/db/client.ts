@@ -1,5 +1,6 @@
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { serverEnv } from "@/lib/env";
 import * as schema from "./schema";
 
 export type Db = PostgresJsDatabase<typeof schema>;
@@ -15,9 +16,7 @@ let shared: Db | undefined;
 /** Server-only database handle. Never import this from a client component. */
 export function getDb(): Db {
   if (!shared) {
-    const url = process.env.DATABASE_URL;
-    if (!url) throw new Error("DATABASE_URL is not set");
-    shared = createDb(url).db;
+    shared = createDb(serverEnv().DATABASE_URL).db;
   }
   return shared;
 }
