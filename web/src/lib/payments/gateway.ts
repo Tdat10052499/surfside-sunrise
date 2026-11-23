@@ -27,6 +27,10 @@ export interface StripeGateway {
   expireCheckout(id: string): Promise<void>;
   /** Releases a card authorisation that will not be captured. */
   cancelPaymentIntent(id: string): Promise<void>;
+  /** Charges an authorised card (the host approved). */
+  capturePaymentIntent(id: string): Promise<void>;
+  /** Refunds part or all of a captured payment. The key makes a repeated call refund once. */
+  refund(paymentIntentId: string, amountCents: number, idempotencyKey: string): Promise<void>;
 }
 
 /** Events the webhook handler (src/lib/payments/webhook.ts) acts on. */
@@ -100,6 +104,14 @@ export function stripeGateway(key: string): StripeGateway {
       const pi = await stripe.paymentIntents.retrieve(id);
       if (pi.status === "canceled") return; // already released
       await stripe.paymentIntents.cancel(id);
+    },
+    async capturePaymentIntent(id) {
+      const pi = await stripe.paymentIntents.retrieve(id);
+      if (pi.status === "succeeded") return; // already captured
+      await stripe.paymentIntents.capture(id);
+    },
+    async refund(paymentIntentId, amountCents, idempotencyKey) {
+      await stripe.refunds.create({ payment_intent: paymentIntentId, amount: amountCents }, { idempotencyKey });
     },
   };
 }

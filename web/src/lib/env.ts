@@ -35,6 +35,8 @@ export const serverEnvSchema = z.object({
   // Public address of the live site, e.g. https://www.example.com. Falls back to
   // Vercel's production domain. Stripe sends webhooks here.
   SITE_URL: optional(z.string().trim().url()),
+  // Vercel sends it with each cron call (vercel.json); any long random string.
+  CRON_SECRET: optional(z.string().trim().min(16, "must be at least 16 characters")),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

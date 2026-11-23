@@ -5,6 +5,7 @@ import { and, eq, inArray, or, sql } from "drizzle-orm";
 import type Stripe from "stripe";
 import type { Db } from "@/db/client";
 import { bookings, properties, stripeEvents, type StatusReason } from "@/db/schema";
+import { approvalDeadline, bookingPolicy } from "@/lib/booking/policy";
 import type { StripeGateway } from "./gateway";
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
@@ -15,7 +16,8 @@ export type WebhookOutcome =
   | "awaiting_approval"
   | "confirmed"
   | "expired"
-  | "released"; // authorised but refused (amount or dates); the hold on the card was released
+  | "released" // authorised but refused (amount or dates); the hold on the card was released
+  | "refund_recorded";
 
 const EXCLUSION_VIOLATION = "23P01";
 
@@ -29,6 +31,7 @@ export async function handleStripeEvent(
   db: Db,
   event: Stripe.Event,
   gateway: StripeGateway | null,
+  now: Date = new Date(),
 ): Promise<WebhookOutcome> {
   return db.transaction(async (tx) => {
     const [fresh] = await tx
@@ -44,15 +47,16 @@ export async function handleStripeEvent(
       case "checkout.session.expired":
         return expireCheckout(tx, event.data.object);
       case "payment_intent.amount_capturable_updated":
-        return authorised(tx, event.data.object, gateway);
+        return authorised(tx, event.data.object, gateway, now);
       case "payment_intent.succeeded":
         return captured(tx, event.data.object);
       case "payment_intent.canceled":
         return canceled(tx, event.data.object);
+      case "charge.refunded":
+        return refunded(tx, event.data.object);
       default:
         // payment_intent.payment_failed: the guest can try another card on the same
         // Checkout page; if they give up, checkout.session.expired frees the nights.
-        // charge.refunded: handled with refunds in step 6.
         return "ignored";
     }
   });
@@ -101,7 +105,12 @@ async function expireCheckout(tx: Tx, session: Stripe.Checkout.Session): Promise
 }
 
 /** The card is authorised for the full amount: the booking waits for the host. */
-async function authorised(tx: Tx, pi: Stripe.PaymentIntent, gateway: StripeGateway | null): Promise<WebhookOutcome> {
+async function authorised(
+  tx: Tx,
+  pi: Stripe.PaymentIntent,
+  gateway: StripeGateway | null,
+  now: Date,
+): Promise<WebhookOutcome> {
   if (pi.status !== "requires_capture") return "ignored";
   const booking = await bookingForIntent(tx, pi);
   if (!booking) return "ignored";
@@ -125,13 +134,20 @@ async function authorised(tx: Tx, pi: Stripe.PaymentIntent, gateway: StripeGatew
     pi.currency.toLowerCase() === booking.currency.toLowerCase();
   if (!amountOk) return release("AMOUNT_MISMATCH");
 
+  const approveBy = approvalDeadline(await bookingPolicy(tx), now);
   try {
     // A savepoint: if the nights were given to someone else after this hold ran out,
     // the occupancy constraint refuses and only this step is undone.
     await tx.transaction(async (sp) => {
       await sp
         .update(bookings)
-        .set({ status: "AWAITING_APPROVAL", statusReason: null, stripePaymentIntentId: pi.id, holdExpiresAt: null })
+        .set({
+          status: "AWAITING_APPROVAL",
+          statusReason: null,
+          stripePaymentIntentId: pi.id,
+          holdExpiresAt: null,
+          approveBy,
+        })
         .where(eq(bookings.id, booking.id));
     });
   } catch (e) {
@@ -150,7 +166,10 @@ async function captured(tx: Tx, pi: Stripe.PaymentIntent): Promise<WebhookOutcom
     console.error(`Booking ${booking.id}: captured ${pi.amount_received}, expected ${booking.totalCents}`);
     return "ignored";
   }
-  await tx.update(bookings).set({ status: "CONFIRMED" }).where(eq(bookings.id, booking.id));
+  await tx
+    .update(bookings)
+    .set({ status: "CONFIRMED", decidedAt: sql`coalesce(${bookings.decidedAt}, now())` })
+    .where(eq(bookings.id, booking.id));
   return "confirmed";
 }
 
@@ -164,6 +183,30 @@ async function canceled(tx: Tx, pi: Stripe.PaymentIntent): Promise<WebhookOutcom
     .where(and(eq(bookings.id, booking.id), inArray(bookings.status, ["HOLD", "AWAITING_APPROVAL"])))
     .returning({ id: bookings.id });
   return rows.length ? "expired" : "ignored";
+}
+
+/**
+ * A refund, made from the dashboard or straight in Stripe: keep the refunded total in
+ * step with Stripe's, and mark a fully refunded booking.
+ */
+async function refunded(tx: Tx, charge: Stripe.Charge): Promise<WebhookOutcome> {
+  const piId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
+  if (!piId) return "ignored";
+  const [booking] = await tx
+    .select({ id: bookings.id, status: bookings.status, totalCents: bookings.totalCents })
+    .from(bookings)
+    .where(eq(bookings.stripePaymentIntentId, piId))
+    .for("update");
+  if (!booking) return "ignored";
+  const full = booking.totalCents !== null && charge.amount_refunded >= booking.totalCents;
+  await tx
+    .update(bookings)
+    .set({
+      refundedCents: charge.amount_refunded,
+      ...(full && (booking.status === "CONFIRMED" || booking.status === "CANCELLED") ? { status: "REFUNDED" } : {}),
+    })
+    .where(eq(bookings.id, booking.id));
+  return "refund_recorded";
 }
 
 function isUuid(v: string) {
